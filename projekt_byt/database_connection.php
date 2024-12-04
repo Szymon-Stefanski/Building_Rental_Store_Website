@@ -1,6 +1,6 @@
 <?php
 $host = 'localhost';
-$db = 'Build_Store';
+$db = 'Store';
 $user = 'root';
 $pass = '';
 $charset = 'utf8mb4';
