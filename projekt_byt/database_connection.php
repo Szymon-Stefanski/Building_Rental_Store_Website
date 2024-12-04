@@ -1,6 +1,6 @@
 <?php
 $host = 'localhost';
-$db = 'Store';
+$db = 'Build_Store';
 $user = 'root';
 $pass = '';
 $charset = 'utf8mb4';
@@ -18,29 +18,51 @@ try {
     throw new \PDOException($e->getMessage(), (int)$e->getCode());
 }
 
-
 function initializeDatabase(PDO $pdo) {
     $dbName = 'Build_Store';
-    
 
-    $pdo->exec("CREATE DATABASE IF NOT EXISTS $dbName CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci");
-    $pdo->exec("USE $dbName");
+    // Sprawdzamy, czy baza danych istnieje, jeśli tak, używamy jej
+    $stmt = $pdo->query("SHOW DATABASES LIKE '$dbName'");
+    $existingDb = $stmt->fetch(PDO::FETCH_ASSOC);
 
+    if ($existingDb) {
+        // Baza danych istnieje, przechodzimy do jej używania
+        $pdo->exec("USE $dbName");
+    } else {
+        // Jeśli baza danych nie istnieje, zgłaszamy błąd
+        throw new Exception("Baza danych '$dbName' nie istnieje.");
+    }
 
+    // Sprawdzanie i uruchamianie pliku schema.sql
     $sqlFile = __DIR__ . '/schema.sql';
     if (file_exists($sqlFile)) {
+        // Wczytanie zawartości pliku SQL
         $sql = file_get_contents($sqlFile);
-        $pdo->exec($sql);
+
+        // Podzielenie zapytań na pojedyncze komendy
+        $queries = explode(";", $sql);
+
+        // Uruchamianie każdej komendy
+        foreach ($queries as $query) {
+            $query = trim($query);
+            if (!empty($query)) {
+                try {
+                    $pdo->exec($query); // Wykonanie zapytania
+                } catch (PDOException $e) {
+                    echo "Błąd podczas wykonywania zapytania: " . $e->getMessage();
+                }
+            }
+        }
+
+        echo "Tabele zostały utworzone (lub baza danych była już gotowa).";
     } else {
         throw new Exception("Plik schema.sql nie został znaleziony!");
     }
 }
 
-
 try {
     initializeDatabase($pdo);
-    echo "Baza danych została utworzona lub już istnieje.";
 } catch (Exception $e) {
-    echo "Wystąpił błąd podczas inicjalizacji bazy danych: " . $e->getMessage();
+    echo "Wystąpił błąd: " . $e->getMessage();
 }
 ?>
