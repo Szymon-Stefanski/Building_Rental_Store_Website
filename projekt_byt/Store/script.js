@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
    
     // Funkcja powrotu do strony głównej
     function goToIndex() {
-        window.location.href = "index.html";
+        window.location.href = "index.php";
     }
 
     // Funkcja do obsługi przycisku "Powrót do strony głównej"
