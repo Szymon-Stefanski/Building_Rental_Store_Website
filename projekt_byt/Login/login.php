@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($user && password_verify($password, $user['haslo'])) {
         $_SESSION['user_id'] = $user['uzytkownik_id'];
         $_SESSION['username'] = $user['login'];
-        header('Location: index.php');
+        header('Location: ../index.php');
         exit;
     } else {
         $error = "Nieprawidłowa nazwa użytkownika lub hasło.";

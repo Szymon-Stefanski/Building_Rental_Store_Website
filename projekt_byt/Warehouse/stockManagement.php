@@ -74,8 +74,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $_SESSION['error_message'] = 'Brak wymaganych danych.';
     }
 
-
     $action = isset($_POST['action']) ? $_POST['action'] : null;
+
+    if ($action === 'add_category') {
+        $newCategoryName = isset($_POST['new_category_name']) ? trim($_POST['new_category_name']) : null;
+
+        if ($newCategoryName) {
+            $addCategoryStmt = getDbConnection()->prepare("
+            INSERT INTO Kategorie (nazwa_kategorii) VALUES (:newCategoryName)
+        ");
+            $addCategoryStmt->execute([':newCategoryName' => $newCategoryName]);
+
+            $_SESSION['success_message'] = 'Nowa kategoria została dodana.';
+        } else {
+            $_SESSION['error_message'] = 'Nie udało się dodać kategorii.';
+        }
+    }
+
+    if ($action === 'delete_category') {
+        $categoryId = isset($_POST['category_id']) ? $_POST['category_id'] : null;
+
+        if ($categoryId) {
+            $deleteProductsStmt = getDbConnection()->prepare("
+            DELETE FROM Produkty WHERE kategoria_id = :categoryId
+        ");
+            $deleteProductsStmt->execute([':categoryId' => $categoryId]);
+
+            $deleteCategoryStmt = getDbConnection()->prepare("
+            DELETE FROM Kategorie WHERE kategoria_id = :categoryId
+        ");
+            $deleteCategoryStmt->execute([':categoryId' => $categoryId]);
+
+            $_SESSION['success_message'] = 'Kategoria została usunięta.';
+        } else {
+            $_SESSION['error_message'] = 'Nie udało się usunąć kategorii.';
+        }
+    }
 
     if ($action === 'update_quantity') {
         $productId = isset($_POST['product_id']) ? $_POST['product_id'] : null;
@@ -142,6 +176,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="index-button-container">
                     <a href="../index.php" class="index-button">◄  Do strony głównej</a>
                 </div>
+                <div class="index-button-container">
+                   <a href="suppliersManagement.php" class="index-button">◄  Dostawcy</a>
+                </div>
             <div class="nav-links">
                 <a href="#">
                     <img src="../Image/Icon/discount.png" class="category-icon"> PROMOCJE
@@ -169,13 +206,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <h2>
                             <span class="category-name"><?= ($category) ?></span>
                             <button class="edit-category-button" onclick="showEditCategoryForm(this)">Zmień nazwę</button>
+                            <form action="<?= $_SERVER['PHP_SELF'] ?>" method="POST" style="display: inline;">
+                                <input type="hidden" name="action" value="delete_category">
+                                <input type="hidden" name="category_id" value="<?= $groupedProducts[$category]['id'] ?>">
+                                <button type="submit" onclick="return confirm('Czy na pewno chcesz usunąć tę kategorię?')">Usuń</button>
+                            </form>
                         </h2>
-                        <form class="edit-category-form" action="<?= $_SERVER['PHP_SELF'] ?>" method="POST" style="display: none;">
-                            <input type="hidden" name="old_category_name" value="<?= ($category) ?>">
-                            <input type="text" name="new_category_name" placeholder="Nowa nazwa kategorii" required>
-                            <button type="submit">Zapisz</button>
-                            <button type="button" onclick="hideEditCategoryForm(this)">Anuluj</button>
-                        </form>
                         <?php if (!empty($products[0]['produkt_id'])): ?>
                             <div class="product-grid">
                                 <?php foreach ($products as $product): ?>
@@ -228,11 +264,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </section>
             <?php endforeach; ?>
+
         <?php else: ?>
             <div id="no-results-message" class="no-results-message">
-                Przepraszamy, nie znaleziono produktów.
+                Brak produktów i kategorii.
             </div>
         <?php endif; ?>
+        <div class="add-category-container">
+            <form action="<?= $_SERVER['PHP_SELF'] ?>" method="POST">
+                <input type="hidden" name="action" value="add_category">
+                <label for="new_category_name">Nowa kategoria:</label>
+                <input type="text" name="new_category_name" id="new_category_name" placeholder="Nazwa kategorii" required>
+                <button type="submit">Dodaj kategorię</button>
+            </form>
+        </div>
     </main>
 </div>
 <script>
