@@ -21,42 +21,42 @@ try {
 function initializeDatabase(PDO $pdo) {
     $dbName = 'Build_Store';
 
-    // Sprawdzamy, czy baza danych istnieje, jeśli tak, używamy jej
+    // Sprawdzamy, czy baza danych istnieje
     $stmt = $pdo->query("SHOW DATABASES LIKE '$dbName'");
     $existingDb = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if ($existingDb) {
-        // Baza danych istnieje, przechodzimy do jej używania
-        $pdo->exec("USE $dbName");
-    } else {
-        // Jeśli baza danych nie istnieje, zgłaszamy błąd
-        throw new Exception("Baza danych '$dbName' nie istnieje.");
+    if (!$existingDb) {
+        // Jeśli baza danych nie istnieje, tworzymy ją
+        $pdo->exec("CREATE DATABASE $dbName CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci");
     }
 
-    // Sprawdzanie i uruchamianie pliku schema.sql
-    $sqlFile = __DIR__ . '/schema.sql';
-    if (file_exists($sqlFile)) {
-        // Wczytanie zawartości pliku SQL
-        $sql = file_get_contents($sqlFile);
+    // Używamy bazy danych
+    $pdo->exec("USE $dbName");
 
-        // Podzielenie zapytań na pojedyncze komendy
-        $queries = explode(";", $sql);
+    // Sprawdzamy, czy kluczowa tabela istnieje
+    $stmt = $pdo->query("SHOW TABLES LIKE 'Kategorie'");
+    $tableExists = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        // Uruchamianie każdej komendy
-        foreach ($queries as $query) {
-            $query = trim($query);
-            if (!empty($query)) {
-                try {
-                    $pdo->exec($query); // Wykonanie zapytania
-                } catch (PDOException $e) {
-                    echo "Błąd podczas wykonywania zapytania: " . $e->getMessage();
+    if (!$tableExists) {
+        // Jeśli tabela nie istnieje, uruchamiamy plik schema.sql
+        $sqlFile = __DIR__ . '/schema.sql';
+        if (file_exists($sqlFile)) {
+            $sql = file_get_contents($sqlFile);
+            $queries = explode(";", $sql);
+
+            foreach ($queries as $query) {
+                $query = trim($query);
+                if (!empty($query)) {
+                    try {
+                        $pdo->exec($query);
+                    } catch (PDOException $e) {
+                        echo "Błąd podczas wykonywania zapytania: " . $e->getMessage();
+                    }
                 }
             }
+        } else {
+            throw new Exception("Plik schema.sql nie został znaleziony!");
         }
-
-        echo "Tabele zostały utworzone (lub baza danych była już gotowa).";
-    } else {
-        throw new Exception("Plik schema.sql nie został znaleziony!");
     }
 }
 
@@ -64,5 +64,10 @@ try {
     initializeDatabase($pdo);
 } catch (Exception $e) {
     echo "Wystąpił błąd: " . $e->getMessage();
+}
+
+function getDbConnection() {
+    global $pdo; // Zwracamy połączenie PDO
+    return $pdo;
 }
 ?>
