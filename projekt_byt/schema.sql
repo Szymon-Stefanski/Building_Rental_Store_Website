@@ -106,3 +106,18 @@ CREATE TABLE Transakcje (
     kwota DECIMAL(10, 2) NOT NULL,
     FOREIGN KEY (zamowienie_id) REFERENCES Zamowienia(zamowienie_id) ON DELETE CASCADE
 );
+
+
+
+INSERT INTO Kategorie (nazwa_kategorii, opis) VALUES 
+('Budowlanka', 'Materiały i narzędzia budowlane do prac konstrukcyjnych i remontowych.'),
+('Elektryka', 'Produkty związane z instalacjami elektrycznymi i oświetleniem.'),
+('Narzędzia', 'Narzędzia ręczne i elektronarzędzia do prac warsztatowych i budowlanych.'),
+('Sanitarka', 'Wyposażenie sanitarne oraz elementy instalacji wodno-kanalizacyjnych.');
+
+
+INSERT INTO Dostawcy (nazwa_dostawcy, osoba_kontaktowa, numer_telefonu, email, adres) VALUES
+('Budowlanix', 'Jan Kowalski', '123456789', 's22043@pjwstk.edu.pl', 'ul. Budowlana 1, 00-001 Warszawa'),
+('Elektrix', 'Anna Nowak', '987654321', 's22043@pjwstk.edu.pl', 'ul. Elektryczna 2, 00-002 Warszawa'),
+('Toolix', 'Piotr Wiśniewski', '555666777', 's22043@pjwstk.edu.pl', 'ul. Narzędziowa 3, 00-003 Warszawa'),
+('Sanitarix', 'Katarzyna Zielińska', '444333222', 's22043@pjwstk.edu.pl', 'ul. Sanitarna 4, 00-004 Warszawa');
