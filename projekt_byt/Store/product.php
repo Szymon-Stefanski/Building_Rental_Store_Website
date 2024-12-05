@@ -55,6 +55,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['opinion'])) {
     header("Location: product.php?id=$product_id");
     exit;
 }
+
+if (!isset($_SESSION['cart'])) {
+    $_SESSION['cart'] = [];
+}
+
+if (!isset($_SESSION['user_id'])) {
+    $logged_in = false;
+    $user_id = null;
+} else {
+    $logged_in = true;
+    $user_id = $_SESSION['user_id'];
+}
 ?>
 <!DOCTYPE html>
 <html lang="pl">
@@ -73,6 +85,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['opinion'])) {
             <a href="#">Reklamacje i zwroty</a>
             <a href="#">Kontakt</a>
         </div>
+        <div class="language-currency">
+            <?php if (isset($_SESSION['user_id'])): ?>
+                <?php
+                $username = ($_SESSION['username']);
+                ?>
+                <p><a href="login/profile.php?id=<?php echo $_SESSION['user_id']; ?>">
+                        Witaj <?php echo $username; ?> !
+                    </a></p>
+            <?php else: ?>
+                <p><a href="Login/login.php">Witaj gość ! Zaloguj się !</a></p>
+
+            <?php endif; ?>
+        </div>
     </div>
 
     <div class="header-container">
@@ -88,7 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['opinion'])) {
         </div>
         <div class="cart-info">
             <span style="font-weight: bold;">Twój koszyk: <span id="cart-total">0 zł</span></span>
-            <a href="cart.html">
+            <a href="cart.php">
                 <div class="cart-icon">
                     <img src="../Image/Icon/pngegg.png" alt="Koszyk">
                     <span id="cart-count">0</span>
@@ -174,14 +199,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['opinion'])) {
                 </div>
                 <div class="product-actions">
                     <div class="quantity-cart-container">
-                        <div class="quantity-control">
-                            <button class="decrease-quantity" onclick="changeQuantity(this, -1)">-</button>
-                            <input type="number" value="1" min="1" class="quantity" onchange="updateCart()">
-                            <button class="increase-quantity" onclick="changeQuantity(this, 1)">+</button>
-                        </div>
-                        <button class="add-to-cart">
-                            <img src="../Image/Icon/pngegg.png" style="filter: invert(1) brightness(1000%);" alt="Dodaj do koszyka"> DO KOSZYKA
-                        </button>
+                            <div class="quantity-control">
+                                <button type="button" class="decrease-quantity" onclick="changeQuantity(this, -1)">-</button>
+                                <input type="number" value="1" min="1" class="quantity" name="quantity" onchange="updateQuantityDisplay(this)">
+                                <button type="button" class="increase-quantity" onclick="changeQuantity(this, 1)">+</button>
+                            </div>
+                            <form method="POST" action="../Store/cart_actions.php" class="add-to-cart-form">
+                                <input type="hidden" name="action" value="add">
+                                <input type="hidden" name="product_id" value="<?= $product['produkt_id'] ?>">
+                                <input type="hidden" name="product_name" value="<?= ($product['nazwa_produktu']) ?>">
+                                <input type="hidden" name="product_price" value="<?= $product['cena'] ?>">
+                                <input type="hidden" class="form-quantity" name="quantity" value="1">
+                                <button type="submit" class="add-to-cart-button">
+                                    <img src="../Image/Icon/pngegg.png" style="filter: invert(1) brightness(1000%);" alt="Dodaj do koszyka"> DO KOSZYKA
+                                </button>
+                            </form>
                     </div>
                 </div>
             </div>
@@ -258,18 +290,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['opinion'])) {
         updateCart();
     }
 
-    // Funkcja zmieniająca ilość produktu
-    function changeQuantity(button, change) {
-        const input = button.closest('.quantity-control').querySelector('.quantity');
-        let currentValue = parseInt(input.value);
-        currentValue += change;
-
-        if (currentValue >= 1) {
-            input.value = currentValue;
-        }
-        updateCart();
-    }
-
     // Funkcja aktualizująca widok koszyka
     function updateCart() {
         const cartCountElement = document.getElementById('cart-count');
@@ -298,6 +318,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['opinion'])) {
         }
     }
 
+    function changeQuantity(button, change) {
+        const quantityInput = button.closest('.quantity-cart-container').querySelector('.quantity');
+        let currentValue = parseInt(quantityInput.value) || 1; // Ustaw domyślnie na 1, jeśli pole jest puste
+        currentValue += change;
+
+        if (currentValue < 1) currentValue = 1; // Ilość nie może być mniejsza niż 1
+        quantityInput.value = currentValue;
+
+        updateQuantityInForm(quantityInput);
+    }
+
+    function updateQuantityDisplay(input) {
+        let currentValue = parseInt(input.value) || 1; // Walidacja dla pustego pola
+        if (currentValue < 1) currentValue = 1;
+        input.value = currentValue;
+
+        updateQuantityInForm(input);
+    }
+
+    function updateQuantityInForm(input) {
+        const formQuantityInput = input.closest('.quantity-cart-container').querySelector('.form-quantity');
+        formQuantityInput.value = input.value;
+    }
 
 
     // Funkcja do filtrowania produktów
