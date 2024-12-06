@@ -17,10 +17,12 @@ foreach ($Products as $row) {
     $groupedProducts[$row['nazwa_kategorii']][] = $row;
 }
 
-function findProductImage($productId, $productName = null) {
-    $imageDir = 'Image/Product/';
+
+function findProductImage($productId, $categoryName = null, $productName = null) {
+    $imageDir = 'Image/Product/budowlanka/';
     $extensions = ['png', 'jpg', 'gif'];
 
+    // Przeglądanie wszystkich rozszerzeń, aby znaleźć odpowiedni plik
     foreach ($extensions as $extension) {
         $filePath = $imageDir . $productId . ".1." . $extension;
         if (file_exists($filePath)) {
@@ -28,8 +30,44 @@ function findProductImage($productId, $productName = null) {
         }
     }
 
+    $imageDir = 'Image/Product/elektryka/';
+    $extensions = ['png', 'jpg', 'gif'];
+
+    // Przeglądanie wszystkich rozszerzeń, aby znaleźć odpowiedni plik
+    foreach ($extensions as $extension) {
+        $filePath = $imageDir . $productId . ".1." . $extension;
+        if (file_exists($filePath)) {
+            return $filePath;
+        }
+    }
+
+    $imageDir = 'Image/Product/narzędzia/';
+    $extensions = ['png', 'jpg', 'gif'];
+
+    // Przeglądanie wszystkich rozszerzeń, aby znaleźć odpowiedni plik
+    foreach ($extensions as $extension) {
+        $filePath = $imageDir . $productId . ".1." . $extension;
+        if (file_exists($filePath)) {
+            return $filePath;
+        }
+    }
+
+    $imageDir = 'Image/Product/sanitarka/';
+    $extensions = ['png', 'jpg', 'gif'];
+
+    // Przeglądanie wszystkich rozszerzeń, aby znaleźć odpowiedni plik
+    foreach ($extensions as $extension) {
+        $filePath = $imageDir . $productId . ".1." . $extension;
+        if (file_exists($filePath)) {
+            return $filePath;
+        }
+    }
+
+    // Jeżeli obraz nie został znaleziony
     return $productName ? "Brak obrazu dla produktu: " . htmlspecialchars($productName) : "Brak obrazu";
+    
 }
+
 
 if (!isset($_SESSION['cart'])) {
     $_SESSION['cart'] = [];

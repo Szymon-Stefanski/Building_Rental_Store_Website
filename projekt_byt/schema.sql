@@ -112,8 +112,8 @@ CREATE TABLE Transakcje (
 INSERT INTO Kategorie (nazwa_kategorii, opis) VALUES 
 ('Budowlanka', 'Materiały i narzędzia budowlane do prac konstrukcyjnych i remontowych.'),
 ('Elektryka', 'Produkty związane z instalacjami elektrycznymi i oświetleniem.'),
-('Narzędzia', 'Narzędzia ręczne i elektronarzędzia do prac warsztatowych i budowlanych.'),
-('Sanitarka', 'Wyposażenie sanitarne oraz elementy instalacji wodno-kanalizacyjnych.');
+('Sanitarka', 'Wyposażenie sanitarne oraz elementy instalacji wodno-kanalizacyjnych.'),
+('Narzędzia', 'Narzędzia ręczne i elektronarzędzia do prac warsztatowych i budowlanych.');
 
 
 INSERT INTO Dostawcy (nazwa_dostawcy, osoba_kontaktowa, numer_telefonu, email, adres) VALUES
@@ -178,7 +178,6 @@ INSERT INTO Produkty (nazwa_produktu, kategoria_id, dostawca_id, cena, ilosc_w_m
 ('Odpływ liniowy', 3, 4, 270.00, 100, 'Nowoczesny odpływ liniowy o długości 80 cm, wykonany ze stali nierdzewnej.'),
 ('Zestaw prysznicowy', 3, 4, 130.00, 100, 'Zestaw prysznicowy z deszczownicą i słuchawką natryskową.'),
 ('Sedes kompaktowy', 3, 4, 800.00, 100, 'Nowoczesny sedes kompaktowy z cichym spłukiwaniem.'),
-('Deska sedesowa', 3, 4, 170.00, 100, 'Deska sedesowa wolnoopadająca, wykonana z wytrzymałego materiału.'),
 ('Pisuar', 3, 4, 300.00, 100, 'Ceramiczny pisuar z zaworem spłukującym.'),
 ('Umywalka', 3, 4, 270.00, 100, 'Ceramiczna umywalka nablatowa o nowoczesnym designie.'),
 ('Płyn udrażniający', 3, 4, 30.00, 100, 'Silny płyn do udrażniania rur kanalizacyjnych.'),
@@ -189,7 +188,8 @@ INSERT INTO Produkty (nazwa_produktu, kategoria_id, dostawca_id, cena, ilosc_w_m
 ('Termometr rurowy', 3, 4, 40.00, 100, 'Termometr do pomiaru temperatury w rurach ciepłowniczych.'),
 ('Pompa do szamba', 3, 4, 300.00, 100, 'Mocna pompa do szamba z funkcją rozdrabniania.'),
 ('Zawór kulowy', 3, 4, 20.00, 100, 'Zawór kulowy 1/2", wykonany z mosiądzu, przeznaczony do instalacji wodnych.'),
-('Filtr wodny', 3, 4, 80.00, 100, 'Filtr wodny do oczyszczania wody użytkowej z osadów.');
+('Filtr wodny', 3, 4, 80.00, 100, 'Filtr wodny do oczyszczania wody użytkowej z osadów.'),
+('Deska sedesowa', 3, 4, 170.00, 100, 'Deska sedesowa wolnoopadająca, wykonana z wytrzymałego materiału.');
 
 
 INSERT INTO Produkty (nazwa_produktu, kategoria_id, dostawca_id, cena, ilosc_w_magazynie, opis) VALUES
@@ -213,4 +213,3 @@ INSERT INTO Produkty (nazwa_produktu, kategoria_id, dostawca_id, cena, ilosc_w_m
 ('Odkurzacz przemysłowy', 4, 3, 1500.00, 100, 'Mocny odkurzacz przemysłowy 1600W, do pracy na sucho i mokro.'),
 ('Wiertnica do betonu', 4, 3, 2500.00, 100, 'Wiertnica do betonu 2000W, średnica wiercenia do 200 mm.'),
 ('Drabina teleskopowa', 4, 3, 1000.00, 100, 'Aluminiowa drabina teleskopowa o maksymalnej wysokości 5m.');
-
