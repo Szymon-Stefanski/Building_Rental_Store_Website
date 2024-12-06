@@ -18,11 +18,10 @@ foreach ($Products as $row) {
 }
 
 
-function findProductImage($productId, $categoryName = null, $productName = null) {
-    $imageDir = 'Image/Product/budowlanka/';
+function findProductImage($productId, $categoryName, $productName) {
+    $imageDir = "Image/Product/$categoryName/";
     $extensions = ['png', 'jpg', 'gif'];
 
-    // Przeglądanie wszystkich rozszerzeń, aby znaleźć odpowiedni plik
     foreach ($extensions as $extension) {
         $filePath = $imageDir . $productId . ".1." . $extension;
         if (file_exists($filePath)) {
@@ -30,42 +29,7 @@ function findProductImage($productId, $categoryName = null, $productName = null)
         }
     }
 
-    $imageDir = 'Image/Product/elektryka/';
-    $extensions = ['png', 'jpg', 'gif'];
-
-    // Przeglądanie wszystkich rozszerzeń, aby znaleźć odpowiedni plik
-    foreach ($extensions as $extension) {
-        $filePath = $imageDir . $productId . ".1." . $extension;
-        if (file_exists($filePath)) {
-            return $filePath;
-        }
-    }
-
-    $imageDir = 'Image/Product/narzędzia/';
-    $extensions = ['png', 'jpg', 'gif'];
-
-    // Przeglądanie wszystkich rozszerzeń, aby znaleźć odpowiedni plik
-    foreach ($extensions as $extension) {
-        $filePath = $imageDir . $productId . ".1." . $extension;
-        if (file_exists($filePath)) {
-            return $filePath;
-        }
-    }
-
-    $imageDir = 'Image/Product/sanitarka/';
-    $extensions = ['png', 'jpg', 'gif'];
-
-    // Przeglądanie wszystkich rozszerzeń, aby znaleźć odpowiedni plik
-    foreach ($extensions as $extension) {
-        $filePath = $imageDir . $productId . ".1." . $extension;
-        if (file_exists($filePath)) {
-            return $filePath;
-        }
-    }
-
-    // Jeżeli obraz nie został znaleziony
-    return $productName ? "Brak obrazu dla produktu: " . htmlspecialchars($productName) : "Brak obrazu";
-    
+    return "Brak obrazu dla produktu: " . ($productName);
 }
 
 
@@ -187,13 +151,13 @@ if (!isset($_SESSION['user_id'])) {
                             <h2><?= ($category) ?></h2>
                             <div class="product-grid">
                                 <?php foreach ($products as $product): ?>
-                                    <div class="product-card" >
-                                        <a href="Store/product.php?id=<?=$product['produkt_id']?>">
+                                    <div class="product-card">
+                                        <a href="Store/product.php?id=<?= $product['produkt_id'] ?>">
                                             <div class="favorite-icon">
                                                 <img src="Image/Icon/love-always-wins.png" alt="Ulubione">
                                             </div>
-                                            <img src="<?= findProductImage($product['produkt_id']) ?>"
-                                                 alt="<?= findProductImage($product['produkt_id'], $product['nazwa_produktu']) ?>">
+                                            <img src="<?= findProductImage($product['produkt_id'], $category, $product['nazwa_produktu']) ?>"
+                                                 alt="Obraz produktu: <?= ($product['nazwa_produktu']) ?>">
 
                                             <h3><?= ($product['nazwa_produktu']) ?></h3>
                                             <p class="product-price"><?= number_format($product['cena'], 2, ',', ' ') ?> zł/szt.</p>
@@ -215,7 +179,6 @@ if (!isset($_SESSION['user_id'])) {
                                                 </button>
                                             </form>
                                         </div>
-
                                     </div>
                                 <?php endforeach; ?>
                             </div>

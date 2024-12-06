@@ -16,16 +16,22 @@ $stmt = getDbConnection()->prepare("
         p.cena, 
         p.ilosc_w_magazynie, 
         p.opis, 
-        d.nazwa_dostawcy
+        d.nazwa_dostawcy, 
+        k.nazwa_kategorii
     FROM 
         Produkty p
-    JOIN 
+    LEFT JOIN 
         Dostawcy d 
     ON 
         p.dostawca_id = d.dostawca_id
+    LEFT JOIN 
+        Kategorie k 
+    ON 
+        p.kategoria_id = k.kategoria_id
     WHERE 
         p.produkt_id = ?
 ");
+
 $stmt->execute([$product_id]);
 $product = $stmt->fetch();
 if (!$product) {
@@ -67,6 +73,7 @@ if (!isset($_SESSION['user_id'])) {
     $logged_in = true;
     $user_id = $_SESSION['user_id'];
 }
+
 ?>
 <!DOCTYPE html>
 <html lang="pl">
@@ -168,11 +175,12 @@ if (!isset($_SESSION['user_id'])) {
                 <img src="../Image/Product/1.2.png" alt="Zdjęcie produktu" class="main-image" id="mainImage">
                 <div class="thumbnail-images">
                     <?php
-                    $images_dir = '../Image/Product/';
+                    $images_dir = "../Image/Product/" . $product['nazwa_kategorii'] . "/";
                     $images = glob($images_dir . $product_id . '.*.*');
 
                     foreach ($images as $image) {
-                    echo "<img src='{$image}' alt='Zdjęcie produktu {$product_id}' class='thumbnail'><br>";}
+                        echo "<img src='{$image}' alt='Zdjęcie produktu {$product_id}' class='thumbnail'><br>";}
+
                     ?>
                 </div>
             </div>
@@ -199,21 +207,21 @@ if (!isset($_SESSION['user_id'])) {
                 </div>
                 <div class="product-actions">
                     <div class="quantity-cart-container">
-                            <div class="quantity-control">
-                                <button type="button" class="decrease-quantity" onclick="changeQuantity(this, -1)">-</button>
-                                <input type="number" value="1" min="1" class="quantity" name="quantity" onchange="updateQuantityDisplay(this)">
-                                <button type="button" class="increase-quantity" onclick="changeQuantity(this, 1)">+</button>
-                            </div>
-                            <form method="POST" action="../Store/cart_actions.php" class="add-to-cart-form">
-                                <input type="hidden" name="action" value="add">
-                                <input type="hidden" name="product_id" value="<?= $product['produkt_id'] ?>">
-                                <input type="hidden" name="product_name" value="<?= ($product['nazwa_produktu']) ?>">
-                                <input type="hidden" name="product_price" value="<?= $product['cena'] ?>">
-                                <input type="hidden" class="form-quantity" name="quantity" value="1">
-                                <button type="submit" class="add-to-cart-button">
-                                    <img src="../Image/Icon/pngegg.png" style="filter: invert(1) brightness(1000%);" alt="Dodaj do koszyka"> DO KOSZYKA
-                                </button>
-                            </form>
+                        <div class="quantity-control">
+                            <button type="button" class="decrease-quantity" onclick="changeQuantity(this, -1)">-</button>
+                            <input type="number" value="1" min="1" class="quantity" name="quantity" onchange="updateQuantityDisplay(this)">
+                            <button type="button" class="increase-quantity" onclick="changeQuantity(this, 1)">+</button>
+                        </div>
+                        <form method="POST" action="../Store/cart_actions.php" class="add-to-cart-form">
+                            <input type="hidden" name="action" value="add">
+                            <input type="hidden" name="product_id" value="<?= $product['produkt_id'] ?>">
+                            <input type="hidden" name="product_name" value="<?= ($product['nazwa_produktu']) ?>">
+                            <input type="hidden" name="product_price" value="<?= $product['cena'] ?>">
+                            <input type="hidden" class="form-quantity" name="quantity" value="1">
+                            <button type="submit" class="add-to-cart-button">
+                                <img src="../Image/Icon/pngegg.png" style="filter: invert(1) brightness(1000%);" alt="Dodaj do koszyka"> DO KOSZYKA
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>
