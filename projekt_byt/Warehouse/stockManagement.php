@@ -40,8 +40,8 @@ foreach ($allCategories as $category) {
         $groupedProducts[$categoryName]['id'] = $categoryId;
     }
 }
-function findProductImage($productId, $productName = null) {
-    $imageDir = '../Image/Product/';
+function findProductImage($productId, $categoryName, $productName) {
+    $imageDir = "../Image/Product/$categoryName/";
     $extensions = ['png', 'jpg', 'gif'];
 
     foreach ($extensions as $extension) {
@@ -51,7 +51,7 @@ function findProductImage($productId, $productName = null) {
         }
     }
 
-    return $productName ? "Brak obrazu dla produktu: " . ($productName) : "Brak obrazu";
+    return "Brak obrazu dla produktu: " . ($productName);
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -221,8 +221,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                 <div class="favorite-icon">
                                                     <img src="../Image/Icon/love-always-wins.png" alt="Ulubione">
                                                 </div>
-                                                <img src="<?= findProductImage($product['produkt_id']) ?>"
-                                                     alt="<?= findProductImage($product['produkt_id'], $product['nazwa_produktu']) ?>">
+                                                <img src="<?= findProductImage($product['produkt_id'], $category, $product['nazwa_produktu']) ?>"
+                                                     alt="Obraz produktu: <?= ($product['nazwa_produktu']) ?>">
 
                                                 <h3><?= ($product['nazwa_produktu']) ?></h3>
                                                 <p class="product-price"><?= number_format($product['ilosc_w_magazynie']) ?> sztuk</p>

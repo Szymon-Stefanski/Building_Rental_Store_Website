@@ -92,10 +92,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if (isset($_FILES['product_images'])) {
             $allowed_types = ['image/jpeg', 'image/png', 'image/gif'];
-            $upload_dir = '../Image/product/';
+            $upload_dir = "../Image/Product/" . $category_name . "/";
+
+            if (!is_dir($upload_dir)) {
+                if (!mkdir($upload_dir, 0777, true)) {
+                    echo "Nie udało się utworzyć katalogu dla obrazów.";
+                    exit;
+                }
+            }
 
             $uploadedFiles = uploadFiles($_FILES['product_images'], $upload_dir);
-
             renameFiles($uploadedFiles, $product_id, $upload_dir);
         }
 
