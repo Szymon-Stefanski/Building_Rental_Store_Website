@@ -40,8 +40,8 @@ foreach ($allCategories as $category) {
         $groupedProducts[$categoryName]['id'] = $categoryId;
     }
 }
-function findProductImage($productId, $productName = null) {
-    $imageDir = '../Image/Product/';
+function findProductImage($productId, $categoryName, $productName) {
+    $imageDir = "../Image/Product/$categoryName/";
     $extensions = ['png', 'jpg', 'gif'];
 
     foreach ($extensions as $extension) {
@@ -51,7 +51,7 @@ function findProductImage($productId, $productName = null) {
         }
     }
 
-    return $productName ? "Brak obrazu dla produktu: " . ($productName) : "Brak obrazu";
+    return "Brak obrazu dla produktu: " . ($productName);
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -59,17 +59,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $newCategoryName = isset($_POST['new_category_name']) ? $_POST['new_category_name'] : null;
 
     if ($oldCategoryName && $newCategoryName) {
-        $stmt = getDbConnection()->prepare("
+        $db = getDbConnection();
+        $stmt = $db->prepare("
             UPDATE Kategorie
             SET nazwa_kategorii = :newCategoryName
             WHERE nazwa_kategorii = :oldCategoryName
         ");
-        $stmt->execute([
-            ':newCategoryName' => $newCategoryName,
-            ':oldCategoryName' => $oldCategoryName,
-        ]);
 
-        $_SESSION['success_message'] = 'Nazwa kategorii została zmieniona.';
+        try {
+            $stmt->execute([
+                ':newCategoryName' => $newCategoryName,
+                ':oldCategoryName' => $oldCategoryName,
+            ]);
+
+            $imageDir = "../Image/Product/";
+
+            $oldCategoryDir = $imageDir . $oldCategoryName;
+            $newCategoryDir = $imageDir . $newCategoryName;
+
+            if (is_dir($oldCategoryDir)) {
+                if (!rename($oldCategoryDir, $newCategoryDir)) {
+                    $_SESSION['error_message'] = "Nie udało się zmienić nazwy folderu.";
+                } else {
+                    $_SESSION['success_message'] = 'Nazwa kategorii oraz folderu zostały zmienione.';
+                }
+            } else {
+                $_SESSION['success_message'] = 'Nazwa kategorii została zmieniona, ale folder nie istnieje.';
+            }
+        } catch (Exception $e) {
+            $_SESSION['error_message'] = 'Wystąpił błąd: ' . $e->getMessage();
+        }
     } else {
         $_SESSION['error_message'] = 'Brak wymaganych danych.';
     }
@@ -206,6 +225,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <h2>
                             <span class="category-name"><?= ($category) ?></span>
                             <button class="edit-category-button" onclick="showEditCategoryForm(this)">Zmień nazwę</button>
+                            <form action="<?= $_SERVER['PHP_SELF'] ?>" method="POST" class="edit-category-form" style="display: none;">
+                                <input type="hidden" name="action" value="rename_category">
+                                <input type="hidden" name="old_category_name" value="<?= ($category) ?>">
+                                <label for="new_category_name">Nowa nazwa:</label>
+                                <input type="text" name="new_category_name" required>
+                                <button type="submit">Zapisz</button>
+                                <button type="button" onclick="hideEditCategoryForm(this)">Anuluj</button>
+                            </form>
                             <form action="<?= $_SERVER['PHP_SELF'] ?>" method="POST" style="display: inline;">
                                 <input type="hidden" name="action" value="delete_category">
                                 <input type="hidden" name="category_id" value="<?= $groupedProducts[$category]['id'] ?>">
@@ -221,8 +248,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                 <div class="favorite-icon">
                                                     <img src="../Image/Icon/love-always-wins.png" alt="Ulubione">
                                                 </div>
-                                                <img src="<?= findProductImage($product['produkt_id']) ?>"
-                                                     alt="<?= findProductImage($product['produkt_id'], $product['nazwa_produktu']) ?>">
+                                                <img src="<?= findProductImage($product['produkt_id'], $category, $product['nazwa_produktu']) ?>"
+                                                     alt="Obraz produktu: <?= ($product['nazwa_produktu']) ?>">
 
                                                 <h3><?= ($product['nazwa_produktu']) ?></h3>
                                                 <p class="product-price"><?= number_format($product['ilosc_w_magazynie']) ?> sztuk</p>

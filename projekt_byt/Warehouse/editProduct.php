@@ -40,7 +40,23 @@ try {
     $supplier_stmt->execute();
     $suppliers = $supplier_stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    $images_dir = '../Image/Product/';
+    $stmt = getDbConnection()->prepare("
+    SELECT 
+        k.nazwa_kategorii
+    FROM 
+        Produkty p
+    JOIN 
+        Kategorie k
+    ON 
+        p.kategoria_id = k.kategoria_id
+    WHERE 
+        p.produkt_id = ?
+");
+    $stmt->execute([$product_id]);
+    $category_data = $stmt->fetch(PDO::FETCH_ASSOC);
+    $category = isset($category_data['nazwa_kategorii']) ? $category_data['nazwa_kategorii'] : '';
+
+    $images_dir = "../Image/Product/" . $category . "/";
     $product_images = glob($images_dir . $product_id . '.*');
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
