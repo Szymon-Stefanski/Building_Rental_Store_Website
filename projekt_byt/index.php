@@ -219,6 +219,7 @@ if (!isset($_SESSION['user_id'])) {
             updateCart();
         }
 
+        <!-- funkcje changeQuantity, updateQuantityDisplay, updateQuantityInForm w js odpowiadają za sychronizacę widocznych przycisków z forumlarzem koszyka w php -->
         function changeQuantity(button, change) {
             const quantityInput = button.closest('.quantity-cart-container').querySelector('.quantity');
             let currentValue = parseInt(quantityInput.value) || 1; // Ustaw domyślnie na 1, jeśli pole jest puste

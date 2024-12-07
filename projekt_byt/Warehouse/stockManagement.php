@@ -208,7 +208,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </header>
 
     <main class="main-content">
-
+        <!-- Wyświetla wiadomości z przekierowań np. o dodaniu produktu $_SESSION['success_message'] = "Produkt został pomyślnie dodany."; -->
         <?php if (isset($_SESSION['success_message'])): ?>
             <div class="success-message">
                 <?php
@@ -245,9 +245,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <?php if (!empty($product['produkt_id'])): ?>
                                         <div class="product-card">
                                             <a href="editProduct.php?id=<?=$product['produkt_id']?>">
-                                                <div class="favorite-icon">
-                                                    <img src="../Image/Icon/love-always-wins.png" alt="Ulubione">
-                                                </div>
                                                 <img src="<?= findProductImage($product['produkt_id'], $category, $product['nazwa_produktu']) ?>"
                                                      alt="Obraz produktu: <?= ($product['nazwa_produktu']) ?>">
 
