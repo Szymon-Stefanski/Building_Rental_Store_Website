@@ -1,5 +1,34 @@
 <?php
 session_start();
+// zapisywanie przekierowania do zmiennej by zapobiec pętli przy odświeżaniu
+if (!isset($_SESSION['original_referer'])) {
+    $_SESSION['original_referer'] = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '../index.php';
+}
+
+// funkca dodająca ilość produktów otrzymanych z różnych źródeł np. index.php, product.php
+$product_id = isset($_POST['id']) ? $_POST['id'] : null;
+$product_name = isset($_POST['name']) ? $_POST['name'] : null;
+$product_price = isset($_POST['price']) ? $_POST['price'] : null;
+$product_quantity = isset($_POST['quantity']) ? $_POST['quantity'] : 1;
+if ($product_id) {
+    $found = false;
+    foreach ($_SESSION['cart'] as &$item) {
+        if ($item['id'] == $product_id) {
+            $item['quantity'] += $product_quantity;
+            $found = true;
+            break;
+        }
+    }
+    if (!$found) {
+        $_SESSION['cart'][] = [
+            'id' => $product_id,
+            'name' => $product_name,
+            'price' => $product_price,
+            'quantity' => $product_quantity
+        ];
+    }
+}
+
 if (!isset($_SESSION['user_id'])) {
     $logged_in = false;
     $user_id = null;
@@ -39,6 +68,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit();
 }
 
+$Total = 0;
+$Delivery = 13.99;
+$Vat = 0.08;
+                    if (isset($_SESSION['cart'])) {
+                        foreach ($_SESSION['cart'] as $item) {
+                            $itemTotal = $item['price'] * $item['quantity'];
+                            $Total += $itemTotal;
+                        }
+                    }
+$Brutto = $Total + $Delivery + $Total * $Vat;
 ?>
 
 <!DOCTYPE html>
@@ -55,12 +94,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="main-cart">
             <div class="breadcrumbs">
                 <?php
-                if (isset($_SERVER['HTTP_REFERER'])) {
-                    $redirectUrl = $_SERVER['HTTP_REFERER'];
-                } else {
-                    $redirectUrl = '../index.php';
-                }
-                echo '<a href="' . $redirectUrl . '" class="back-button">◄  Powrót</a>';
+                $redirectUrl = $_SESSION['original_referer'];
+                echo '<a href="' . $redirectUrl . '" class="back-button">◄ Powrót</a>';
                 ?>
             </div>
 
@@ -126,18 +161,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
                 <div class="free-shipping">
                     <?php
-                    $Total = 0;
-                    if (!isset($_SESSION['cart']) || empty($_SESSION['cart'])) {
-                        echo '<tr><td colspan="5">Koszyk jest pusty.</td></tr>';
-                    } else {
-
-                        foreach ($_SESSION['cart'] as $item) {
-                            $itemTotal = $item['price'] * $item['quantity'];
-                            $Total += $itemTotal;
-                        }
-                        echo '<tr><td colspan="5">Łączna wartość koszyka: ' . number_format($Total, 2, ',', '.') . ' PLN</td></tr>';
-                    }
-
                     if ($Total >= 200) {
                         echo '<p>Gratulacje! Masz darmową dostawę!</p>';
                     } else {
@@ -202,10 +225,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <!-- Podsumowanie koszyka -->
             <div class="summary">
-                <p>Produkty: <span id="products-total"></span></p>
+                <p>Produkty: <span id="products-total"><?php echo $Total;?> zł</span></p>
                 <p>Wysyłka: <span id="shipping-cost">13,99 zł</span></p>
-                <p>RAZEM (BRUTTO): <strong id="cart-total"></strong></p>
-                <p>VAT (wliczony): <span id="vat-amount"></span></p>
+                <p>RAZEM (BRUTTO): <strong id="cart-total"></strong> <?php echo $Brutto;?> zł</p>
+                <p>VAT (wliczony): <span id="vat-amount"><?php echo $Vat*100;?>%</span></p>
             </div>
         </aside>
     </div>
