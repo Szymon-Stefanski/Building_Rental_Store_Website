@@ -1,0 +1,374 @@
+/* Reset CSS */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f9f9f9;
+    padding: 20px;
+}
+
+/* Kontener koszyka */
+.cart-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+/* Główna sekcja koszyka */
+.main-cart {
+    width: 70%;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Breadcrumbs */
+.breadcrumbs {
+    margin-bottom: 15px;
+    font-size: 14px;
+    color: #555;
+}
+
+.breadcrumbs a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.breadcrumbs a:hover {
+    text-decoration: underline;
+}
+
+/* Nagłówek koszyka */
+.cart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.cart-header h2 {
+    font-size: 24px;
+}
+
+.checkout-button {
+    background-color: #28a745;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.checkout-button:hover {
+    background-color: #218838;
+}
+
+/* Tabela produktów */
+.cart-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+}
+
+.cart-table th, .cart-table td {
+    padding: 15px;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+}
+
+.cart-table th {
+    background-color: #f2f2f2;
+}
+
+.product-info {
+    display: flex;
+    align-items: center;
+}
+
+.product-info img {
+    width: 50px;
+    margin-right: 10px;
+}
+
+.availability .status {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 15px;
+}
+
+.available {
+    background-color: #28a745;
+    color: #fff;
+}
+
+.clear-cart {
+    margin-top: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f44336;
+    color: #fff;
+    font-size: 16px;
+    padding: 12px 24px;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    width: 100%;
+    max-width: 250px;
+    transition: background-color 0.3s ease;
+    font-weight: bold;
+}
+
+.clear-cart:hover {
+    background-color: #d32f2f;
+}
+
+
+
+/* Sekcja kodu rabatowego i darmowej dostawy */
+.cart-summary {
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #F4F4F4;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.cart-summary .item {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.cart-summary .item:last-child {
+    border-bottom: none;
+}
+
+.cart-summary .total {
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+
+.promo-code {
+    margin-bottom: 20px;
+}
+
+.promo-code button {
+    background: none;
+    border: 1px solid #ddd;
+    padding: 10px;
+    cursor: pointer;
+    width: 100%;
+    text-align: center;
+}
+
+.free-shipping {
+    background-color: #f8f8f8;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+.progress-bar {
+    width: 100%;
+    background-color: #e0e0e0;
+    border-radius: 5px;
+    margin: 10px 0;
+}
+
+.progress {
+    width: 0%;
+    height: 10px;
+    border-radius: 5px;
+    transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+.note {
+    font-size: 12px;
+    color: #777;
+}
+
+/* Polecany produkt i podsumowanie */
+.recommended-product {
+    width: 25%;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.recommended-product h3 {
+    margin-bottom: 15px;
+}
+
+.product-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.product-card img {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.add-to-cart {
+    margin-top: 20px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #8BC34A;
+    color: #fff;
+    font-size: 16px;
+    padding: 12px 24px;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    width: 100%;
+    max-width: 250px;
+    transition: background-color 0.3s ease;
+    font-weight: bold;
+}
+
+/* Ustawienia ikony koszyka */
+.add-to-cart .icon-basket {
+    background-image: url('../Image/Icon/pngegg.png');
+    background-size: cover;
+    width: 24px;
+    height: 24px;
+    margin-right: 12px;
+}
+.add-to-cart:hover {
+    background-color: #7CB342;
+}
+
+/* Podsumowanie */
+.summary p {
+    display: flex;
+    justify-content: space-between;
+    margin: 5px 0;
+}
+
+.summary strong {
+    font-size: 18px;
+}
+
+/* Przycisk na dole */
+.bottom-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.empty-cart,
+.continue-shopping {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    color: #007bff;
+}
+
+.empty-cart:hover,
+.continue-shopping:hover {
+    text-decoration: underline;
+}
+
+.checkout-button a {
+    text-decoration: none;
+    color: inherit;
+}
+.bottom-buttons button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    margin: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.bottom-buttons button:hover {
+    box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.15);
+}
+
+.bottom-buttons a{
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    align-items: center;
+}
+
+.bottom-buttons button img {
+    width: 20px;
+    height: 20px;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+#loginButton {
+    background-color: #ff8c00;
+    color: #fff;
+}
+
+#loginButton:hover {
+    background-color: #e07b00;
+}
+
+/* Styl dla przycisku "Kontynuuj jako gość" */
+#guestButton {
+    background-color: #32cd32;
+    color: #fff;
+}
+
+#guestButton:hover {
+    background-color: #28a428;
+}
+
+/* Stylizacja kontrolera ilości */
+.quantity-control {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #C0C0C0;
+    border-radius: 20px;
+    overflow: hidden;
+    width: 120px;
+}
+
+/* Styl przycisków do zwiększania/zmniejszania ilości */
+.quantity-control button {
+    background: none;
+    border: none;
+    padding: 10px;
+    font-size: 20px;
+    cursor: pointer;
+    color: #8BC34A;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Styl inputa ilości */
+.quantity-control .quantity {
+    text-align: center;
+    border: none;
+    font-size: 18px;
+    width: 40px;
+    outline: none;
+}
