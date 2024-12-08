@@ -230,7 +230,7 @@ if (!isset($_SESSION['user_id'])) {
         <!-- Opis produktu poniżej -->
         <div class="product-description">
             <h3>Opis produktu</h3>
-            <p><?php echo ($product['opis']); ?></p>
+            <p><?php echo $product['opis']; ?></p>
         </div>
         <div class="product-opinions">
             <h3>Opinie produktu</h3>

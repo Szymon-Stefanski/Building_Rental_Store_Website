@@ -78,6 +78,47 @@ $Vat = 0.08;
                         }
                     }
 $Brutto = $Total + $Delivery + $Total * $Vat;
+
+// Losowe wyświetlanie produktów z bazy
+require '../database_connection.php';
+
+$stmt = getDbConnection()->prepare("
+    SELECT k.nazwa_kategorii, p.produkt_id, p.nazwa_produktu, p.cena
+    FROM Produkty p
+    LEFT JOIN Kategorie k ON p.kategoria_id = k.kategoria_id
+    ORDER BY RAND() LIMIT 1
+");
+
+$stmt->execute();
+
+$product = $stmt->fetch();
+
+if ($product) {
+    $productId = $product['produkt_id'];
+    $productName = $product['nazwa_produktu'];
+    $productPrice = $product['cena'];
+    $categoryName = $product['nazwa_kategorii'];
+
+    function findProductImage($productId, $categoryName, $productName) {
+        $categoryName = strtolower($categoryName);
+        $imageDir = "../Image/Product/$categoryName/";
+        $extensions = ['png', 'jpg', 'gif'];
+    
+        foreach ($extensions as $extension) {
+            $filePath = $imageDir . $productId . ".1." . $extension;
+    
+    
+            if (file_exists($filePath)) {
+                return $filePath;
+            }
+        }
+    }
+    
+    $productImage = findProductImage($productId, $categoryName, $productName);
+} else {
+    echo "Brak produktów w bazie.";
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -152,8 +193,6 @@ $Brutto = $Total + $Delivery + $Total * $Vat;
 
             </table>
 
-
-
             <!-- Sekcja kodu rabatowego i darmowej dostawy -->
             <div class="cart-summary">
                 <div class="promo-code">
@@ -214,11 +253,12 @@ $Brutto = $Total + $Delivery + $Total * $Vat;
         <aside class="recommended-product">
             <h3 style="color: red;">Polecany produkt</h3>
             <div class="product-card">
-                <img src="../Image/Product/1.2.png" alt="Polecany Produkt">
-                <p>Profil główny do sufitów podwieszanych RIGIPS T24 QUICK-LOCK 3600 mm</p>
-                <p><strong>20,00 zł</strong></p>
+                <!-- Dynamiczne wstawienie zdjęcia i danych z bazy -->
+                <img src="<?= $productImage ?>" alt="Obraz produktu">
+                <p><?php echo $productName; ?></p>
+                <p><strong><?php echo $productPrice; ?> zł</strong></p>
                 <button class="add-to-cart" onclick="addRecommendedProduct()">
-                    <span class="icon-basket" ></span>
+                    <span class="icon-basket"></span>
                     DO KOSZYKA
                 </button>
             </div>
