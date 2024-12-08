@@ -77,12 +77,7 @@ if (!isset($_SESSION['user_id'])) {
                                 Witaj <?php echo $username; ?> !
                             </a></p>
                     <?php else: ?>
-                        <p>
-                            <a href="Login/login.php">
-                                <img src="Image/Icon/user.png" alt="logowanie">
-                                Logowanie
-                            </a>
-                        </p>
+                        <p><a href="Login/login.php">Witaj gość ! Zaloguj się !</a></p>
 
                     <?php endif; ?>
                 </div>
@@ -111,19 +106,11 @@ if (!isset($_SESSION['user_id'])) {
             </div>
 
             <nav class="main-navigation">
-                
+                <button class="category-dropdown">
+                    <img src="Image/Icon/menu.png" alt="Kategoria" class="button-icon"> KATEGORIE
+                    <img src="Image/Icon/down-arrow.png" alt="Strzałka w dół" class="arrow-icon">
+                </button>
                 <div class="nav-links">
-                    <div class="category-dropdown">
-                        <img src="Image/Icon/menu.png" alt="Kategoria" class="button-icon"> KATEGORIE
-                        <img src="Image/Icon/down-arrow.png" alt="Strzałka w dół" class="arrow-icon">
-                        <div class="category-dropdown-menu"> <!-- to samo co z produktami możesz zrobić php, dynamiczne uzupełnianie. -->
-                            <a href="#" id="category-electronics">BUDOWLANKA</a> <!-- zrobione poglądowo -->
-                            <a href="#" id="category-fashion">ELEKTRYKA</a>
-                            <a href="#" id="category-home">NARZĘDZIA</a>
-                            <a href="#" id="category-sport">SANITARKA</a>
-                        </div>
-                    </div>
-                    
                     <a href="#">
                         <img src="Image/Icon/brickwall.png" class="category-icon"> BUDOWA
                         <img src="Image/Icon/down-arrow.png" alt="Strzałka w dół" class="arrow-icon">
@@ -143,7 +130,7 @@ if (!isset($_SESSION['user_id'])) {
                     </a>
                     <!-- Domyślinie będzie tylko z uprawnieniami -->
                     <a href="Warehouse/stockManagement.php">
-                        <img src="Image/Icon/support.png" class="category-icon"> ZARZĄDZANIE STANEM MAGAZYNU
+                        <img src="Image/Icon/management.png" class="category-icon"> ZARZĄDZANIE STANEM MAGAZYNU
                     </a>
                 </div>
             </nav>
@@ -156,20 +143,7 @@ if (!isset($_SESSION['user_id'])) {
 
         <!-- Main Content -->
         <main class="main-content">
-            
-            <div class="advertisement-container">
-                <div class="advertisement-slider">
-                    <img src="Image/Advert/szlifierkenmachendruten.jpg" alt="Reklama 1" class="ad-image">
-                    <img src="Image/Advert/budex.png" alt="Reklama 2" class="ad-image">
-                    <img src="Image/Advert/reklama3.png" alt="Reklama 3" class="ad-image">
-                </div>
-                <div class="advertisement-dots">
-                    <span class="dot"></span>
-                    <span class="dot"></span>
-                    <span class="dot"></span>
-                </div>
-            </div>
-            
+
             <?php if (!empty($groupedProducts)): ?>
                 <?php foreach ($groupedProducts as $category => $products): ?>
                     <section class="products">
@@ -200,7 +174,7 @@ if (!isset($_SESSION['user_id'])) {
                                                 <input type="hidden" name="product_name" value="<?= ($product['nazwa_produktu']) ?>">
                                                 <input type="hidden" name="product_price" value="<?= $product['cena'] ?>">
                                                 <input type="hidden" class="form-quantity" name="quantity" value="1">
-                                                <button type="submit" class="add-to-cart" onclick="addToCart(this)">
+                                                <button type="submit" class="add-to-cart-button">
                                                     <img src="Image/Icon/pngegg.png" style="filter: invert(1) brightness(1000%);" alt="Dodaj do koszyka"> DO KOSZYKA
                                                 </button>
                                             </form>
@@ -216,127 +190,34 @@ if (!isset($_SESSION['user_id'])) {
                     Przepraszamy, nie znaleziono produktów.
                 </div>
             <?php endif; ?>
-            <footer class="footer">
-            <p>&copy; <?php echo date('Y'); ?> Budex Sp z.o.o . Wszelkie prawa zastrzeżone.</p>
-        </footer>
         </main>
     </div>
     <script>
         
         let cart = [];
-        
-        let currentIndex = 0;
-        const images = document.querySelectorAll('.advertisement-slider .ad-image');
-        const dots = document.querySelectorAll('.advertisement-dots .dot');
-        
-        
-        // Funkcja zmieniająca aktywny obrazek
-        function changeImage() {
-            // Ukryj wszystkie obrazki
-            images.forEach(image => image.style.display = 'none');
-            // Ukryj wszystkie kółeczka
-            dots.forEach(dot => dot.classList.remove('active'));
 
-            // Pokaż obecny obrazek
-            images[currentIndex].style.display = 'block';
-            dots[currentIndex].classList.add('active');
+        function addToCart() {
+            const quantityInput = event.target.closest('.product-card').querySelector('.quantity');
+            const productName = event.target.closest('.product-card').querySelector('h3').innerText;
+            const productPriceText = event.target.closest('.product-card').querySelector('.product-price').innerText;
 
-            // Przejdź do następnego obrazka
-            currentIndex = (currentIndex + 1) % images.length;
+            const productPrice = parseFloat(productPriceText.replace(' zł/szt.', '').replace(',', '.'));
+
+            const quantity = parseInt(quantityInput.value);
+
+            // Szukamy, czy produkt już istnieje w koszyku
+            const existingProduct = cart.find(item => item.name === productName);
+
+            if (existingProduct) {
+                existingProduct.quantity += quantity; // Dodajemy ilość do istniejącego produktu
+            } else {
+                cart.push({ name: productName, price: productPrice, quantity }); // Dodajemy nowy produkt do koszyka
+            }
+
+            localStorage.setItem('cartItems', JSON.stringify(cart));
+
+            updateCart();
         }
-
-        // Funkcja zmieniająca obrazek na kliknięcie kółeczka
-        function goToImage(index) {
-            currentIndex = index;
-            changeImage();
-        }
-
-        // Dodajemy obsługę kliknięć na kółeczka
-        dots.forEach((dot, index) => {
-            dot.addEventListener('click', () => goToImage(index));
-        });
-
-        // Automatyczne przełączanie obrazków co 3 sekundy
-        setInterval(changeImage, 6000);
-
-        // Inicjalne ustawienie pierwszego obrazka
-        changeImage();
-        
-        
-        
-
-        
-        // Funkcja do animacji kółeczka z liczbą produktów
-function animateCartCount() {
-    const cartCountElement = document.getElementById('cart-count');
-    // Dodajemy klasę animującą
-    cartCountElement.classList.add('animating');
-    
-    // Usuwamy klasę po zakończeniu animacji, by kółeczko wróciło do normalnych rozmiarów
-    setTimeout(() => {
-        cartCountElement.classList.remove('animating');
-    }, 300); // Długość animacji (w tym przypadku 0.3 sekundy)
-}
-
-// Funkcja do aktualizacji zawartości koszyka
-function updateCart() {
-    const cartCountElement = document.getElementById('cart-count');
-    const cartInfoElement = document.querySelector('.cart-info span');
-    let totalPrice = 0;
-    let totalQuantity = 0;
-
-    // Zliczamy łączną ilość produktów i cenę
-    cart.forEach(item => {
-        totalQuantity += item.quantity;
-        totalPrice += item.price * item.quantity;
-    });
-
-    // Aktualizujemy licznik produktów w koszyku
-    cartCountElement.textContent = totalQuantity;
-
-    // Aktualizujemy cenę w koszyku
-    cartInfoElement.textContent = `Twój koszyk: ${totalPrice.toFixed(2)} zł`;
-
-    // Zapisz zmodyfikowany koszyk w localStorage
-    localStorage.setItem('cartItems', JSON.stringify(cart));
-
-    // Animacja kółeczka
-    animateCartCount();
-
-    // Ukrywamy lub pokazujemy komunikat o braku produktów
-    const noResultsMessage = document.getElementById('no-results-message');
-    if (totalQuantity === 0) {
-        noResultsMessage.style.display = 'block';
-    } else {
-        noResultsMessage.style.display = 'none';
-    }
-}
-
-// Funkcja dodająca produkt do koszyka
-function addToCart() {
-    const quantityInput = event.target.closest('.product-card').querySelector('.quantity');
-    const productName = event.target.closest('.product-card').querySelector('h3').innerText;
-    const productPriceText = event.target.closest('.product-card').querySelector('.product-price').innerText;
-
-    const productPrice = parseFloat(productPriceText.replace(' zł/szt.', '').replace(',', '.'));
-
-    const quantity = parseInt(quantityInput.value);
-
-    // Szukamy, czy produkt już istnieje w koszyku
-    const existingProduct = cart.find(item => item.name === productName);
-
-    if (existingProduct) {
-        existingProduct.quantity += quantity; // Dodajemy ilość do istniejącego produktu
-    } else {
-        cart.push({ name: productName, price: productPrice, quantity }); // Dodajemy nowy produkt do koszyka
-    }
-
-    localStorage.setItem('cartItems', JSON.stringify(cart));
-
-    // Zaktualizowanie zawartości koszyka po dodaniu produktu
-    updateCart();
-}
-
 
         <!-- funkcje changeQuantity, updateQuantityDisplay, updateQuantityInForm w js odpowiadają za sychronizacę widocznych przycisków z forumlarzem koszyka w php -->
         function changeQuantity(button, change) {
@@ -364,7 +245,35 @@ function addToCart() {
         }
 
 
-        
+        function updateCart() {
+            const cartCountElement = document.getElementById('cart-count');
+            const cartInfoElement = document.querySelector('.cart-info span');
+            let totalPrice = 0;
+            let totalQuantity = 0;
+
+            // Zliczamy łączną ilość produktów i cenę
+            cart.forEach(item => {
+                totalQuantity += item.quantity;
+                totalPrice += item.price * item.quantity;
+            });
+
+            // Aktualizujemy licznik produktów w koszyku
+            cartCountElement.textContent = totalQuantity;
+
+            // Aktualizujemy cenę w koszyku
+            cartInfoElement.textContent = `Twój koszyk: ${totalPrice.toFixed(2)} zł`;
+
+            // Zapisz zmodyfikowany koszyk w localStorage
+            localStorage.setItem('cartItems', JSON.stringify(cart));
+
+            // Ukrywamy lub pokazujemy komunikat o braku produktów
+            const noResultsMessage = document.getElementById('no-results-message');
+            if (totalQuantity === 0) {
+                noResultsMessage.style.display = 'block';
+            } else {
+                noResultsMessage.style.display = 'none';
+            }
+        }
 
         
         
@@ -406,8 +315,5 @@ function addToCart() {
 
 
     </script>
-        
-
-
- </body>
+</body>
 </html>

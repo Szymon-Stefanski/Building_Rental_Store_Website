@@ -172,7 +172,7 @@ if (!isset($_SESSION['user_id'])) {
         <div class="product-container">
             <!-- Sekcja zdjęć produktu -->
             <div class="product-images">
-                <img src="../Image/Product/budowlanka/1.1.jpg" alt="Zdjęcie produktu" class="main-image" id="mainImage">
+                <img src="../Image/Product/1.2.png" alt="Zdjęcie produktu" class="main-image" id="mainImage">
                 <div class="thumbnail-images">
                     <?php
                     $images_dir = "../Image/Product/" . $product['nazwa_kategorii'] . "/";
@@ -218,7 +218,7 @@ if (!isset($_SESSION['user_id'])) {
                             <input type="hidden" name="product_name" value="<?= ($product['nazwa_produktu']) ?>">
                             <input type="hidden" name="product_price" value="<?= $product['cena'] ?>">
                             <input type="hidden" class="form-quantity" name="quantity" value="1">
-                            <button type="submit" class="add-to-cart"> <!--"add-to-cart-button" wersja mateusza, a potem problemy. Double check panie Mateuszu i wszystko będzie dobrze. -->
+                            <button type="submit" class="add-to-cart-button">
                                 <img src="../Image/Icon/pngegg.png" style="filter: invert(1) brightness(1000%);" alt="Dodaj do koszyka"> DO KOSZYKA
                             </button>
                         </form>
@@ -230,7 +230,7 @@ if (!isset($_SESSION['user_id'])) {
         <!-- Opis produktu poniżej -->
         <div class="product-description">
             <h3>Opis produktu</h3>
-            <p><?php echo ($product['opis']); ?></p>
+            <p><?php echo $product['opis']; ?></p>
         </div>
         <div class="product-opinions">
             <h3>Opinie produktu</h3>
