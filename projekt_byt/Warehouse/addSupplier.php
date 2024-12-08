@@ -22,15 +22,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $stmt->execute([$supplier_name, $contact_person, $phone_number, $email, $address]);
 
-        $_SESSION['success_message'] = "Dostawca został pomyślnie dodany.";
+        $_SESSION['message'] = [
+            'type' => 'success',
+            'text' => 'Dostawca został pomyślnie dodany.'
+        ];
         header("Location: suppliersManagement.php");
         exit;
     } catch (PDOException $e) {
         echo "Wystąpił błąd podczas dodawania dostawcy: " . $e->getMessage();
     }
 }
-
 ?>
+
 
 <!DOCTYPE html>
 <html lang="pl">

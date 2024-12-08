@@ -38,7 +38,10 @@ try {
         ");
         $update_stmt->execute([$supplier_name, $contact_person, $phone_number, $email, $address, $supplier_id]);
 
-        $_SESSION['success_message'] = "Dane dostawcy zostały pomyślnie zaktualizowane.";
+        $_SESSION['message'] = [
+            'type' => 'success',
+            'text' => 'Dane dostawcy zostały pomyślnie zaktualizowane.'
+        ];
         header("Location: suppliersManagement.php");
         exit;
     }
@@ -47,6 +50,7 @@ try {
     exit;
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="pl">
@@ -85,5 +89,14 @@ try {
 <footer>
     <p>&copy; 2024 Budex Sp z.o.o. Wszelkie prawa zastrzeżone.</p>
 </footer>
+    <script>
+document.getElementById('phone_number').addEventListener('input', function (e) {
+    let value = e.target.value.replace(/\D/g, ''); // Usuń wszystkie znaki niebędące cyframi
+    if (value.length > 9) value = value.slice(0, 9); // Maksymalnie 9 cyfr
+    let formatted = value.replace(/(\d{3})(\d{3})(\d{3})/, '$1-$2-$3');
+    e.target.value = formatted;
+});
+</script>
+
 </body>
 </html>
