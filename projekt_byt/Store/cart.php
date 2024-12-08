@@ -1,34 +1,5 @@
 <?php
 session_start();
-// zapisywanie przekierowania do zmiennej by zapobiec pętli przy odświeżaniu
-if (!isset($_SESSION['original_referer'])) {
-    $_SESSION['original_referer'] = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '../index.php';
-}
-
-// funkca dodająca ilość produktów otrzymanych z różnych źródeł np. index.php, product.php
-$product_id = isset($_POST['id']) ? $_POST['id'] : null;
-$product_name = isset($_POST['name']) ? $_POST['name'] : null;
-$product_price = isset($_POST['price']) ? $_POST['price'] : null;
-$product_quantity = isset($_POST['quantity']) ? $_POST['quantity'] : 1;
-if ($product_id) {
-    $found = false;
-    foreach ($_SESSION['cart'] as &$item) {
-        if ($item['id'] == $product_id) {
-            $item['quantity'] += $product_quantity;
-            $found = true;
-            break;
-        }
-    }
-    if (!$found) {
-        $_SESSION['cart'][] = [
-            'id' => $product_id,
-            'name' => $product_name,
-            'price' => $product_price,
-            'quantity' => $product_quantity
-        ];
-    }
-}
-
 if (!isset($_SESSION['user_id'])) {
     $logged_in = false;
     $user_id = null;
@@ -68,57 +39,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit();
 }
 
-$Total = 0;
-$Delivery = 13.99;
-$Vat = 0.08;
-                    if (isset($_SESSION['cart'])) {
-                        foreach ($_SESSION['cart'] as $item) {
-                            $itemTotal = $item['price'] * $item['quantity'];
-                            $Total += $itemTotal;
-                        }
-                    }
-$Brutto = $Total + $Delivery + $Total * $Vat;
-
-// Losowe wyświetlanie produktów z bazy
-require '../database_connection.php';
-
-$stmt = getDbConnection()->prepare("
-    SELECT k.nazwa_kategorii, p.produkt_id, p.nazwa_produktu, p.cena
-    FROM Produkty p
-    LEFT JOIN Kategorie k ON p.kategoria_id = k.kategoria_id
-    ORDER BY RAND() LIMIT 1
-");
-
-$stmt->execute();
-
-$product = $stmt->fetch();
-
-if ($product) {
-    $productId = $product['produkt_id'];
-    $productName = $product['nazwa_produktu'];
-    $productPrice = $product['cena'];
-    $categoryName = $product['nazwa_kategorii'];
-
-    function findProductImage($productId, $categoryName, $productName) {
-        $categoryName = strtolower($categoryName);
-        $imageDir = "../Image/Product/$categoryName/";
-        $extensions = ['png', 'jpg', 'gif'];
-    
-        foreach ($extensions as $extension) {
-            $filePath = $imageDir . $productId . ".1." . $extension;
-    
-    
-            if (file_exists($filePath)) {
-                return $filePath;
-            }
-        }
-    }
-    
-    $productImage = findProductImage($productId, $categoryName, $productName);
-} else {
-    echo "Brak produktów w bazie.";
-}
-
 ?>
 
 <!DOCTYPE html>
@@ -135,8 +55,12 @@ if ($product) {
         <div class="main-cart">
             <div class="breadcrumbs">
                 <?php
-                $redirectUrl = $_SESSION['original_referer'];
-                echo '<a href="' . $redirectUrl . '" class="back-button">◄ Powrót</a>';
+                if (isset($_SERVER['HTTP_REFERER'])) {
+                    $redirectUrl = $_SERVER['HTTP_REFERER'];
+                } else {
+                    $redirectUrl = '../index.php';
+                }
+                echo '<a href="' . $redirectUrl . '" class="back-button">◄  Powrót</a>';
                 ?>
             </div>
 
@@ -193,6 +117,8 @@ if ($product) {
 
             </table>
 
+
+
             <!-- Sekcja kodu rabatowego i darmowej dostawy -->
             <div class="cart-summary">
                 <div class="promo-code">
@@ -200,6 +126,18 @@ if ($product) {
                 </div>
                 <div class="free-shipping">
                     <?php
+                    $Total = 0;
+                    if (!isset($_SESSION['cart']) || empty($_SESSION['cart'])) {
+                        echo '<tr><td colspan="5">Koszyk jest pusty.</td></tr>';
+                    } else {
+
+                        foreach ($_SESSION['cart'] as $item) {
+                            $itemTotal = $item['price'] * $item['quantity'];
+                            $Total += $itemTotal;
+                        }
+                        echo '<tr><td colspan="5">Łączna wartość koszyka: ' . number_format($Total, 2, ',', '.') . ' PLN</td></tr>';
+                    }
+
                     if ($Total >= 200) {
                         echo '<p>Gratulacje! Masz darmową dostawę!</p>';
                     } else {
@@ -253,22 +191,21 @@ if ($product) {
         <aside class="recommended-product">
             <h3 style="color: red;">Polecany produkt</h3>
             <div class="product-card">
-                <!-- Dynamiczne wstawienie zdjęcia i danych z bazy -->
-                <img src="<?= $productImage ?>" alt="Obraz produktu">
-                <p><?php echo $productName; ?></p>
-                <p><strong><?php echo $productPrice; ?> zł</strong></p>
+                <img src="../Image/Product/budowlanka/4.1.jpg" alt="Polecany Produkt">
+                <p>Profil główny do sufitów podwieszanych RIGIPS T24 QUICK-LOCK 3600 mm</p>
+                <p><strong>20,00 zł</strong></p>
                 <button class="add-to-cart" onclick="addRecommendedProduct()">
-                    <span class="icon-basket"></span>
+                    <span class="icon-basket" ></span>
                     DO KOSZYKA
                 </button>
             </div>
 
             <!-- Podsumowanie koszyka -->
             <div class="summary">
-                <p>Produkty: <span id="products-total"><?php echo $Total;?> zł</span></p>
+                <p>Produkty: <span id="products-total"></span></p>
                 <p>Wysyłka: <span id="shipping-cost">13,99 zł</span></p>
-                <p>RAZEM (BRUTTO): <strong id="cart-total"></strong> <?php echo $Brutto;?> zł</p>
-                <p>VAT (wliczony): <span id="vat-amount"><?php echo $Vat*100;?>%</span></p>
+                <p>RAZEM (BRUTTO): <strong id="cart-total"></strong></p>
+                <p>VAT (wliczony): <span id="vat-amount"></span></p>
             </div>
         </aside>
     </div>
