@@ -1,9 +1,7 @@
 <?php
 session_start();
 // zapisywanie przekierowania do zmiennej by zapobiec pętli przy odświeżaniu
-if (!isset($_SESSION['original_referer'])) {
-    $_SESSION['original_referer'] = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '../index.php';
-}
+$source = isset($_GET['source']) ? $_GET['source'] : '../index.php';
 
 // funkca dodająca ilość produktów otrzymanych z różnych źródeł np. index.php, product.php
 $product_id = isset($_POST['id']) ? $_POST['id'] : null;
@@ -135,12 +133,7 @@ if ($product) {
         <div class="main-cart">
             <div class="breadcrumbs">
                 <?php
-                if (isset($_SERVER['HTTP_REFERER'])) {
-                    $redirectUrl = $_SERVER['HTTP_REFERER'];
-                } else {
-                    $redirectUrl = '../index.php';
-                }
-                echo '<a href="' . $redirectUrl . '" class="back-button">◄  Powrót</a>';
+                echo '<a href="' . $source . '" class="back-button">◄ Powrót</a>';
                 ?>
             </div>
 

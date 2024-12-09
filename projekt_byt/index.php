@@ -96,7 +96,10 @@ if (!isset($_SESSION['user_id'])) {
                 </div>
                 <div class="cart-info">
                     <span style="font-weight: bold;">Twój koszyk: <span id="cart-total">0 zł</span></span>
-                    <a href="Store/cart.php"> <!-- Link do strony koszyka -->
+                    <?php
+                    $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
+                    ?>
+                    <a href="Store/cart.php?source=<?php echo $current_url; ?>"> <!-- Link do strony koszyka -->
                         <div class="cart-icon">
                             <img src="Image/Icon/pngegg.png" alt="Koszyk">
                             <span id="cart-count">0</span> <!-- Liczba produktów w koszyku -->
