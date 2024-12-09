@@ -57,8 +57,8 @@ nav a {
 }
 
 .thumbnail-images img {
-  width: 60px;
-  height: 60px;
+  width: 260px;
+  height: 260px;
   cursor: pointer;
   border: 1px solid #ddd;
   border-radius: 5px;
@@ -525,17 +525,19 @@ nav a {
 .thumbnail-images {
   display: flex;
   gap: 10px;
+  flex-wrap: wrap; /* Pozwoli na zawijanie zdjęć, gdy brakuje miejsca */
 }
 
 .thumbnail {
-  width: 100px;
-  height: auto;
+  width: 200px; /* Określenie szerokości zdjęcia (dostosuj w zależności od potrzeb) */
+  height: auto; /* Utrzymanie proporcji zdjęcia */
+  object-fit: contain; /* Zapewnienie, że zdjęcie nie zostanie rozciągnięte */
   cursor: pointer;
   border: 2px solid transparent;
 }
 
 .thumbnail:hover {
-  border-color: #007bff; /* Zmienia kolor obramowania przy najechaniu */
+  border-color: #007bff; /* Kolor obramowania przy najechaniu */
 }
 
 /* Stylizacja modalnego okna */

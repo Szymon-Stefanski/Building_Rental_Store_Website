@@ -135,8 +135,12 @@ if ($product) {
         <div class="main-cart">
             <div class="breadcrumbs">
                 <?php
-                $redirectUrl = $_SESSION['original_referer'];
-                echo '<a href="' . $redirectUrl . '" class="back-button">◄ Powrót</a>';
+                if (isset($_SERVER['HTTP_REFERER'])) {
+                    $redirectUrl = $_SERVER['HTTP_REFERER'];
+                } else {
+                    $redirectUrl = '../index.php';
+                }
+                echo '<a href="' . $redirectUrl . '" class="back-button">◄  Powrót</a>';
                 ?>
             </div>
 
@@ -200,6 +204,16 @@ if ($product) {
                 </div>
                 <div class="free-shipping">
                     <?php
+                    $Total = 0;
+                    if (!isset($_SESSION['cart']) || empty($_SESSION['cart'])) {
+                        echo '<tr><td colspan="5">Koszyk jest pusty.</td></tr>';
+                    } else {
+                        foreach ($_SESSION['cart'] as $item) {
+                            $itemTotal = $item['price'] * $item['quantity'];
+                            $Total += $itemTotal;
+                        }
+                        echo '<tr><td colspan="5">Łączna wartość koszyka: ' . number_format($Total, 2, ',', '.') . ' PLN</td></tr>';
+                    }
                     if ($Total >= 200) {
                         echo '<p>Gratulacje! Masz darmową dostawę!</p>';
                     } else {
