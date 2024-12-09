@@ -37,7 +37,7 @@ if (!isset($_SESSION['user_id'])) {
 
 if (isset($_POST['action']) && $_POST['action'] === 'clear_cart') {
     unset($_SESSION['cart']);
-    header("Location: ".$_SERVER['PHP_SELF']);
+    header("Refresh:0");
     exit();
 }
 
@@ -62,7 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
     }
-    header("Location: ".$_SERVER['PHP_SELF']);
+    header("Refresh:0");
     exit();
 }
 
