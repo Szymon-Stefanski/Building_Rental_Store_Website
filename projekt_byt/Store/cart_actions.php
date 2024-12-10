@@ -1,5 +1,4 @@
 <?php
-
 session_start();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
@@ -8,12 +7,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         $productName = $_POST['product_name'];
         $productPrice = (float)$_POST['product_price'];
         $quantity = (int)$_POST['quantity'];
+        $productImage = $_POST['product_image'];
 
         if (!isset($_SESSION['cart'])) {
             $_SESSION['cart'] = [];
         }
 
         $productFound = false;
+
         foreach ($_SESSION['cart'] as &$item) {
             if ($item['id'] === $productId) {
                 $item['quantity'] += $quantity;
@@ -28,8 +29,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 'name' => $productName,
                 'price' => $productPrice,
                 'quantity' => $quantity,
+                'image' => $productImage,
             ];
         }
+
 
         $totalQuantity = 0;
         $totalPrice = 0;
@@ -46,6 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             ]);
             exit;
         }
+
 
         if (isset($_SERVER['HTTP_REFERER'])) {
             $redirectUrl = $_SERVER['HTTP_REFERER'];

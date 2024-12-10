@@ -66,6 +66,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit();
 }
 
+function displayCart() {
+    if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
+        echo "<table class='cart-table'>
+                <thead>
+                    <tr>
+                        <th>Produkt</th>
+                        <th>Cena</th>
+                        <th>Ilość</th>
+                        <th>Łączna cena</th>
+                    </tr>
+                </thead>
+                <tbody>";
+
+        foreach ($_SESSION['cart'] as $item) {
+            $totalPrice = $item['price'] * $item['quantity'];
+            echo "<tr>
+                    <td><img src='{$item['image']}' alt='{$item['name']}' style='width: 50px;'> {$item['name']}</td>
+                    <td>{$item['price']} zł</td>
+                    <td>{$item['quantity']}</td>
+                    <td>{$totalPrice} zł</td>
+                  </tr>";
+        }
+
+        echo "</tbody></table>";
+    } else {
+        echo "<p>Twój koszyk jest pusty.</p>";
+    }
+}
+
 $Total = 0;
 $Delivery = 13.99;
 $Vat = 0.08;
@@ -141,54 +170,59 @@ if ($product) {
                 <h2>KOSZYK</h2>
 
             </div>
-
             <table class="cart-table">
                 <thead>
-                <tr>
-                    <th>Produkt</th>
-                    <th>Dostępność</th>
-                    <th>Cena (brutto)</th>
-                    <th>Ilość</th>
-                    <th>Razem (brutto)</th>
-                </tr>
+                    <tr>
+                        <th>Produkt</th>
+                        <th>Dostępność</th>
+                        <th>Cena (brutto)</th>
+                        <th>Ilość</th>
+                        <th>Razem (brutto)</th>
+                    </tr>
                 </thead>
                 <tbody>
-                <?php
-                if (!isset($_SESSION['cart']) || empty($_SESSION['cart'])) {
-                    echo '<tr><td colspan="6">Koszyk jest pusty.</td></tr>';
-                } else {
-                    foreach ($_SESSION['cart'] as $index => $item) {
-                        $itemTotal = $item['price'] * $item['quantity'];
-                        echo '<tr>';
-                        echo '<td class="product-info">' . ($item['name']) . '</td>';
-                        echo '<td class="availability"><span class="status available">Dostępny</span></td>';
-                        echo '<td class="unit-price">' . number_format($item['price'], 2) . ' zł</td>';
-                        echo '<td>
-                <div class="quantity-control">
-                    <form method="post" class="quantity-form">
-                        <input type="hidden" name="action" value="update_quantity">
-                        <input type="hidden" name="item_index" value="' . $index . '">
-                        <button type="submit" name="change" value="-1">-</button>
-                        <input type="text" name="quantity" value="' . ($item['quantity']) . '" min="1">
-                        <button type="submit" name="change" value="1">+</button>
-                    </form>
-              </div>
-            </td>';
-                        echo '<td class="total-price">' . number_format($itemTotal, 2) . ' zł</td>';
-                        echo '<td>
-                <form method="post">
-                    <input type="hidden" name="action" value="remove_item">
-                    <input type="hidden" name="item_index" value="' . $index . '">
-                    <button type="submit" class="remove-button">Usuń</button>
-                </form>
-              </td>';
-                        echo '</tr>';
+                    <?php
+                    if (!isset($_SESSION['cart']) || empty($_SESSION['cart'])) {
+                        echo '<tr><td colspan="6">Koszyk jest pusty.</td></tr>';
+                    } else {
+                        foreach ($_SESSION['cart'] as $index => $item) {
+                            $itemTotal = $item['price'] * $item['quantity'];
+                            echo '<tr>';
+                            echo '<td class="product-info">
+                                    <img src="' . $item['image'] . '" alt="' . $item['name'] . '" width="50" height="50">
+                                    <div>
+                                        <p>' . $item['name'] . '</p>
+                                    </div>
+                                </td>';
+                            echo '<td class="availability"><span class="status available">Dostępny</span></td>';
+                            echo '<td class="unit-price">' . number_format($item['price'], 2) . ' zł</td>';
+                            echo '<td>
+                                    <div class="quantity-control">
+                                        <form method="post" class="quantity-form">
+                                            <input type="hidden" name="action" value="update_quantity">
+                                            <input type="hidden" name="item_index" value="' . $index . '">
+                                            <button type="submit" name="change" value="-1">-</button>
+                                            <input type="text" name="quantity" value="' . $item['quantity'] . '" min="1">
+                                            <button type="submit" name="change" value="1">+</button>
+                                        </form>
+                                    </div>
+                                </td>';
+                            echo '<td class="total-price">' . number_format($itemTotal, 2) . ' zł</td>';
+                            echo '<td>
+                                    <form method="post">
+                                        <input type="hidden" name="action" value="remove_item">
+                                        <input type="hidden" name="item_index" value="' . $index . '">
+                                        <button type="submit" class="remove-button">Usuń</button>
+                                    </form>
+                                </td>';
+                            echo '</tr>';
+                        }
                     }
-                }
-                ?>
+                    ?>
                 </tbody>
-
             </table>
+
+
 
             <!-- Sekcja kodu rabatowego i darmowej dostawy -->
             <div class="cart-summary">
@@ -264,10 +298,17 @@ if ($product) {
                 <img src="<?= $productImage ?>" alt="Obraz produktu">
                 <p><?php echo $productName; ?></p>
                 <p><strong><?php echo $productPrice; ?> zł</strong></p>
-                <button class="add-to-cart" onclick="addRecommendedProduct()">
-                    <span class="icon-basket"></span>
-                    DO KOSZYKA
-                </button>
+                <form method="POST" action="../Store/cart_actions.php" class="add-to-cart-form">
+                    <input type="hidden" name="action" value="add">
+                    <input type="hidden" name="product_id" value="<?= $product['produkt_id'] ?>">
+                    <input type="hidden" name="product_name" value="<?= ($product['nazwa_produktu']) ?>">
+                    <input type="hidden" name="product_price" value="<?= $product['cena'] ?>">
+                    <input type="hidden" name="product_image" value="<?= $productImage?>">
+                    <input type="hidden" class="form-quantity" name="quantity" value="1">
+                    <button type="submit" class="add-to-cart" onclick="addToCart(this)">
+                        DO KOSZYKA
+                    </button>
+                </form>
             </div>
 
             <!-- Podsumowanie koszyka -->
@@ -302,7 +343,6 @@ if ($product) {
                             <img src="${product.image || 'default-image.jpg'}" alt="${product.name}">
                             <div>
                                 <p>${product.name}</p>
-                                <span>Indeks: ${product.index || 'Brak'}</span>
                             </div>
                         </td>
                         <td class="availability">
@@ -436,73 +476,78 @@ if ($product) {
 
 
         function addRecommendedProduct() {
+            // Pobierz element przycisku polecanego produktu
+            const button = document.querySelector('.add-to-cart');
+
+            // Dane polecanego produktu (pobrane dynamicznie z atrybutów przycisku)
+            const recommendedProduct = {
+                id: button.getAttribute('data-id'),
+                name: button.getAttribute('data-name'),
+                image: button.getAttribute('data-image'),
+                price: parseFloat(button.getAttribute('data-price')),
+                quantity: 1, // Domyślna ilość
+                availability: "Dostępny" // Jeśli to statyczna wartość, można ją zmienić
+            };
+
             // Znajdź tabelę koszyka
             const cartTable = document.querySelector('.cart-table tbody');
 
-            // Informacje o polecanym produkcie
-            const recommendedProduct = {
-            name: "Profil główny do sufitów podwieszanych RIGIPS T24 QUICK-LOCK 3600 mm",
-            image: "profilglowny.png",
-            price: 20.00, // Cena polecanego produktu
-            quantity: 1,  // Domyślna ilość
-            availability: "Dostępny"
-        };
-
+            // Sprawdź, czy produkt już istnieje w koszyku
             let existingProductRow = null;
             const rows = Array.from(cartTable.querySelectorAll('tr'));
             rows.forEach(row => {
-            const productName = row.querySelector('.product-info p');
-            if (productName && productName.textContent === recommendedProduct.name) {
-                existingProductRow = row;
+                const productName = row.querySelector('.product-info p');
+                if (productName && productName.textContent.trim() === recommendedProduct.name) {
+                    existingProductRow = row;
+                }
+            });
+
+            if (existingProductRow) {
+                // Jeśli produkt już istnieje, zaktualizuj ilość
+                const quantityInput = existingProductRow.querySelector('.quantity');
+                quantityInput.value = parseInt(quantityInput.value) + 1;
+
+                // Zaktualizuj cenę całkowitą
+                const unitPrice = parseFloat(existingProductRow.querySelector('.unit-price').textContent);
+                const newTotalPrice = unitPrice * parseInt(quantityInput.value);
+                existingProductRow.querySelector('.total-price').textContent = `${newTotalPrice.toFixed(2)} zł`;
+            } else {
+                // Jeśli produkt nie istnieje, dodaj nowy wiersz do koszyka
+                const newRow = document.createElement('tr');
+                newRow.innerHTML = `
+                    <td class="product-info">
+                        <img src="${recommendedProduct.image}" alt="${recommendedProduct.name}" style="width: 50px; height: auto;">
+                        <div>
+                            <p>${recommendedProduct.name}</p>
+                        </div>
+                    </td>
+                    <td class="availability">
+                        <span class="status available">${recommendedProduct.availability}</span>
+                    </td>
+                    <td class="unit-price">
+                        ${recommendedProduct.price.toFixed(2)} zł
+                    </td>
+                    <td>
+                        <div class="quantity-control">
+                            <button class="decrease-quantity" onclick="changeQuantity(this, -1)">-</button>
+                            <input type="text" value="${recommendedProduct.quantity}" min="1" class="quantity" onchange="updateCart()">
+                            <button class="increase-quantity" onclick="changeQuantity(this, 1)">+</button>
+                        </div>
+                    </td>
+                    <td class="total-price">${(recommendedProduct.price * recommendedProduct.quantity).toFixed(2)} zł</td>
+                `;
+
+                // Dodaj wiersz do tabeli koszyka
+                cartTable.appendChild(newRow);
             }
-        });
 
-    if (existingProductRow) {
-        const quantityInput = existingProductRow.querySelector('.quantity');
-        quantityInput.value = parseInt(quantityInput.value) + 1;
+            // Zaktualizuj koszyk (jeśli masz funkcję `updateCart`)
+            updateCart();
 
-        // Zaktualizuj cenę całkowitą dla tego produktu
-        const unitPrice = parseFloat(existingProductRow.querySelector('.unit-price').textContent);
-        const newTotalPrice = unitPrice * parseInt(quantityInput.value);
-        existingProductRow.querySelector('.total-price').textContent = `${newTotalPrice.toFixed(2)} zł`;
-    } else {
-        // Utwórz nowy wiersz dla polecanego produktu
-        const newRow = document.createElement('tr');
-        newRow.innerHTML = `
-            <td class="product-info">
-                <img src="${recommendedProduct.image}" alt="${recommendedProduct.name}">
-                <div>
-                    <p>${recommendedProduct.name}</p>
-                    <span>Indeks: REK-12345</span>
-                </div>
-            </td>
-            <td class="availability">
-                <span class="status available">${recommendedProduct.availability}</span>
-            </td>
-            <td class="unit-price">
-                <span class="current-price">${recommendedProduct.price.toFixed(2)} zł</span>
-                <!-- Jeśli chcesz pokazać poprzednią cenę, dodaj ją poniżej -->
-                ${recommendedProduct.oldPrice ? `<span class="old-price">${recommendedProduct.oldPrice.toFixed(2)} zł</span>` : ''}
-            </td>
-            <td>
-                <div class="quantity-control">
-                    <button class="decrease-quantity" onclick="changeQuantity(this, -1)">-</button>
-                    <input type="text" value="${recommendedProduct.quantity}" min="1" class="quantity" onchange="updateCart()">
-                    <button class="increase-quantity" onclick="changeQuantity(this, 1)">+</button>
-                </div>
-            </td>
-            <td class="total-price">${(recommendedProduct.price * recommendedProduct.quantity).toFixed(2)} zł</td>
-        `;
+            // Komunikat o sukcesie
+            alert('Polecany produkt dodany do koszyka!');
+        }
 
-
-        cartTable.appendChild(newRow);
-    }
-
-    updateCart();
-
-
-    alert('Polecany produkt dodany do koszyka!');
-    }
 
     // Funkcja do zmiany ilości produktów za pomocą przycisków
         function changeQuantity(button, change) {

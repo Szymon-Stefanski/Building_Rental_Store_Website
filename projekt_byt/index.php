@@ -50,6 +50,7 @@ if (!isset($_SESSION['user_id'])) {
 $stmt = getDbConnection()->prepare("SELECT rola FROM Uzytkownicy WHERE uzytkownik_id = ?");
 $stmt->execute([$user_id]);
 $userRole = $stmt->fetchColumn();
+
 ?>
 
 <!DOCTYPE html>
@@ -211,10 +212,10 @@ $userRole = $stmt->fetchColumn();
                                             <form method="POST" action="Store/cart_actions.php" class="add-to-cart-form">
                                                 <input type="hidden" name="action" value="add">
                                                 <input type="hidden" name="product_id" value="<?= $product['produkt_id'] ?>">
-                                                <input type="hidden" name="product_name" value="<?= ($product['nazwa_produktu']) ?>">
+                                                <input type="hidden" name="product_name" value="<?= $product['nazwa_produktu'] ?>">
                                                 <input type="hidden" name="product_price" value="<?= $product['cena'] ?>">
                                                 <input type="hidden" class="form-quantity" name="quantity" value="1">
-                                                <button type="submit" class="add-to-cart" onclick="addToCart(this)">
+                                                <button type="submit" class="add-to-cart">
                                                     <img src="Image/Icon/pngegg.png" style="filter: invert(1) brightness(1000%);" alt="Dodaj do koszyka"> DO KOSZYKA
                                                 </button>
                                             </form>
