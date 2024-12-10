@@ -43,9 +43,6 @@ try {
     <link rel="stylesheet" href="../Style/style_suppliersManagement.css">
 </head>
 <body>
-<div class="index-button-container">
-    <a href="stockManagement.php" class="index-button">◄  Do zarządzania magazynem</a>
-</div>
 <header class="header">
     <h1>Zarządzanie Dostawcami</h1>
 </header>
