@@ -37,6 +37,7 @@ if (!isset($_SESSION['cart'])) {
     $_SESSION['cart'] = [];
 }
 
+// Sprawdzenie, czy użytkownik jest zalogowany
 if (!isset($_SESSION['user_id'])) {
     $logged_in = false;
     $user_id = null;
@@ -45,6 +46,10 @@ if (!isset($_SESSION['user_id'])) {
     $user_id = $_SESSION['user_id'];
 }
 
+// Pobranie roli użytkownika z bazy danych
+$stmt = getDbConnection()->prepare("SELECT rola FROM Uzytkownicy WHERE uzytkownik_id = ?");
+$stmt->execute([$user_id]);
+$userRole = $stmt->fetchColumn();
 ?>
 
 <!DOCTYPE html>
@@ -120,10 +125,15 @@ if (!isset($_SESSION['user_id'])) {
                         <img src="Image/Icon/menu.png" alt="Kategoria" class="button-icon"> KATEGORIE
                         <img src="Image/Icon/down-arrow.png" alt="Strzałka w dół" class="arrow-icon">
                         <div class="category-dropdown-menu"> <!-- to samo co z produktami możesz zrobić php, dynamiczne uzupełnianie. -->
-                            <a href="#" id="category-electronics">BUDOWLANKA</a> <!-- zrobione poglądowo -->
-                            <a href="#" id="category-fashion">ELEKTRYKA</a>
-                            <a href="#" id="category-home">NARZĘDZIA</a>
-                            <a href="#" id="category-sport">SANITARKA</a>
+                            <?php if (!empty($groupedProducts)): ?>
+                            <?php foreach ($groupedProducts as $category => $products): ?>
+                                    <a href="#<?= ($category) ?>" class="category-link"><?= htmlspecialchars($category) ?></a>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <div id="no-results-message" class="no-results-message">
+                                    Przepraszamy, nie znaleziono kategorii.
+                                </div>
+                            <?php endif; ?>
                         </div>
                     </div>
                     
@@ -144,10 +154,11 @@ if (!isset($_SESSION['user_id'])) {
                         <img src="Image/Icon/discount.png" class="category-icon"> PROMOCJE
                         <img src="Image/Icon/down-arrow.png" alt="Strzałka w dół" class="arrow-icon">
                     </a>
-                    <!-- Domyślinie będzie tylko z uprawnieniami -->
+                    <?php if ($userRole === 'administrator' || $userRole === 'moderator'): ?>
                     <a href="Warehouse/stockManagement.php">
                         <img src="Image/Icon/support.png" class="category-icon"> ZARZĄDZANIE STANEM MAGAZYNU
                     </a>
+                    <?php endif; ?>
                 </div>
             </nav>
 
@@ -176,7 +187,7 @@ if (!isset($_SESSION['user_id'])) {
             <?php if (!empty($groupedProducts)): ?>
                 <?php foreach ($groupedProducts as $category => $products): ?>
                     <section class="products">
-                        <div class="category-container">
+                        <div class="category-container" id="<?= ($category) ?>">
                             <h2><?= ($category) ?></h2>
                             <div class="product-grid">
                                 <?php foreach ($products as $product): ?>
@@ -225,7 +236,17 @@ if (!isset($_SESSION['user_id'])) {
         </main>
     </div>
     <script>
-        
+        //płynne przewijanie do kategorii
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
         let cart = [];
         
         let currentIndex = 0;
