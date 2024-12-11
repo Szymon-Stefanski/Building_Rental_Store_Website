@@ -15,9 +15,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
         $productFound = false;
 
-        foreach ($_SESSION['cart'] as &$item) {
+        foreach ($_SESSION['cart'] as $index => $item) {
             if ($item['id'] === $productId) {
-                $item['quantity'] += $quantity;
+                $_SESSION['cart'][$index]['quantity'] += $quantity;
                 $productFound = true;
                 break;
             }
@@ -32,6 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 'image' => $productImage,
             ];
         }
+
 
 
         $totalQuantity = 0;

@@ -68,32 +68,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 function displayCart() {
     if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
-        echo "<table class='cart-table'>
-                <thead>
-                    <tr>
-                        <th>Produkt</th>
-                        <th>Cena</th>
-                        <th>Ilość</th>
-                        <th>Łączna cena</th>
-                    </tr>
-                </thead>
-                <tbody>";
+        echo "<form action='update_cart.php' method='post'>
+                <table class='cart-table'>
+                    <thead>
+                        <tr>
+                            <th>Produkt</th>
+                            <th>Cena</th>
+                            <th>Ilość</th>
+                            <th>Łączna cena</th>
+                        </tr>
+                    </thead>
+                    <tbody>";
 
-        foreach ($_SESSION['cart'] as $item) {
+        foreach ($_SESSION['cart'] as $key => $item) {
             $totalPrice = $item['price'] * $item['quantity'];
             echo "<tr>
                     <td><img src='{$item['image']}' alt='{$item['name']}' style='width: 50px;'> {$item['name']}</td>
                     <td>{$item['price']} zł</td>
-                    <td>{$item['quantity']}</td>
+                    <td>
+                        <input type='number' name='quantity[{$key}]' value='{$item['quantity']}' min='1' />
+                    </td>
                     <td>{$totalPrice} zł</td>
                   </tr>";
         }
 
-        echo "</tbody></table>";
+        echo "</tbody></table>
+              <button type='submit'>Zaktualizuj koszyk</button>
+              </form>";
     } else {
         echo "<p>Twój koszyk jest pusty.</p>";
     }
 }
+
 
 $Total = 0;
 $Delivery = 13.99;
@@ -221,8 +227,6 @@ if ($product) {
                     ?>
                 </tbody>
             </table>
-
-
 
             <!-- Sekcja kodu rabatowego i darmowej dostawy -->
             <div class="cart-summary">
@@ -372,8 +376,6 @@ if ($product) {
         };
 
 
-
-
         // Logika koszyka
         const freeShippingThreshold = 200; // Próg darmowej dostawy w zł
         const shippingCost = 13.99; // Koszt wysyłki
@@ -382,63 +384,91 @@ if ($product) {
         // Funkcja do zmiany koloru paska postępu
         function updateProgressColor(progressElement, progress) {
             if (progress <= 20) {
-                progressElement.style.backgroundColor = '#8B0000';
+                progressElement.style.backgroundColor = '#8B0000'; // Czerwony
             } else if (progress <= 40) {
-                progressElement.style.backgroundColor = '#FF0000';
+                progressElement.style.backgroundColor = '#FF0000'; // Intensywny czerwony
             } else if (progress <= 60) {
-                progressElement.style.backgroundColor = '#FFA500';
+                progressElement.style.backgroundColor = '#FFA500'; // Pomarańczowy
             } else if (progress <= 80) {
-                progressElement.style.backgroundColor = '#FFFF00';
+                progressElement.style.backgroundColor = '#FFFF00'; // Żółty
             } else {
-                progressElement.style.backgroundColor = '#28a745';
+                progressElement.style.backgroundColor = '#28a745'; // Zielony
             }
         }
 
-        // Funkcja aktualizująca koszyk
-        function updateCart() {
-            // Znajdź wszystkie wiersze produktów w tabeli koszyka
-            const rows = document.querySelectorAll('.cart-table tbody tr');
-            const remainingAmountElement = document.getElementById('remaining-amount');
-            const progressBarElement = document.getElementById('progress-bar');
-            const productsTotalElement = document.getElementById('products-total');
-            const cartTotalElement = document.getElementById('cart-total');
-            const vatAmountElement = document.getElementById('vat-amount');
+        function updateProgressBar(total, threshold) {
+            const progressBar = document.getElementById('progress-bar');
+            const remainingAmount = document.getElementById('remaining-amount');
 
+            const progress = Math.min((total / threshold) * 100, 100);
+            progressBar.style.width = `${progress}%`;
+
+            // Zmieniamy kolor w zależności od wartości
+            if (progress <= 20) {
+                progressBar.style.backgroundColor = '#8B0000'; // Czerwony
+            } else if (progress <= 40) {
+                progressBar.style.backgroundColor = '#FF4500'; // Pomarańczowy
+            } else if (progress <= 60) {
+                progressBar.style.backgroundColor = '#FFD700'; // Żółty
+            } else if (progress <= 80) {
+                progressBar.style.backgroundColor = '#32CD32'; // Zielony jasny
+            } else {
+                progressBar.style.backgroundColor = '#008000'; // Zielony ciemny
+            }
+
+            // Aktualizacja pozostałej kwoty do darmowej dostawy
+            const remaining = threshold - total;
+            remainingAmount.textContent = remaining > 0 ? `${remaining.toFixed(2)} zł` : '0.00 zł';
+        }
+
+        // Wywołaj funkcję na podstawie wartości PHP
+        document.addEventListener('DOMContentLoaded', () => {
+            const total = <?php echo $Total; ?>; // Łączna kwota koszyka
+            const threshold = 200; // Próg darmowej dostawy
+            updateProgressBar(total, threshold);
+        });
+
+
+
+        // Funkcja do aktualizowania cen w koszyku
+        function updateCart() {
+            // Znajdź wszystkie wiersze w tabeli
+            const rows = document.querySelectorAll('.cart-table tbody tr');
             let totalProductPrice = 0;
 
-            // Przejdź przez wszystkie produkty w koszyku i oblicz całkowitą wartość
             rows.forEach(row => {
-                const unitPrice = parseFloat(row.querySelector('.unit-price').textContent);
-                const quantity = parseInt(row.querySelector('.quantity').value);
+                const quantityElement = row.querySelector('.quantity');
+                const unitPriceElement = row.querySelector('.unit-price');
+                const totalPriceElement = row.querySelector('.total-price');
+
+                // Jeśli brakuje któregokolwiek z tych elementów, logujemy błąd
+                if (!quantityElement || !unitPriceElement || !totalPriceElement) {
+                    console.error("Brak wymaganych elementów w wierszu:", row);
+                    return;
+                }
+
+                // Pobieramy dane
+                const unitPrice = parseFloat(unitPriceElement.textContent);
+                const quantity = parseInt(quantityElement.value);
+
+                // Jeśli którykolwiek z danych jest niepoprawny, przerywamy
+                if (isNaN(unitPrice) || isNaN(quantity)) {
+                    console.error("Niepoprawne dane w wierszu:", row);
+                    return;
+                }
+
+                // Obliczamy cenę całkowitą dla tego produktu
                 const productTotalPrice = unitPrice * quantity;
 
-                // Aktualizuj cenę całkowitą dla tego produktu
-                row.querySelector('.total-price').textContent = `${productTotalPrice.toFixed(2)} zł`;
+                // Aktualizujemy cenę całkowitą dla produktu
+                totalPriceElement.textContent = `${productTotalPrice.toFixed(2)} zł`;
 
-                // Dodaj cenę tego produktu do całkowitej ceny produktów
+                // Dodajemy cenę tego produktu do całkowitej ceny koszyka
                 totalProductPrice += productTotalPrice;
+                updateProgress();
             });
-
-            // Aktualizacja kosztu produktów i całkowitego koszyka
-            productsTotalElement.textContent = `${totalProductPrice.toFixed(2)} zł`;
-            const cartTotal = totalProductPrice >= freeShippingThreshold ? totalProductPrice : totalProductPrice + shippingCost;
-            cartTotalElement.textContent = `${cartTotal.toFixed(2)} zł`;
-
-            // Obliczanie VAT
-            const vatAmount = totalProductPrice * vatRate;
-            vatAmountElement.textContent = `${vatAmount.toFixed(2)} zł`;
-
-            // Obliczanie brakującej kwoty do darmowej dostawy
-            const remainingAmount = freeShippingThreshold - totalProductPrice;
-            remainingAmountElement.textContent = remainingAmount > 0 ? `${remainingAmount.toFixed(2)}` : '0.00';
-
-            // Aktualizacja paska postępu
-            const progress = (totalProductPrice / freeShippingThreshold) * 100;
-            progressBarElement.style.width = `${Math.min(progress, 100)}%`;
-
-            // Zmiana koloru paska postępu
-            updateProgressColor(progressBarElement, progress);
         }
+
 
         function clearCart() {
 
