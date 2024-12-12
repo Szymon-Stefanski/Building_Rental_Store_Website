@@ -7,6 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         $productName = $_POST['product_name'];
         $productPrice = (float)$_POST['product_price'];
         $quantity = (int)$_POST['quantity'];
+        $productCategory = $_POST['product_category'];
         $productImage = $_POST['product_image'];
 
         if (!isset($_SESSION['cart'])) {
@@ -30,6 +31,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                 'price' => $productPrice,
                 'quantity' => $quantity,
                 'image' => $productImage,
+                'category' => $productCategory,
             ];
         }
 

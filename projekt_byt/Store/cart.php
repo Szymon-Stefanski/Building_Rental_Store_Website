@@ -122,6 +122,13 @@ $stmt = getDbConnection()->prepare("
     ORDER BY RAND() LIMIT 1
 ");
 
+try {
+    $pdo = new PDO('mysql:host=localhost;dbname=build_store', 'root', '');
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    echo "Błąd połączenia: " . $e->getMessage();
+}
+
 $stmt->execute();
 
 $product = $stmt->fetch();
@@ -133,18 +140,44 @@ if ($product) {
     $categoryName = $product['nazwa_kategorii'];
 
     function findProductImage($productId, $categoryName, $productName) {
+        global $pdo;
+    
+        if (empty($categoryName)) {
+            $categoryName = 'elektryka';
+        }
+    
         $categoryName = strtolower($categoryName);
-        $imageDir = "../Image/Product/$categoryName/";
+    
+        $imageDir = "../Image/Product/";
         $extensions = ['png', 'jpg', 'gif'];
     
-        foreach ($extensions as $extension) {
-            $filePath = $imageDir . $productId . ".1." . $extension;
+        if ($categoryName === 'all') {
+            $query = "SELECT nazwa_kategorii FROM Kategorie";
+            $stmt = $pdo->prepare($query);
+            $stmt->execute();
+            $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
     
+            foreach ($categories as $category) {
+                $categoryName = strtolower($category['nazwa_kategorii']);
+                foreach ($extensions as $extension) {
+                    $filePath = $imageDir . $categoryName . "/" . $productId . ".1." . $extension;
+
+                    if (file_exists($filePath)) {
+                        return $filePath;
+                    }
+                }
+            }
+        } else {
+            foreach ($extensions as $extension) {
+                $filePath = $imageDir . $categoryName . "/" . $productId . ".1." . $extension;
     
-            if (file_exists($filePath)) {
-                return $filePath;
+                if (file_exists($filePath)) {
+                    return $filePath;
+                }
             }
         }
+
+        return null;
     }
     
     $productImage = findProductImage($productId, $categoryName, $productName);
@@ -188,42 +221,45 @@ if ($product) {
                 </thead>
                 <tbody>
                     <?php
-                    if (!isset($_SESSION['cart']) || empty($_SESSION['cart'])) {
-                        echo '<tr><td colspan="6">Koszyk jest pusty.</td></tr>';
-                    } else {
-                        foreach ($_SESSION['cart'] as $index => $item) {
-                            $itemTotal = $item['price'] * $item['quantity'];
-                            echo '<tr>';
-                            echo '<td class="product-info">
-                                    <img src="' . $item['image'] . '" alt="' . $item['name'] . '" width="50" height="50">
-                                    <div>
-                                        <p>' . $item['name'] . '</p>
-                                    </div>
-                                </td>';
-                            echo '<td class="availability"><span class="status available">Dostępny</span></td>';
-                            echo '<td class="unit-price">' . number_format($item['price'], 2) . ' zł</td>';
-                            echo '<td>
-                                    <div class="quantity-control">
-                                        <form method="post" class="quantity-form">
-                                            <input type="hidden" name="action" value="update_quantity">
+                        if (!isset($_SESSION['cart']) || empty($_SESSION['cart'])) {
+                            echo '<tr><td colspan="6">Koszyk jest pusty.</td></tr>';
+                        } else {
+                            foreach ($_SESSION['cart'] as $index => $item) {
+                                $itemTotal = $item['price'] * $item['quantity'];
+
+                                $imagePath = findProductImage($item['id'], 'all', $item['name']);
+
+                                echo '<tr>';
+                                echo '<td class="product-info">
+                                        <img src="' . $imagePath . '" alt="' . htmlspecialchars($item['name'] ?? 'Produkt bez nazwy') . '" width="50" height="50">
+                                        <div>
+                                            <p>' . htmlspecialchars($item['name'] ?? 'Produkt bez nazwy') . '</p>
+                                        </div>
+                                    </td>';
+                                echo '<td class="availability"><span class="status available">Dostępny</span></td>';
+                                echo '<td class="unit-price">' . number_format($item['price'], 2) . ' zł</td>';
+                                echo '<td>
+                                        <div class="quantity-control">
+                                            <form method="post" class="quantity-form">
+                                                <input type="hidden" name="action" value="update_quantity">
+                                                <input type="hidden" name="item_index" value="' . $index . '">
+                                                <button type="submit" name="change" value="-1">-</button>
+                                                <input type="text" name="quantity" value="' . $item['quantity'] . '" min="1">
+                                                <button type="submit" name="change" value="1">+</button>
+                                            </form>
+                                        </div>
+                                    </td>';
+                                echo '<td class="total-price">' . number_format($itemTotal, 2) . ' zł</td>';
+                                echo '<td>
+                                        <form method="post">
+                                            <input type="hidden" name="action" value="remove_item">
                                             <input type="hidden" name="item_index" value="' . $index . '">
-                                            <button type="submit" name="change" value="-1">-</button>
-                                            <input type="text" name="quantity" value="' . $item['quantity'] . '" min="1">
-                                            <button type="submit" name="change" value="1">+</button>
+                                            <button type="submit" class="remove-button">Usuń</button>
                                         </form>
-                                    </div>
-                                </td>';
-                            echo '<td class="total-price">' . number_format($itemTotal, 2) . ' zł</td>';
-                            echo '<td>
-                                    <form method="post">
-                                        <input type="hidden" name="action" value="remove_item">
-                                        <input type="hidden" name="item_index" value="' . $index . '">
-                                        <button type="submit" class="remove-button">Usuń</button>
-                                    </form>
-                                </td>';
-                            echo '</tr>';
+                                    </td>';
+                                echo '</tr>';
+                            }
                         }
-                    }
                     ?>
                 </tbody>
             </table>
@@ -344,7 +380,7 @@ if ($product) {
                     // Tworzymy wiersz z produktem
                     productRow.innerHTML = `
                         <td class="product-info">
-                            <img src="${product.image || 'default-image.jpg'}" alt="${product.name}">
+                            <img src="${product.image || '../Image/Product/budowlanka/1.1.png'}" alt="${product.name}">
                             <div>
                                 <p>${product.name}</p>
                             </div>
