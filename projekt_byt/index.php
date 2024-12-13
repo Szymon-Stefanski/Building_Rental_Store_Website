@@ -56,6 +56,16 @@ $query = "
     JOIN Kategorie c ON p.kategoria_id = c.id
 ";
 
+$itemCount = 0;
+$totalPrice = 0.0;
+
+if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
+    foreach ($_SESSION['cart'] as $item) {
+        $itemCount += $item['quantity']; // Liczba przedmiotów
+        $totalPrice += $item['price'] * $item['quantity']; // Łączna wartość
+    }
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -111,14 +121,14 @@ $query = "
                     </button>
                 </div>
                 <div class="cart-info">
-                    <span style="font-weight: bold;">Twój koszyk: <span id="cart-total">0 zł</span></span>
+                    <span style="font-weight: bold;">Twój koszyk: <span id="total-price"><?= number_format($totalPrice, 2) ?> zł</span></p>
                     <?php
                     $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
                     ?>
                     <a href="Store/cart.php?source=<?php echo $current_url; ?>"> <!-- Link do strony koszyka -->
                         <div class="cart-icon">
                             <img src="Image/Icon/pngegg.png" alt="Koszyk">
-                            <span id="cart-count">0</span> <!-- Liczba produktów w koszyku -->
+                            <span id="cart-count"><?= $itemCount ?></span> <!-- Liczba produktów w koszyku -->
                         </div>
                     </a>
                 </div>
