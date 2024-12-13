@@ -133,7 +133,7 @@ if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
             <?php
             $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
             ?>
-            <a href="Store/cart.php?source=<?php echo $current_url; ?>"> <!-- Link do strony koszyka -->
+            <a href="cart.php?source=<?php echo $current_url; ?>"> <!-- Link do strony koszyka -->
                 <div class="cart-icon">
                     <img src="../Image/Icon/pngegg.png" alt="Koszyk">
                     <span id="cart-count"><?= $itemCount ?></span> <!-- Liczba produktów w koszyku -->
