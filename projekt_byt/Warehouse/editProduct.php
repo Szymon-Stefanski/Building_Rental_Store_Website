@@ -128,71 +128,245 @@ try {
 
 <!DOCTYPE html>
 <html lang="pl">
-<head>
+ <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edytuj Produkt</title>
     <link rel="stylesheet" href="../Style/style_add.editProduct.css">
-</head>
-<body>
-<header class="header">
-    <h1>Edytuj Produkt</h1>
-</header>
+ </head>
+ <body>
+     <header class="header">
+        <h1>Edytuj Produkt</h1>
+     </header>
 
-<main class="main-content">
-    <form method="POST" class="edit-product-form">
-        <label for="product_name">Nazwa Produktu:</label>
-        <input type="text" id="product_name" name="product_name" value="<?php echo ($product['nazwa_produktu']); ?>" required>
+        <main class="main-content">
+        <form method="POST" class="edit-product-form">
+            <label for="product_name">Nazwa Produktu:</label>
+            <input type="text" id="product_name" name="product_name" value="<?php echo ($product['nazwa_produktu']); ?>" required>
 
-        <label for="supplier_id">Dostawca:</label>
-        <select id="supplier_id" name="supplier_id" required>
-            <?php foreach ($suppliers as $supplier): ?>
-                <option value="<?php echo $supplier['dostawca_id']; ?>" <?php echo ($product['dostawca_id'] == $supplier['dostawca_id']) ? 'selected' : ''; ?>>
-                    <?php echo ($supplier['nazwa_dostawcy']); ?>
-                </option>
-            <?php endforeach; ?>
-        </select>
-
-        <label for="price">Cena:</label>
-        <input type="number" step="0.01" id="price" name="price" value="<?php echo ($product['cena']); ?>" required>
-
-        <label for="stock_quantity">Ilość w Magazynie:</label>
-        <input type="number" id="stock_quantity" name="stock_quantity" value="<?php echo ($product['ilosc_w_magazynie']); ?>" required>
-
-        <label for="description">Opis:</label>
-        <textarea id="description" name="description"><?php echo ($product['opis']); ?></textarea>
-
-        <button type="submit">Zapisz zmiany</button>
-    </form>
-
-    <h2>Zarządzanie obrazkami produktu</h2>
-    <form method="POST" enctype="multipart/form-data">
-        <label for="new_images">Dodaj nowe obrazy:</label>
-        <input type="file" id="new_images" name="new_images[]" multiple>
-        <button type="submit">Prześlij</button>
-    </form>
-
-    <h3>Obecne obrazy:</h3>
-    <div class="image-gallery">
-        <?php foreach ($product_images as $image): ?>
-            <div class="image-item">
-                <img src="<?php echo ($image); ?>" alt="Obraz produktu" class="product-image">
-                <form method="POST" class="delete-form">
-                    <input type="hidden" name="delete_image" value="<?php echo ($image); ?>">
-                    <button type="submit">Usuń</button>
-                </form>
+            <label for="supplier_id">Dostawca:</label>
+            <select id="supplier_id" name="supplier_id" required>
+                <?php foreach ($suppliers as $supplier): ?>
+                    <option value="<?php echo $supplier['dostawca_id']; ?>" <?php echo ($product['dostawca_id'] == $supplier['dostawca_id']) ? 'selected' : ''; ?>>
+                        <?php echo ($supplier['nazwa_dostawcy']); ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+            
+            <label for="price">Cena:</label>
+            <div class="input-wrapper">
+                <button type="button" class="btn-decrease" id="decrease-price">-</button>
+                <input type="number" step="0.01" id="price" name="price" value="<?php echo ($product['cena']); ?>" required>
+                <button type="button" class="btn-increase" id="increase-price">+</button>
             </div>
-        <?php endforeach; ?>
-    </div>
 
-    <div class="back-button-container">
-        <a href="stockManagement.php" class="back-button">◄ Powrót do stanu magazynu</a>
-    </div>
-</main>
+            <label for="stock_quantity">Ilość w Magazynie:</label>
+            <div class="input-wrapper">
+                <button type="button" class="btn-decrease" id="decrease-stock">-</button>
+                <input type="number" id="stock_quantity" name="stock_quantity" value="<?php echo ($product['ilosc_w_magazynie']); ?>" required>
+                <button type="button" class="btn-increase" id="increase-stock">+</button>
+            </div>
 
 
-<footer>
-    <p>&copy; 2024 Budex Sp z.o.o. Wszelkie prawa zastrzeżone.</p>
-</footer>
-</body>
+            <label for="description">Opis:</label>
+            <textarea id="description" name="description"><?php echo ($product['opis']); ?></textarea>
+
+            <button type="submit">Zapisz zmiany</button>
+        </form>
+
+        <h2>Zarządzanie obrazkami produktu</h2>
+        <form method="POST" enctype="multipart/form-data">
+            <label for="new_images">Dodaj nowe obrazy:</label>
+            <input type="file" id="new_images" name="new_images[]" multiple>
+            <button type="submit">Prześlij</button>
+        </form>
+
+        <h3>Obecne obrazy:</h3>
+        <div class="image-gallery">
+            <?php foreach ($product_images as $image): ?>
+                <div class="image-item">
+                    <img src="<?php echo ($image); ?>" alt="Obraz produktu" class="product-image">
+                    <form method="POST" class="delete-form">
+                        <input type="hidden" name="delete_image" value="<?php echo ($image); ?>">
+                        <button type="submit">Usuń</button>
+                    </form>
+                </div>
+            <?php endforeach; ?>
+        </div>
+
+        <div class="back-button-container">
+            <a href="stockManagement.php" class="back-button">Powrót do stanu magazynu</a>
+        </div>
+    </main>
+     
+    <script>
+        
+        // Funkcja do zwiększania ceny
+        function increasePrice() {
+            let priceInput = document.getElementById('price');
+            priceInput.value = (parseFloat(priceInput.value) + 0.01).toFixed(2); // Zwiększenie ceny o 0.01
+        }
+
+        // Funkcja do zmniejszania ceny
+        function decreasePrice() {
+            let priceInput = document.getElementById('price');
+            priceInput.value = (parseFloat(priceInput.value) - 0.01).toFixed(2); // Zmniejszenie ceny o 0.01
+        }
+
+        // Funkcja do zwiększania ilości
+        function increaseStock() {
+            let stockInput = document.getElementById('stock_quantity');
+            stockInput.value = parseInt(stockInput.value) + 1; 
+        }
+
+        // Funkcja do zmniejszania ilości
+        function decreaseStock() {
+            let stockInput = document.getElementById('stock_quantity');
+            if (parseInt(stockInput.value) > 0) {
+                stockInput.value = parseInt(stockInput.value) - 1; 
+            }
+        }
+
+        // Obsługa kliknięcia i przytrzymywania przycisków do ceny
+        let increasePriceButton = document.getElementById('increase-price');
+        let decreasePriceButton = document.getElementById('decrease-price');
+
+        let priceInterval;
+        let priceClickTimeout;
+
+        // Funkcja do pojedynczego kliknięcia
+        function handlePriceClick(event, increase) {
+            if (increase) {
+                increasePrice();
+            } else {
+                decreasePrice();
+            }
+        }
+
+        // Funkcja do rozpoczęcia przytrzymywania przycisku
+        function startPriceHold(event, increase) {
+            priceInterval = setInterval(increase ? increasePrice : decreasePrice, 100); // Zwiększaj co 100ms
+        }
+
+        // Funkcja do zatrzymywania przytrzymywania
+        function stopPriceHold() {
+            clearInterval(priceInterval); 
+        }
+
+        increasePriceButton.addEventListener('click', function(event) {
+            handlePriceClick(event, true); 
+        });
+
+        decreasePriceButton.addEventListener('click', function(event) {
+            handlePriceClick(event, false); 
+        });
+
+        increasePriceButton.addEventListener('mousedown', function(event) {
+            priceClickTimeout = setTimeout(function() {
+                startPriceHold(event, true); 
+            }, 200); 
+        });
+
+        decreasePriceButton.addEventListener('mousedown', function(event) {
+            priceClickTimeout = setTimeout(function() {
+                startPriceHold(event, false); 
+            }, 200); 
+        });
+
+        increasePriceButton.addEventListener('mouseup', function() {
+            clearTimeout(priceClickTimeout); 
+            stopPriceHold(); 
+        });
+
+        decreasePriceButton.addEventListener('mouseup', function() {
+            clearTimeout(priceClickTimeout); 
+            stopPriceHold(); 
+        });
+
+        increasePriceButton.addEventListener('mouseleave', function() {
+            clearTimeout(priceClickTimeout); 
+            stopPriceHold(); 
+        });
+
+        decreasePriceButton.addEventListener('mouseleave', function() {
+            clearTimeout(priceClickTimeout); 
+            stopPriceHold(); 
+        });
+
+        // Obsługa kliknięcia i przytrzymywania przycisków do ilości
+        let increaseStockButton = document.getElementById('increase-stock');
+        let decreaseStockButton = document.getElementById('decrease-stock');
+
+        let stockInterval;
+        let stockClickTimeout;
+
+        
+        function handleStockClick(event, increase) {
+            if (increase) {
+                increaseStock();
+            } else {
+                decreaseStock();
+            }
+        }
+
+        // Funkcja do rozpoczęcia przytrzymywania przycisku
+        function startStockHold(event, increase) {
+            stockInterval = setInterval(increase ? increaseStock : decreaseStock, 100); 
+        }
+
+        // Funkcja do zatrzymywania przytrzymywania
+        function stopStockHold() {
+            clearInterval(stockInterval); // Zatrzymuje zmienianie
+        }
+
+        increaseStockButton.addEventListener('click', function(event) {
+            handleStockClick(event, true); 
+        });
+
+        decreaseStockButton.addEventListener('click', function(event) {
+            handleStockClick(event, false); 
+        });
+
+        increaseStockButton.addEventListener('mousedown', function(event) {
+            stockClickTimeout = setTimeout(function() {
+                startStockHold(event, true); 
+            }, 200); 
+        });
+
+        decreaseStockButton.addEventListener('mousedown', function(event) {
+            stockClickTimeout = setTimeout(function() {
+                startStockHold(event, false); 
+            }, 200); 
+        });
+
+        increaseStockButton.addEventListener('mouseup', function() {
+            clearTimeout(stockClickTimeout); 
+            stopStockHold(); 
+        });
+
+        decreaseStockButton.addEventListener('mouseup', function() {
+            clearTimeout(stockClickTimeout); 
+            stopStockHold(); 
+        });
+
+        increaseStockButton.addEventListener('mouseleave', function() {
+            clearTimeout(stockClickTimeout);
+            stopStockHold(); 
+        });
+
+        decreaseStockButton.addEventListener('mouseleave', function() {
+            clearTimeout(stockClickTimeout); 
+            stopStockHold(); 
+        });
+
+</script>
+
+
+
+
+
+    <footer>
+        <p>&copy; 2024 Budex Sp z.o.o. Wszelkie prawa zastrzeżone.</p>
+    </footer>
+ </body>
 </html>
