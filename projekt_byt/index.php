@@ -191,7 +191,7 @@ if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
                 <div class="advertisement-slider">
                     <img src="Image/Advert/szlifierkenmachendruten.jpg" alt="Reklama 1" class="ad-image">
                     <img src="Image/Advert/budex.png" alt="Reklama 2" class="ad-image">
-                    <img src="Image/Advert/reklama3.png" alt="Reklama 3" class="ad-image">
+                    <img src="Image/Advert/reklama.png" alt="Reklama 3" class="ad-image">
                 </div>
                 <div class="advertisement-dots">
                     <span class="dot"></span>
