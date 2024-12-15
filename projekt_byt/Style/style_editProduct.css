@@ -1,0 +1,227 @@
+body, h1, h2, h3, p, form {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+/* Ogólny styl strony */
+body {
+    background-color: #f4f4f4;
+    color: #333;
+    line-height: 1.6;
+    padding: 20px;
+}
+
+/* Nagłówek */
+.header {
+    background-color: #4CAF50;
+    color: white;
+    padding: 15px;
+    text-align: center;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+/* Główna zawartość */
+.main-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Formularze */
+.edit-product-form,
+.delete-form {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+.edit-product-form label,
+.delete-form label {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.edit-product-form input,
+.edit-product-form select,
+.edit-product-form textarea {
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+/* Przyciski */
+button {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+
+.back-button {
+    background-color: #8b4513; 
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: center;
+    display: inline-block;
+    transition: background-color 0.3s ease;
+}
+button:hover, .back-button:hover {
+    background-color: #a0522d; 
+}
+
+
+/* Kontener dla przycisku powrotu */
+.back-button-container {
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* Link jako przycisk */
+.back-button {
+    text-decoration: none;
+    font-weight: bold;
+}
+
+/* Wrapper dla pól input z przyciskami */
+.input-wrapper {
+    display: flex;
+    align-items: stretch; 
+    justify-content: center;
+    width: 100%;
+}
+
+/* Ukrycie strzałek w input*/
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+
+.input-wrapper input {
+    width: 80%;
+    padding: 10px;
+    border: 1px solid #a0522d;
+    border-radius: 4px;
+    font-size: 16px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
+    transition: box-shadow 0.3s, border-color 0.3s;
+}
+
+/* Efekt po najechaniu kursorem */
+.input-wrapper input:hover,
+.input-wrapper input:focus {
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); 
+    border-color: #8b4513; 
+    outline: none; 
+}
+
+.input-wrapper button {
+    background-color: #8b4513;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.input-wrapper button:hover {
+    background-color: #a0522d;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.input-wrapper .btn-decrease {
+    margin-right: 10px;
+}
+
+.input-wrapper .btn-increase {
+    margin-left: 10px;
+}
+
+
+
+
+/* Sekcja obrazków */
+.image-gallery {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.image-item {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    overflow: hidden;
+    text-align: center;
+    padding: 10px;
+    background: #f9f9f9;
+    width: 150px;
+}
+
+.product-image {
+    width: 100%;
+    height: auto;
+    margin-bottom: 10px;
+}
+
+/* Powrót do magazynu */
+.back-button-container {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.back-button {
+    text-decoration: none;
+    color: #4CAF50;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.back-button:hover {
+    text-decoration: underline;
+}
+
+
+/* Stopka */
+footer {
+    text-align: center;
+    padding: 15px;
+    background-color: #333;
+    color: white;
+    margin-top: 20px;
+    border-radius: 8px;
+}
