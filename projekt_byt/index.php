@@ -66,6 +66,8 @@ if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
     }
 }
 
+$current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
+
 ?>
 
 <!DOCTYPE html>
@@ -85,9 +87,9 @@ if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
         <header class="header">
             <div class="top-bar">
                 <div class="top-links">
-                    <a href="#">Koszty dostawy</a>
-                    <a href="#">Reklamacje i zwroty</a>
-                    <a href="#">Kontakt</a>
+                    <a href="Store/deliveryCost.php">Koszty dostawy</a>
+                    <a href="Store/reclamation.php">Reklamacje i zwroty</a>
+                    <a href="Store/contact.php">Kontakt</a>
                 </div>
                 <div class="language-currency">
                     <?php if (isset($_SESSION['user_id'])): ?>
@@ -99,7 +101,7 @@ if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
                             </a></p>
                     <?php else: ?>
                         <p>
-                            <a href="Login/login.php">
+                            <a href="Login/login.php?source=<?php echo $current_url;?>">
                                 <img src="Image/Icon/user.png" alt="logowanie">
                                 Logowanie
                             </a>
@@ -122,9 +124,6 @@ if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
                 </div>
                 <div class="cart-info">
                     <span style="font-weight: bold;">Twój koszyk: <span id="total-price"><?= number_format($totalPrice, 2) ?> zł</span></p>
-                    <?php
-                    $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
-                    ?>
                     <a href="Store/cart.php?source=<?php echo $current_url; ?>"> <!-- Link do strony koszyka -->
                         <div class="cart-icon">
                             <img src="Image/Icon/pngegg.png" alt="Koszyk">

@@ -84,6 +84,8 @@ if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
     }
 }
 
+$current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
+
 ?>
 <!DOCTYPE html>
 <html lang="pl">
@@ -98,21 +100,23 @@ if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
 <header class="header">
     <div class="top-bar">
         <div class="top-links">
-            <a href="#">Koszty dostawy</a>
-            <a href="#">Reklamacje i zwroty</a>
-            <a href="#">Kontakt</a>
+            <a href="deliveryCost.php">Koszty dostawy</a>
+            <a href="reclamation.php">Reklamacje i zwroty</a>
+            <a href="contact.php">Kontakt</a>
         </div>
         <div class="language-currency">
             <?php if (isset($_SESSION['user_id'])): ?>
                 <?php
                 $username = ($_SESSION['username']);
                 ?>
-                <p><a href="login/profile.php?id=<?php echo $_SESSION['user_id']; ?>">
+                <p><a href="../login/profile.php?id=<?php echo $_SESSION['user_id']; ?>">
                         Witaj <?php echo $username; ?> !
                     </a></p>
             <?php else: ?>
-                <p><a href="Login/login.php">Witaj gość ! Zaloguj się !</a></p>
-
+                <a href="../Login/login.php?source=<?php echo $current_url;?>">
+                    <img src="../Image/Icon/user.png" alt="logowanie">
+                    Logowanie
+                </a>
             <?php endif; ?>
         </div>
     </div>
