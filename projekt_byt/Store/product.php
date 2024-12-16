@@ -98,9 +98,9 @@ if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
 <header class="header">
     <div class="top-bar">
         <div class="top-links">
-            <a href="#">Koszty dostawy</a>
-            <a href="#">Reklamacje i zwroty</a>
-            <a href="#">Kontakt</a>
+            <a href="deliveryCost.php">Koszty dostawy</a>
+            <a href="reclamation.php">Reklamacje i zwroty</a>
+            <a href="contact.php">Kontakt</a>
         </div>
         <div class="language-currency">
             <?php if (isset($_SESSION['user_id'])): ?>
