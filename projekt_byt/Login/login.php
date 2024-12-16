@@ -1,6 +1,7 @@
 <?php
 session_start();
 require '../database_connection.php';
+$source = isset($_GET['source']) ? $_GET['source'] : '../index.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $login = $_POST['username'];
@@ -13,7 +14,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($user && password_verify($password, $user['haslo'])) {
         $_SESSION['user_id'] = $user['uzytkownik_id'];
         $_SESSION['username'] = $user['login'];
-        header('Location: ../index.php');
+        header("Location: $source");
         exit;
     } else {
         $error = "Nieprawidłowa nazwa użytkownika lub hasło.";
@@ -34,6 +35,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endif; ?>
         <div class="login-wrapper">
             <div class="login-form">
+                <?php
+                echo '<a href="' . $source . '" class="back-button">◄ Powrót</a>';
+                ?>
                 <h1>Logowanie</h1>
                 <form action="login.php" method="POST">
                     <label for="username">Nazwa użytkownika:</label><br>

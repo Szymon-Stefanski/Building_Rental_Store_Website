@@ -84,6 +84,8 @@ if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
     }
 }
 
+$current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
+
 ?>
 <!DOCTYPE html>
 <html lang="pl">
@@ -107,12 +109,14 @@ if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
                 <?php
                 $username = ($_SESSION['username']);
                 ?>
-                <p><a href="login/profile.php?id=<?php echo $_SESSION['user_id']; ?>">
+                <p><a href="../login/profile.php?id=<?php echo $_SESSION['user_id']; ?>">
                         Witaj <?php echo $username; ?> !
                     </a></p>
             <?php else: ?>
-                <p><a href="Login/login.php">Witaj gość ! Zaloguj się !</a></p>
-
+                <a href="../Login/login.php?source=<?php echo $current_url;?>">
+                    <img src="../Image/Icon/user.png" alt="logowanie">
+                    Logowanie
+                </a>
             <?php endif; ?>
         </div>
     </div>

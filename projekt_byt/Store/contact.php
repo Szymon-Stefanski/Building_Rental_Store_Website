@@ -66,6 +66,8 @@ if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
     }
 }
 
+$current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
+
 ?>
 
 <!DOCTYPE html>
@@ -98,13 +100,10 @@ if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
                             Witaj <?php echo $username; ?> !
                         </a></p>
                 <?php else: ?>
-                    <p>
-                        <a href="../Login/login.php">
-                            <img src="../Image/Icon/user.png" alt="logowanie">
-                            Logowanie
-                        </a>
-                    </p>
-
+                    <a href="../Login/login.php?source=<?php echo $current_url;?>">
+                        <img src="../Image/Icon/user.png" alt="logowanie">
+                        Logowanie
+                    </a>
                 <?php endif; ?>
             </div>
         </div>
