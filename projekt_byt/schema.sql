@@ -109,6 +109,10 @@ CREATE TABLE Transakcje (
 
 
 
+INSERT INTO Uzytkownicy (imie, nazwisko, email, login, haslo, numer_telefonu, adres, rola) VALUES
+('admin', 'admin', 'examplemail@g.pl', 'admin', 'admin', 123456789, 'Example street 1/2 Gdansk', 'admin');
+
+
 INSERT INTO Kategorie (nazwa_kategorii, opis) VALUES 
 ('Budowlanka', 'Materiały i narzędzia budowlane do prac konstrukcyjnych i remontowych.'),
 ('Elektryka', 'Produkty związane z instalacjami elektrycznymi i oświetleniem.'),
