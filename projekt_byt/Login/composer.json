@@ -1,0 +1,8 @@
+{
+    "name": "vendor/projekt-byt",
+    "description": "Integracja z Google OAuth",
+    "require": {
+        "google/apiclient": "^2.0",
+        "vlucas/phpdotenv": "^5.6"
+    }
+}
