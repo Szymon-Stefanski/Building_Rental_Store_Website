@@ -9,7 +9,14 @@ body {
     align-items: center;
     height: 100vh;
     color: #333;
+    
+    background-image: url("../Image/Icon/brickwallpaper.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
 }
+
 
 h1 {
     text-align: center;
@@ -22,14 +29,19 @@ h1 {
     justify-content: space-between;
     max-width: 1100px;
     margin: 0 auto;
-    padding: 20px;
     gap: 20px;
+    position: relative;
+    padding-bottom: 60px; 
+    z-index: 100;
+    
 }
 
-/* Styl formularza logowania z efektem cegły */
+/* Styl formularza logowania */
 .login-form {
+    
     background: linear-gradient(45deg, #8b4513 25%, #d2691e 50%, #8b4513 75%);
-    background-size: 20px 20px;
+    background-size: 80px 80px;
+    background-position: center;
     padding: 30px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -38,6 +50,7 @@ h1 {
     border: 2px solid #3e2b1f;
     box-sizing: border-box;
 }
+
 
 .login-form label {
     display: block;
@@ -56,11 +69,13 @@ h1 {
     box-sizing: border-box;
     font-size: 16px;
     background-color: #fff;
+    transition: border-color 0.3s ease, box-shadow 0.5s ease;
 }
 
 .login-form input:focus {
     border-color: #b22222;
     outline: none;
+    box-shadow: 0 0 15px 5px rgba(255, 215, 0, 0.7);
 }
 
 .login-form button {
@@ -73,20 +88,42 @@ h1 {
     font-size: 18px;
     cursor: pointer;
     font-family: Fantasy;
+    transition: background-color 0.3s ease, box-shadow 0.5s ease;
 }
 
 .login-form button:hover {
     background-color: #a0522d;
+    box-shadow: 0 0 15px 5px rgba(255, 215, 0, 0.7);
+}
+
+.login-form .back-btn {
+    background-color: #ada339; 
+    color: white;
+    margin-top: 5px;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    width: 100%;
+    font-family: Fantasy;
+    transition: background-color 0.3s ease, box-shadow 0.5s ease;
+}
+
+
+/* Styl po najechaniu na przycisk "Powrót" */
+.login-form .back-btn:hover {
+    background-color: #797334; 
+    box-shadow: 0 0 15px 5px rgba(72, 239, 128, 0.8); 
 }
 
 /* Nowy kontener z korzyściami rejestracji */
 .registration-benefits {
-    background-color: #fff;
+    flex-basis: 50%;
     padding: 20px;
+    background-color: #f4f4f4;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 48%;
-    box-sizing: border-box;
 }
 
 .registration-benefits h2 {
@@ -115,14 +152,14 @@ h1 {
     margin-bottom: 10px;
     font-size: 14px;
     position: relative;
-    padding-left: 20px; /* Zwiększamy odstęp od ikony */
+    padding-left: 20px; 
 }
 
 .registration-benefits li img {
-    margin-right: 15px; /* Zwiększamy odstęp między ikoną a tekstem */
-    width: 30px; /* Zwiększamy szerokość ikony */
-    height: 30px; /* Zwiększamy wysokość ikony */
-    filter: invert(28%) sepia(92%) saturate(3196%) hue-rotate(118deg) brightness(92%) contrast(104%); /* Kolorowanie na zielono */
+    margin-right: 15px; 
+    width: 30px; 
+    height: 30px; 
+    filter: invert(28%) sepia(92%) saturate(3196%) hue-rotate(118deg) brightness(92%) contrast(104%); 
 }
 
 .registration-benefits .register-btn {
@@ -135,16 +172,28 @@ h1 {
     border: none;
     border-radius: 8px;
     font-family: Fantasy;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, box-shadow 0.5s ease; 
+}
+
+.register-btn {
+    background-color: #8b4513;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
 }
 
 .registration-benefits .register-btn:hover {
-    background-color: #45a049;
+    background-color: #45a049; 
+    box-shadow: 0 0 30px rgba(72, 239, 128, 0.9), 0 0 40px rgba(72, 239, 128, 0.6); 
+    animation: glow-fade 1.5s ease forwards; 
 }
+
 
 .registration-benefits ul li:first-child {
     position: relative;
-    padding-top: 10px; /* Odstęp od góry */
+    padding-top: 10px; 
 }
 
 
@@ -156,6 +205,104 @@ h1 {
 }
 
 
+@keyframes glow-fade {
+    0% {
+        box-shadow: 0 0 30px rgba(72, 239, 128, 0.9), 0 0 40px rgba(72, 239, 128, 0.6);
+    }
+    100% {
+        box-shadow: 0 0 10px rgba(72, 239, 128, 0.4);
+    }
+}
+
+/* Styl dla komunikatu błędu */
+.error-message {
+    position: absolute;
+    bottom: 10px; 
+    left: 0;
+    right: 0;
+    background-color: #ffcccc;
+    color: #fff;
+    padding: 10px;
+    border: 2px solid #b22222;
+    border-radius: 4px;
+    text-align: center;
+    font-weight: bold;
+    opacity: 0;
+    transform: translateY(-20px);
+    animation: slideInError 1s forwards, changeColor 3s infinite;
+    z-index: 10; 
+    animation-delay: 0.5s;
+
+}
+
+/* Animacja wysuwania się komunikatu błędu */
+@keyframes slideInError {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes changeColor {
+    0% {
+        background-color: #ffcccc; 
+        box-shadow: 0 0 5px 0px rgba(178, 34, 34, 0.7); 
+    }
+    25% {
+        background-color: #ff9999; 
+        box-shadow: 0 0 10px 5px rgba(178, 34, 34, 0.75); 
+    }
+    50% {
+        background-color: #ff6666; 
+        box-shadow: 0 0 20px 10px rgba(178, 34, 34, 0.8); 
+    }
+    75% {
+        background-color: #cc3333; 
+        box-shadow: 0 0 30px 15px rgba(178, 34, 34, 0.85); 
+    }
+    100% {
+        background-color: #840000; 
+        box-shadow: 0 0 40px 20px rgba(178, 34, 34, 1); 
+    }
+}
+
+/* Styl dla kontenera Google */
+.google-login-container {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.google-login-btn {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: rgba(72, 239, 128, 0.8); 
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+    font-family: sans-serif;
+}
+
+
+.google-login-btn:hover {
+    background-color: rgb(72, 172, 128);
+    box-shadow: 0 0 15px 5px rgba(72, 239, 128, 0.8); 
+}
+
+.google-logo {
+    width: 30px;  
+    height: 30px; 
+    margin-right: 10px; 
+}
+
 
 @media (max-width: 768px) {
     .login-wrapper {
@@ -166,5 +313,9 @@ h1 {
     .login-form, .registration-benefits {
         width: 90%;
         margin-bottom: 20px;
+    }
+    .google-login-btn {
+        font-size: 14px;
+        padding: 8px 16px;
     }
 }
