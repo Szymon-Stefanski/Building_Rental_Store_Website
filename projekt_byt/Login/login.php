@@ -2,6 +2,7 @@
     session_start();
     require 'vendor/autoload.php';
     require '../database_connection.php';
+    $source = isset($_GET['source']) ? $_GET['source'] : '../index.php';
 
     // Załaduj zmienne środowiskowe z pliku .env
     $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
@@ -53,7 +54,7 @@
                 if ($user && password_verify($password, $user['haslo'])) {
                     $_SESSION['user_id'] = $user['uzytkownik_id'];
                     $_SESSION['username'] = $user['login'];
-                    header('Location: ../index.php');
+                    header("Location: $source");
                     exit;
                 } else {
                     $error = "Nieprawidłowa nazwa użytkownika lub hasło.";
