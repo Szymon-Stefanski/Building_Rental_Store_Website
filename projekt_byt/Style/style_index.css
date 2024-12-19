@@ -1042,3 +1042,8 @@ body {
     gap: 20px; /* Odstępy między elementami siatki */
   }
 }
+@media (min-width: 1098px) {
+  .advertisement-slider .ad-image {
+    object-fit: contain; 
+  }
+}
