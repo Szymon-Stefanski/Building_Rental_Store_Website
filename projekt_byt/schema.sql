@@ -110,7 +110,8 @@ CREATE TABLE Transakcje (
 
 
 INSERT INTO Uzytkownicy (imie, nazwisko, email, login, haslo, numer_telefonu, adres, rola) VALUES
-('admin', 'admin', 'examplemail@g.pl', 'admin', 'admin', 123456789, 'Example street 1/2 Gdansk', 'admin');
+('admin', 'admin', 'examplemail@g.pl', 'admin', '$2y$10$eao35AcfQ6kLjBv6piRueu6tspT4EhDCun3L0np4oZ2zeTrOJYx3m', 123456789, 'Example street 1/2 Gdansk', 'admin'),
+('mod', 'mod', 'examplemail2@g.pl', 'mod', '$2y$10$SHdD2vmY/Ml4P296a6xf8ecRyftAGAUcXPAHxcZ/x4vvjwaQmmRFy', 123456789, 'Example street 1/2 Gdansk', 'mod');
 
 
 INSERT INTO Kategorie (nazwa_kategorii, opis) VALUES 

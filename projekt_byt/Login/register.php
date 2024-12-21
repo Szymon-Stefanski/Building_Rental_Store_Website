@@ -9,7 +9,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $first_name = trim($_POST['first_name']);
     $last_name = trim($_POST['last_name']);
     $phone_number = trim($_POST['phone_number']);
-    $address = trim($_POST['address']);
+    $postal_code = trim($_POST['postal_code']);
+    $city = trim($_POST['city']);
+
+    $address = $postal_code . ', ' . $city;
 
     if (!$email) {
         echo "Nieprawidłowy email!";
