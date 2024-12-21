@@ -128,6 +128,7 @@ body {
   gap: 20px; /* Odstępy między elementami w kontenerze */
 }
 
+
 .logo img {
   width: 200px;
   height: auto;
@@ -232,7 +233,7 @@ body {
 }
 
 .cart-icon img {
-  width: 100%; /* Dopasowanie do wielkości kontenera */
+  width: 100%; 
   height: 100%;
 }
 
@@ -240,14 +241,21 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #d4f8b7; /* Jasny zielony */
+  background-color: #d4f8b7; 
   padding: 10px;
   border-radius: 8px;
   font-family: Arial, sans-serif;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-  min-width: 150px; /* Ustal minimalną szerokość */
-  flex-shrink: 0; /* Zapewnia, że koszyk nie będzie się kurczył */
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.4);
+  min-width: 150px; 
+  flex-shrink: 0; 
+  transition: background-color 0.3s ease, box-shadow 0.3s ease; 
 }
+
+.cart-info:hover {
+  background-color: #a9d48a;
+  
+}
+
 
 #cart-count {
   position: absolute;
@@ -314,11 +322,6 @@ body {
   transition: background-color 0.3s ease;
 }
 
-/*.main-navigation button,
-.main-navigation .category-dropdown {
-    padding: 10px 20px;
-    min-width: 150px; 
-}*/
 
 .main-navigation * {
   margin: 0;
@@ -415,10 +418,10 @@ body {
 /* Styl dla rozwijanego menu */
 .category-dropdown-menu {
   position: absolute;
-  top: 100%; /* menu pojawia się pod przyciskiem */
+  top: 100%; 
   left: 0;
   background-color: #fff;
-  width: 100%; /* rozwijane menu ma tę samą szerokość co przycisk */
+  width: 100%; 
   display: none;
   flex-direction: column;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -477,8 +480,8 @@ body {
 /* Kontener z reklamą */
 .advertisement-container {
   position: relative;
-  width: 100%;
-  height: 400px; /* Stała wysokość kontenera */
+  
+  height: auto; /* Stała wysokość kontenera */
   margin: 0 auto;
   overflow: hidden; /* Ukrywa nadmiar obrazu poza kontenerem */
   padding: 0;
@@ -490,6 +493,7 @@ body {
 .advertisement-slider {
   display: flex;
   transition: transform 0.5s ease-in-out;
+  height: 100%;
 }
 
 /* Obrazki wewnątrz slidera */
@@ -497,17 +501,13 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover; /* Obrazek dopasowuje się do kontenera, przycinając nadmiar */
+    margin: 0;
+  padding: 0;
+  border: none;
 }
 
 /* Kółeczka nawigacyjne */
 .advertisement-dots {
-  /*position: absolute;
-    bottom: 20px; 
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 10px;*/
-
   display: flex;
   justify-content: center;
   position: absolute;
@@ -734,12 +734,74 @@ body {
   top: 10px;
   right: 10px;
   cursor: pointer;
+  transition: transform 0.2s ease;
 }
 
 .favorite-icon img {
-  width: 24px;
-  height: 24px;
+  width: 32px;
+  height: 32px;
 }
+
+.favorite-icon.active img {
+    filter: brightness(0) saturate(100%) invert(35%) sepia(91%) saturate(624%) hue-rotate(330deg) brightness(102%) contrast(101%);
+    filter: grayscale(100%);
+}
+
+.favorite-icon:hover {
+    transform: scale(1.5); 
+}
+
+.header-favorites {
+    position: relative;
+    display: inline-block;
+    align-items: center;
+    justify-content: center;
+}
+
+.header-favorites-icon {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 60px;
+    border: 3px solid white; 
+    border-radius: 50%; 
+    transition: border-width 0.3s ease; 
+    background-color: #fff;
+}
+
+.header-favorites-icon:hover {
+    background-color: #ff0000; 
+    cursor: pointer; 
+}
+
+.header-favorites:hover .header-favorites-icon {
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 1); 
+    transition: box-shadow 0.3s ease; 
+}
+
+.header-favorites-icon.active {
+    border-width: 6px; 
+}
+
+.header-favorites-icon img {
+    width: 100%;
+    height: 100%;
+}
+
+.header-favorite-count {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: #ff0000;
+    color: #fff;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 12px;
+    font-weight: bold;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+
 
 /* Przyciski */
 .add-to-cart {
@@ -781,6 +843,40 @@ body {
   font-size: 18px;
   font-weight: bold;
 }
+
+
+
+
+
+#scrollToTop {
+    
+    position: fixed;
+    bottom: 60px;
+    right: 60px;
+    width: 100px; 
+    height: 100px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 50%; 
+    display: none; 
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+
+
+
+#scrollToTop i {
+    font-size: 34px; 
+}
+#scrollToTop:hover {
+            background-color: #0056b3;
+            box-shadow: 0 0 15px 5px rgba(255, 215, 0, 0.75); /* Złota poświata */
+        }
+
 
 /* RESPONSYWNOŚĆ */
 @media (max-width: 480px) {
@@ -1039,11 +1135,37 @@ body {
       4,
       1fr
     ); /* Cztery kolumny na dużych ekranach */
-    gap: 20px; /* Odstępy między elementami siatki */
+    gap: 20px; 
   }
 }
 @media (min-width: 1098px) {
   .advertisement-slider .ad-image {
     object-fit: contain; 
   }
+}
+
+
+@media (max-width: 1519px) {
+    
+    #scrollToTop {
+        position: fixed;
+        bottom: 60px;
+        right: 60px;
+        width: 50px; 
+        height: 50px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 50%; 
+        display: none; 
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    #scrollToTop i {
+        font-size: 24px; 
+    }
+    
 }
