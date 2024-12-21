@@ -77,7 +77,7 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sklep Budowlany</title>
     <link rel="stylesheet" href="Style/style_index.css">
-    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
 </head>
 <body>
     <!-- Główny kontener strony -->
@@ -122,12 +122,20 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
                         Szukaj
                     </button>
                 </div>
+                <div class="header-favorites">
+                    <a href="Store/favorites.php">
+                        <div class="header-favorites-icon">
+                            <img src="Image/Icon/favourite.png" alt="Ulubione">
+                            <span class="header-favorite-count">0</span>
+                        </div>
+                    </a>
+                </div>
                 <div class="cart-info">
                     <span style="font-weight: bold;">Twój koszyk: <span id="total-price"><?= number_format($totalPrice, 2) ?> zł</span></p>
-                    <a href="Store/cart.php?source=<?php echo $current_url; ?>"> <!-- Link do strony koszyka -->
+                    <a href="Store/cart.php?source=<?php echo $current_url; ?>"> 
                         <div class="cart-icon">
                             <img src="Image/Icon/pngegg.png" alt="Koszyk">
-                            <span id="cart-count"><?= $itemCount ?></span> <!-- Liczba produktów w koszyku -->
+                            <span id="cart-count"><?= $itemCount ?></span> 
                         </div>
                     </a>
                 </div>
@@ -169,7 +177,7 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
                         <img src="Image/Icon/discount.png" class="category-icon"> PROMOCJE
                         <img src="Image/Icon/down-arrow.png" alt="Strzałka w dół" class="arrow-icon">
                     </a>
-                    <?php if ($userRole === 'administrator' || $userRole === 'moderator'): ?>
+                    <?php if ($userRole === 'admin' || $userRole === 'mod'): ?>
                     <a href="Warehouse/stockManagement.php">
                         <img src="Image/Icon/support.png" class="category-icon"> ZARZĄDZANIE STANEM MAGAZYNU
                     </a>
@@ -191,8 +199,12 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
                     <img src="Image/Advert/szlifierkenmachendruten.jpg" alt="Reklama 1" class="ad-image">
                     <img src="Image/Advert/budex.png" alt="Reklama 2" class="ad-image">
                     <img src="Image/Advert/reklama.png" alt="Reklama 3" class="ad-image">
+                    <img src="Image/Advert/baner-uslugi.png" alt="Reklama 4" class="ad-image">
+                    <img src="Image/Advert/reklamaswieta.png" alt="Reklama 5" class="ad-image">
                 </div>
                 <div class="advertisement-dots">
+                    <span class="dot"></span>
+                    <span class="dot"></span>
                     <span class="dot"></span>
                     <span class="dot"></span>
                     <span class="dot"></span>
@@ -208,15 +220,17 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
                                 <?php foreach ($products as $product): ?>
                                     <div class="product-card">
                                         <a href="Store/product.php?id=<?= $product['produkt_id'] ?>">
-                                            <div class="favorite-icon">
-                                                <img src="Image/Icon/love-always-wins.png" alt="Ulubione">
-                                            </div>
+                                            
                                             <img src="<?= findProductImage($product['produkt_id'], $category, $product['nazwa_produktu']) ?>"
                                                  alt="Obraz produktu: <?= ($product['nazwa_produktu']) ?>">
 
                                             <h3><?= ($product['nazwa_produktu']) ?></h3>
                                             <p class="product-price"><?= number_format($product['cena'], 2, ',', ' ') ?> zł/szt.</p>
                                         </a>
+                                        
+                                            <div class="favorite-icon" onclick="toggleFavorite(<?= $product['produkt_id'] ?>)"> <!-- Zmiany ! Zobacz czy poprawnie działa -->
+                                                <img src="Image/Icon/love-always-wins.png" alt="Ulubione">
+                                            </div>
                                         <div class="quantity-cart-container">
                                             <div class="quantity-control">
                                                 <button type="button" class="decrease-quantity" onclick="changeQuantity(this, -1)">-</button>
@@ -229,7 +243,9 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
                                                 <input type="hidden" name="product_name" value="<?= htmlspecialchars($product['nazwa_produktu']) ?>">
                                                 <input type="hidden" name="product_price" value="<?= $product['cena'] ?>">
                                                 <input type="hidden" class="form-quantity" name="quantity" value="1">
-                                                <button type="submit" class="add-to-cart">DO KOSZYKA</button>
+                                                <button type="submit" class="add-to-cart">
+                                                    <img src="Image/Icon/pngegg.png" style="filter: invert(1) brightness(1000%);" alt="Dodaj do koszyka"> DO KOSZYKA
+                                                </button>
                                             </form>
                                         </div>
                                     </div>
@@ -237,6 +253,7 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
                             </div>
                         </div>
                     </section>
+            
                 <?php endforeach; ?>
             <?php else: ?>
                 <div id="no-results-message" class="no-results-message">
@@ -247,8 +264,14 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
             <p>&copy; <?php echo date('Y'); ?> Budex Sp z.o.o . Wszelkie prawa zastrzeżone.</p>
         </footer>
         </main>
+        
+    <button id="scrollToTop">
+        <i class="fas fa-chevron-up"></i> 
+    </button>
+        
     </div>
     <script>
+        
         //płynne przewijanie do kategorii
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
@@ -301,78 +324,78 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
         
         
         // Funkcja do animacji kółeczka z liczbą produktów
-function animateCartCount() {
-    const cartCountElement = document.getElementById('cart-count');
-    // Dodajemy klasę animującą
-    cartCountElement.classList.add('animating');
-    
-    // Usuwamy klasę po zakończeniu animacji, by kółeczko wróciło do normalnych rozmiarów
-    setTimeout(() => {
-        cartCountElement.classList.remove('animating');
-    }, 300); // Długość animacji (w tym przypadku 0.3 sekundy)
-}
+        function animateCartCount() {
+            const cartCountElement = document.getElementById('cart-count');
+            // Dodajemy klasę animującą
+            cartCountElement.classList.add('animating');
 
-// Funkcja do aktualizacji zawartości koszyka
-function updateCart() {
-    const cartCountElement = document.getElementById('cart-count');
-    const cartInfoElement = document.querySelector('.cart-info span');
-    let totalPrice = 0;
-    let totalQuantity = 0;
+            // Usuwamy klasę po zakończeniu animacji, by kółeczko wróciło do normalnych rozmiarów
+            setTimeout(() => {
+                cartCountElement.classList.remove('animating');
+            }, 300); // Długość animacji (w tym przypadku 0.3 sekundy)
+        }
 
-    // Zliczamy łączną ilość produktów i cenę
-    cart.forEach(item => {
-        totalQuantity += item.quantity;
-        totalPrice += item.price * item.quantity;
-    });
+        // Funkcja do aktualizacji zawartości koszyka
+        function updateCart() {
+            const cartCountElement = document.getElementById('cart-count');
+            const cartInfoElement = document.querySelector('.cart-info span');
+            let totalPrice = 0;
+            let totalQuantity = 0;
 
-    // Aktualizujemy licznik produktów w koszyku
-    cartCountElement.textContent = totalQuantity;
+            // Zliczamy łączną ilość produktów i cenę
+            cart.forEach(item => {
+                totalQuantity += item.quantity;
+                totalPrice += item.price * item.quantity;
+            });
 
-    // Aktualizujemy cenę w koszyku
-    cartInfoElement.textContent = `Twój koszyk: ${totalPrice.toFixed(2)} zł`;
+            // Aktualizujemy licznik produktów w koszyku
+            cartCountElement.textContent = totalQuantity;
 
-    // Zapisz zmodyfikowany koszyk w localStorage
-    localStorage.setItem('cartItems', JSON.stringify(cart));
+            // Aktualizujemy cenę w koszyku
+            cartInfoElement.textContent = `Twój koszyk: ${totalPrice.toFixed(2)} zł`;
 
-    // Animacja kółeczka
-    animateCartCount();
+            // Zapisz zmodyfikowany koszyk w localStorage
+            localStorage.setItem('cartItems', JSON.stringify(cart));
 
-    // Ukrywamy lub pokazujemy komunikat o braku produktów
-    const noResultsMessage = document.getElementById('no-results-message');
-    if (totalQuantity === 0) {
-        noResultsMessage.style.display = 'block';
-    } else {
-        noResultsMessage.style.display = 'none';
-    }
-}
+            // Animacja kółeczka
+            animateCartCount();
 
-// Funkcja dodająca produkt do koszyka
-function addToCart() {
-    const quantityInput = event.target.closest('.product-card').querySelector('.quantity');
-    const productName = event.target.closest('.product-card').querySelector('h3').innerText;
-    const productPriceText = event.target.closest('.product-card').querySelector('.product-price').innerText;
+            // Ukrywamy lub pokazujemy komunikat o braku produktów
+            const noResultsMessage = document.getElementById('no-results-message');
+            if (totalQuantity === 0) {
+                noResultsMessage.style.display = 'block';
+            } else {
+                noResultsMessage.style.display = 'none';
+            }
+        }
 
-    const productPrice = parseFloat(productPriceText.replace(' zł/szt.', '').replace(',', '.'));
+        // Funkcja dodająca produkt do koszyka
+        function addToCart() {
+            const quantityInput = event.target.closest('.product-card').querySelector('.quantity');
+            const productName = event.target.closest('.product-card').querySelector('h3').innerText;
+            const productPriceText = event.target.closest('.product-card').querySelector('.product-price').innerText;
 
-    const quantity = parseInt(quantityInput.value);
+            const productPrice = parseFloat(productPriceText.replace(' zł/szt.', '').replace(',', '.'));
 
-    // Szukamy, czy produkt już istnieje w koszyku
-    const existingProduct = cart.find(item => item.name === productName);
+            const quantity = parseInt(quantityInput.value);
 
-    if (existingProduct) {
-        existingProduct.quantity += quantity; // Dodajemy ilość do istniejącego produktu
-    } else {
-        cart.push({ name: productName, price: productPrice, quantity }); // Dodajemy nowy produkt do koszyka
-    }
+            // Szukamy, czy produkt już istnieje w koszyku
+            const existingProduct = cart.find(item => item.name === productName);
 
-    localStorage.setItem('cartItems', JSON.stringify(cart));
+            if (existingProduct) {
+                existingProduct.quantity += quantity; // Dodajemy ilość do istniejącego produktu
+            } else {
+                cart.push({ name: productName, price: productPrice, quantity }); // Dodajemy nowy produkt do koszyka
+            }
 
-    // Zaktualizowanie zawartości koszyka po dodaniu produktu
-    updateCart();
-}
+            localStorage.setItem('cartItems', JSON.stringify(cart));
 
+            // Zaktualizowanie zawartości koszyka po dodaniu produktu
+            updateCart();
+        }
 
-        <!-- funkcje changeQuantity, updateQuantityDisplay, updateQuantityInForm w js odpowiadają za sychronizacę widocznych przycisków z forumlarzem koszyka w php -->
+        
+        //funkcje changeQuantity, updateQuantityDisplay, updateQuantityInForm w js odpowiadają za sychronizacę widocznych przycisków z forumlarzem koszyka w php
         function changeQuantity(button, change) {
             const quantityInput = button.closest('.quantity-cart-container').querySelector('.quantity');
             let currentValue = parseInt(quantityInput.value) || 1; // Ustaw domyślnie na 1, jeśli pole jest puste
@@ -436,9 +459,61 @@ function addToCart() {
 
         // Dodanie nasłuchiwacza do inputa, aby reagować na zmiany tekstu
         document.getElementById('search-input').addEventListener('input', filterProducts);
+        
+        
+        
+        
+        // Wyświetlanie przycisku po przewinięciu strony
+        const scrollToTopButton = document.getElementById('scrollToTop');
 
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 200) {
+                scrollToTopButton.style.display = 'flex';
+            } else {
+                scrollToTopButton.style.display = 'none';
+            }
+        });
+
+        // Przewijanie do góry po kliknięciu przycisku
+        scrollToTopButton.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+        
+        
+        
+        function toggleFavorite(productId) {
+        let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+        if (favorites.includes(productId)) {
+            favorites = favorites.filter(id => id !== productId); // Usuń produkt z ulubionych
+        } else {
+            favorites.push(productId); // Dodaj produkt do ulubionych
+        }
+        localStorage.setItem('favorites', JSON.stringify(favorites));
+        updateFavoriteCount();
+        }
+
+        function updateFavoriteCount() {
+            const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+            const favoriteCountElement = document.querySelector('.header-favorite-count');
+            const favoriteIconElement = document.querySelector('.header-favorites-icon');
+
+            // Aktualizacja licznika
+            favoriteCountElement.innerText = favorites.length;
+
+            
+            if (favorites.length > 0) {
+                favoriteIconElement.classList.add('active');
+            } else {
+                favoriteIconElement.classList.remove('active');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', updateFavoriteCount);
     </script>
-
+    
  </body>
 </html>
 
