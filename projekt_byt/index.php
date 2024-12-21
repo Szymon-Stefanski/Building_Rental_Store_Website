@@ -169,7 +169,7 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
                         <img src="Image/Icon/discount.png" class="category-icon"> PROMOCJE
                         <img src="Image/Icon/down-arrow.png" alt="Strzałka w dół" class="arrow-icon">
                     </a>
-                    <?php if ($userRole === 'administrator' || $userRole === 'moderator'): ?>
+                    <?php if ($userRole === 'admin' || $userRole === 'mod'): ?>
                     <a href="Warehouse/stockManagement.php">
                         <img src="Image/Icon/support.png" class="category-icon"> ZARZĄDZANIE STANEM MAGAZYNU
                     </a>

@@ -42,6 +42,7 @@
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $login = $_POST['username'] ?? '';
         $password = $_POST['password'] ?? '';
+        $source = isset($_POST['source']) ? $_POST['source'] : '..\index.php';
 
         if (empty($login) || empty($password)) {
             $error = "Wszystkie pola są wymagane.";
@@ -85,12 +86,13 @@
             <div class="login-form">
                 <h1>Logowanie</h1>
                 <form action="login.php" method="POST">
+                    <input type="hidden" name="source" value="<?php echo htmlspecialchars($source, ENT_QUOTES, 'UTF-8'); ?>">
                     <label for="username">Nazwa użytkownika:</label><br>
                     <input type="text" id="username" name="username" required><br><br>
                     <label for="password">Hasło:</label><br>
                     <input type="password" id="password" name="password" required><br><br>
                     <button type="submit">Zaloguj</button>
-                    
+
                     <a href="index.php">
                         <button class="back-btn" onclick="window.history.back()">Powrót</button>
                     </a>

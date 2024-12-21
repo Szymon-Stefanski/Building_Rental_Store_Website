@@ -1,3 +1,8 @@
+Konta domyślne:
+administrator login: admin hasło: admin
+moderator     login: mod   hasło: mod
+
+Wymagania do logowania kontem google:
 Dodaj w projekt_byt/ 
 	- plik .env
 	
