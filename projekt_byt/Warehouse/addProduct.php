@@ -156,9 +156,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <label for="product_images">Obrazy Produktu:</label>
         <input type="file" id="product_images" name="product_images[]" multiple>
+        
+        
 
         <button type="submit">Dodaj Produkt</button>
     </form>
+    
+    
+    
+    <div class="back-button-container">
+        <a href="stockManagement.php" class="back-button">Powrót</a>
+    </div>
 
 </main>
 

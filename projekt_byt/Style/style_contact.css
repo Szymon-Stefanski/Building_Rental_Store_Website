@@ -16,10 +16,164 @@ body {
 .footer {
     background-color: #333;
     color: #fff;
+    padding: 40px 20px;
+}
+
+.footer-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.footer-container > div {
+    flex: 1;
+    min-width: 200px;
+}
+
+.footer h3 {
+    font-size: 16px;
+    margin-bottom: 15px;
+}
+
+.footer ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer ul li {
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.footer ul li a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.footer ul li a:hover {
+    text-decoration: underline;
+}
+
+
+.footer-newsletter {
     text-align: center;
-    padding: 20px;
+    color: #fff;
+}
+
+.footer-newsletter h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+}
+
+.footer-newsletter p {
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+
+.footer-newsletter form {
+    display: flex;
+    justify-content: column;
+    align-items: center;
+    gap: 10px;
+}
+
+
+.footer-newsletter button {
+    padding: 10px 20px; 
+    border: 2px solid #ffeb3b; 
+    border-radius: 8px; 
+    background-color: transparent; 
+    color: #ffeb3b; 
+    font-weight: bold; 
+    font-size: 16px; 
+    text-transform: uppercase; 
+    letter-spacing: 1px; 
+    text-decoration: none; 
+    transition: background-color 0.3s ease, color 0.3s ease; 
+    cursor: pointer;
+    width: 200px;
+    transform: skewX(170deg);
+}
+
+.footer-newsletter button:hover {
+    background-color: yellow; 
+    color: #000; 
+}
+
+.footer-newsletter button i {
+    margin-left: 15px; 
+    font-size: 18px; 
+}
+
+.footer-bottom {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 20px 0;
+    border-top: 2px solid #f90;
     margin-top: 20px;
 }
+
+
+.footer-bottom .social-media,
+.footer-bottom .payment-methods {
+    flex: 1; 
+    text-align: center; 
+}
+
+
+
+.social-media a {
+    display: inline-block;
+    width: 40px; 
+    height: 40px;
+    line-height: 40px; 
+    text-align: center;
+    border: 2px solid #28a745; 
+    border-radius: 50%; 
+    color: #fff; 
+    font-size: 20px; 
+    margin: 0 5px; 
+    transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.social-media a:hover {
+    background-color: #28a745; 
+    color: #fff; 
+    box-shadow: 0 0 10px rgba(40, 167, 69, 0.8);
+}
+
+.payment-methods img {
+    width: 80px; 
+    height: auto; 
+    margin: 0 10px; 
+    object-fit: contain; 
+}
+
+.payment-methods {
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    gap: 10px; 
+    margin-top: 20px; 
+    flex-wrap: wrap; 
+}
+
+.reverse-colors {
+    filter: invert(1); 
+}
+
+.footer-copyright {
+    flex-basis: 100%; 
+    text-align: center; 
+    margin-top: 20px;
+    font-size: 18px;
+    color: #bbb; 
+}
+
 
 /* Kontener strony */
 .container {
@@ -129,11 +283,16 @@ body {
 }
 
 .logo img {
-    width: 200px;
-    height: auto;
-    max-width: 100%;
-    object-fit: contain;
+  width: 200px;
+  height: auto;
+  max-width: 100%;
+  object-fit: contain;
+  box-shadow: 
+  0 0 0 3px gray,  
+  0 0 0 5px gold;
+  border-radius: 10px;
 }
+
 
 .search-bar {
     display: flex;
@@ -225,58 +384,72 @@ body {
 
 /* Styl dla koszyka */
 .cart-icon {
-    left: 40%;
-    position: relative;
-    width: 50px;
-    height: 50px;
+  left: 30%;
+  position: relative;
+  width: 50px;
+  height: 50px;
 }
 
 .cart-icon img {
-    width: 100%; /* Dopasowanie do wielkości kontenera */
-    height: 100%;
+  width: 80%; 
+  height: 80%;
 }
 
 .cart-info {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background-color: #d4f8b7; /* Jasny zielony */
-    padding: 10px;
-    border-radius: 8px;
-    font-family: Arial, sans-serif;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    min-width: 150px; /* Ustal minimalną szerokość */
-    flex-shrink: 0; /* Zapewnia, że koszyk nie będzie się kurczył */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #d4f8b7; 
+  padding: 10px;
+  border-radius: 50px;
+  font-family: Arial, sans-serif;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0.4, 0.8);
+  min-width: 150px; 
+  flex-shrink: 0; 
+  transition: background-color 0.3s ease, box-shadow 0.3s ease; 
+  border: 5px solid #a0de94;
+  box-shadow: 
+  0 0 0 3px white,  
+  0 0 0 5px gold;
 }
 
+.cart-info:hover {
+  background-color: #a9d48a;
+  box-shadow: 
+    0 0 0 2px white,  
+    0 0 0 4px gray,   
+    0 0 15px 5px gold; 
+}
+
+
 #cart-count {
-    position: absolute;
-    top: -5px;
-    right: -5px;
-    background-color: red;
-    color: white;
-    font-size: 14px;
-    font-weight: bold;
-    border-radius: 50%;
-    width: 25px;
-    height: 25px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: red;
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .cart-icon a {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    text-decoration: none;
-    cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  text-decoration: none;
+  cursor: pointer;
 }
 
 .cart-icon a:hover {
-    opacity: 0.8;
+  opacity: 0.8;
 }
 
 /* Styl dla nawigacji */
@@ -476,59 +649,57 @@ body {
 
 /* Kontener z reklamą */
 .advertisement-container {
-    position: relative;
-    width: 100%;
-    height: 400px; /* Stała wysokość kontenera */
-    margin: 0 auto;
-    overflow: hidden; /* Ukrywa nadmiar obrazu poza kontenerem */
-    padding: 0;
-    max-width: 1200px; /* Maksymalna szerokość kontenera */
-    background-color: transparent; /* Tło przezroczyste, żeby nie było czarnego tła */
+  position: relative;
+  
+  height: auto; /* Stała wysokość kontenera */
+  margin: 0 auto;
+  overflow: hidden; /* Ukrywa nadmiar obrazu poza kontenerem */
+  padding: 0;
+  max-width: 1200px; 
+  background-color: transparent; 
 }
 
 /* Slider reklamowy */
 .advertisement-slider {
-    display: flex;
-    transition: transform 0.5s ease-in-out;
+  display: flex;
+  transition: transform 0.5s ease-in-out;
+  height: 100%;
 }
 
 /* Obrazki wewnątrz slidera */
 .advertisement-slider .ad-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover; /* Obrazek dopasowuje się do kontenera, przycinając nadmiar */
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Obrazek dopasowuje się do kontenera, przycinając nadmiar */
+    margin: 0;
+  padding: 0;
+  border: none;
 }
 
 /* Kółeczka nawigacyjne */
 .advertisement-dots {
-    /*position: absolute;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 10px;*/
-
-    display: flex;
-    justify-content: center;
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 10;
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
 }
 
 .advertisement-dots .dot {
-    width: 12px;
-    height: 12px;
-    background-color: #fff;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: background-color 0.3s;
+  width: 12px;
+  height: 12px;
+  background-color: #fff;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
 
 .advertisement-dots .dot.active {
-    background-color: #006d28;
+  background-color: #006d28;
 }
+
 
 /* Styl dla pojedynczego kółeczka */
 .dot {
