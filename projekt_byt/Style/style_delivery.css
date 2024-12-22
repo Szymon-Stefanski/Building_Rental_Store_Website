@@ -1,0 +1,156 @@
+/* Ogólny reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 20px;
+}
+
+.main-container {
+    width: 100%;
+    max-width: 1200px;
+}
+
+.container {
+    display: flex;
+    gap: 20px;
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Ekran początkowy wyboru opcji */
+.options-container {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.options-container button {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    margin: 10px;
+    cursor: pointer;
+}
+
+.options-container button:hover {
+    background-color: #0056b3;
+}
+
+/* Kontener dla formularza */
+.form-container {
+    flex: 2;
+    padding: 20px;
+    border-right: 1px solid #ddd;
+    display: none;
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+textarea {
+    height: 80px;
+}
+
+.calendar {
+    margin-bottom: 20px;
+}
+
+.submit-button {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.submit-button button {
+    background-color: #28a745;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.submit-button button:hover {
+    background-color: #218838;
+}
+
+/* Kontener dla podsumowania */
+.summary-container {
+    flex: 1;
+    padding: 20px;
+}
+
+.summary-container h3 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.summary-item {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.summary-item img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.summary-item .details {
+    flex-grow: 1;
+}
+
+.summary-total {
+    margin-top: 20px;
+    padding-top: 10px;
+    border-top: 1px solid #ddd;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* Responsywność */
+@media (max-width: 768px) {
+    .container {
+        flex-direction: column;
+    }
+
+    .form-container, .summary-container {
+        border-right: none;
+        border-bottom: 1px solid #ddd;
+    }
+}

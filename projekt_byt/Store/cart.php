@@ -308,7 +308,7 @@ if ($product) {
                     $username = ($_SESSION['username']);
                     ?>
                     <button id="guestButton" class="guest-button">
-                        <a href="delivery.html">
+                        <a href="delivery.php">
                             <img src="../Image/Icon/user.png" alt="Ikona gościa"> Przejdź do dostawy
                         </a>
                     </button>
@@ -320,7 +320,7 @@ if ($product) {
                     </button>
 
                     <button id="guestButton" class="guest-button">
-                        <a href="delivery.html">
+                        <a href="delivery.php">
                             <img src="../Image/Icon/user.png" alt="Ikona gościa"> KUPUJ JAKO GOŚĆ
                         </a>
                     </button>
