@@ -164,6 +164,13 @@ if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
                 weekend: 25,
             };
 
+            const deliveryCities = {
+                Gdańsk: 14,
+                Gdynia: 16,
+                Sopot: 15,
+                Inne: 40
+            };
+
             // Funkcja powrotu do strony głównej
             function goToIndex() {
                 window.location.href = "index.php";
@@ -235,24 +242,26 @@ if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
 
                 // Uwzględnij koszt dostawy
                 const deliveryDate = document.getElementById("deliveryDate").value;
-                const deliveryCost = calculateDeliveryCost(deliveryDate);
+                const deliveryCity = document.getElementById("city").value.trim();
+
+                const deliveryCost = calculateDeliveryCost(deliveryDate, deliveryCity);
                 total += deliveryCost;
 
                 summaryTotal.textContent = `Razem (brutto): ${total.toFixed(2)} zł`;
             }
 
             // Funkcja do obliczania kosztu dostawy
-            function calculateDeliveryCost(date) {
-                if (!date) return 0; // Brak daty - brak kosztu
+            function calculateDeliveryCost(date,city) {
+                const deliveryCityCost = deliveryCities[city] || deliveryCities["Inne"];
+                if (!date || !city) return 0; // Jeśli brak daty lub miasta - brak kosztu
 
                 const selectedDate = new Date(date);
                 const dayOfWeek = selectedDate.getDay(); // 0 = Niedziela, 6 = Sobota
 
-                if (dayOfWeek === 0 || dayOfWeek === 6) {
-                    return deliveryCosts.weekend; // Weekendy
-                } else {
-                    return deliveryCosts.weekday; // Dni robocze
-                }
+                const weekendCost = deliveryCosts.weekend + deliveryCityCost; // Koszt dostawy w weekendy
+                const weekdayCost = deliveryCosts.weekday + deliveryCityCost; // Koszt dostawy w dni robocze
+
+                return dayOfWeek === 0 || dayOfWeek === 6 ? weekendCost : weekdayCost;
             }
 
             // Walidacja formularza
@@ -268,6 +277,9 @@ if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
             // Obsługa zmiany daty dostawy
             document
                 .getElementById("deliveryDate")
+                .addEventListener("change", updateSummary);
+            document
+                .getElementById("city")
                 .addEventListener("change", updateSummary);
 
             // Inicjalizacja podsumowania przy starcie

@@ -230,15 +230,9 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
                     <td>Brak</td>
                 </tr>
                 <tr>
-                    <td>Okolice Trójmiasta</td>
-                    <td>20 zł</td>
+                    <td>Pozostałe</td>
+                    <td>40 zł</td>
                     <td>2-4 dni robocze</td>
-                    <td>Dostępne tylko dla zamówień do 500 kg</td>
-                </tr>
-                <tr>
-                    <td>Do 150 km</td>
-                    <td>50 zł</td>
-                    <td>3-5 dni robocze</td>
                     <td>Sprawdź dostępność dla dużych zamówień</td>
                 </tr>
                 </tbody>
