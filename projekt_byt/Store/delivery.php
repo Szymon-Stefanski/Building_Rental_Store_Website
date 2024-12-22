@@ -244,9 +244,12 @@ if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
                 const deliveryDate = document.getElementById("deliveryDate").value;
                 const deliveryCity = document.getElementById("city").value.trim();
 
-                const deliveryCost = calculateDeliveryCost(deliveryDate, deliveryCity);
-                total += deliveryCost;
+                let deliveryCost = 0;
+                if (total <= 200) {
+                    deliveryCost = calculateDeliveryCost(deliveryDate, deliveryCity);
+                }
 
+                total += deliveryCost;
                 summaryTotal.textContent = `Razem (brutto): ${total.toFixed(2)} zł`;
             }
 
