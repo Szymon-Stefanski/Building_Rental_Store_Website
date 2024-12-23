@@ -102,7 +102,6 @@ function displayCart() {
 
 
 $Total = 0;
-$Delivery = 13.99;
 $Vat = 0.08;
                     if (isset($_SESSION['cart'])) {
                         foreach ($_SESSION['cart'] as $item) {
@@ -110,7 +109,7 @@ $Vat = 0.08;
                             $Total += $itemTotal;
                         }
                     }
-$Brutto = $Total + $Delivery + $Total * $Vat;
+$Brutto = $Total + $Total * $Vat;
 
 // Losowe wyświetlanie produktów z bazy
 require '../database_connection.php';
@@ -308,7 +307,7 @@ if ($product) {
                     $username = ($_SESSION['username']);
                     ?>
                     <button id="guestButton" class="guest-button">
-                        <a href="delivery.html">
+                        <a href="delivery.php">
                             <img src="../Image/Icon/user.png" alt="Ikona gościa"> Przejdź do dostawy
                         </a>
                     </button>
@@ -320,7 +319,7 @@ if ($product) {
                     </button>
 
                     <button id="guestButton" class="guest-button">
-                        <a href="delivery.html">
+                        <a href="delivery.php">
                             <img src="../Image/Icon/user.png" alt="Ikona gościa"> KUPUJ JAKO GOŚĆ
                         </a>
                     </button>
@@ -354,7 +353,6 @@ if ($product) {
             <!-- Podsumowanie koszyka -->
             <div class="summary">
                 <p>Produkty: <span id="products-total"><?php echo $Total;?> zł</span></p>
-                <p>Wysyłka: <span id="shipping-cost">13,99 zł</span></p>
                 <p>RAZEM (BRUTTO): <strong id="cart-total"></strong> <?php echo $Brutto;?> zł</p>
                 <p>VAT (wliczony): <span id="vat-amount"><?php echo $Vat*100;?>%</span></p>
             </div>
