@@ -78,6 +78,9 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
     <title>Sklep Budowlany</title>
     <link rel="stylesheet" href="Style/style_index.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
+
 </head>
 <body>
     <!-- Główny kontener strony -->
@@ -131,7 +134,7 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
                     </a>
                 </div>
                 <div class="cart-info">
-                    <span style="font-weight: bold;">Twój koszyk: <span id="total-price"><?= number_format($totalPrice, 2) ?> zł</span></p>
+                    <span style="font-weight: bold; text-align: center; margin-left: 15px;">Koszyk:<span id="total-price" style="margin-right: 10px; padding-left: 5px;"><?= number_format($totalPrice, 2) ?> zł</span><!--</p> Tutaj ma ktoś nie zamknięte znaczniki, ale jak spróbujesz zamknąć dany znacznik to cały widok się psuje--> 
                     <a href="Store/cart.php?source=<?php echo $current_url; ?>"> 
                         <div class="cart-icon">
                             <img src="Image/Icon/pngegg.png" alt="Koszyk">
@@ -255,14 +258,79 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
                     </section>
             
                 <?php endforeach; ?>
+            
             <?php else: ?>
                 <div id="no-results-message" class="no-results-message">
                     Przepraszamy, nie znaleziono produktów.
                 </div>
             <?php endif; ?>
+            
             <footer class="footer">
-            <p>&copy; <?php echo date('Y'); ?> Budex Sp z.o.o . Wszelkie prawa zastrzeżone.</p>
-        </footer>
+                <div class="footer-container">
+                    <div class="footer-contact">
+                        <h3>SKONTAKTUJ SIĘ Z NAMI</h3>
+                        <ul>
+                            <li><i class="fa fa-phone"></i> +48 555 348 591<br> Pn-Pt 8:00-18:00, Sb 9:00-14:00</li>
+                            <li><i class="fa fa-envelope"></i> Budex@gmail.com<br> Odpowiedź do 24H</li>
+                            <li><i class="fa fa-map-marker"></i> ul. Budowlana 4, 80-253 Gdańsk</li>
+                        </ul>
+                    </div>
+                    <div class="footer-links">
+                        <h3>INFORMACJE</h3>
+                        <ul>
+                            <li><a href="#">O nas</a></li>
+                            <li><a href="#">Rabaty</a></li>
+                            <li><a href="#">Sprzedaż hurtowa</a></li>
+                            <li><a href="#">Regulamin</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-links">
+                        <h3>OBSŁUGA KLIENTA</h3>
+                        <ul>
+                            <li><a href="#">Najczęściej zadawane pytania</a></li>
+                            <li><a href="#">Koszty dostawy</a></li>
+                            <li><a href="#">Reklamacje</a></li>
+                            <li><a href="#">Zwroty</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-links">
+                        <h3>KONTO</h3>
+                        <ul>
+                            <li><a href="#">Dane osobowe</a></li>
+                            <li><a href="#">Zamówienia</a></li>
+                            <li><a href="#">Adresy</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-newsletter">
+                        <h3>NEWSLETTER</h3>
+                        <p>Chcesz być na bieżąco z najlepszymi ofertami? Zapisz się do newslettera i nie przegap okazji!</p>
+                        <button type="submit"><i class="fa fa-arrow-right"></i> ZAPISZ SIĘ</button>
+                        
+                        
+                    </div>
+
+                </div>
+                <div class="footer-bottom">
+                    <div class="social-media">
+                        <h3>OBSERWUJ NAS</h3>
+                        <a href="https://www.facebook.com/"><i class="fab fa-facebook"></i></a>
+                        <a href="https://x.com/home"><i class="fab fa-x"></i></a>
+                        <a href="https://www.instagram.com/"><i class="fab fa-instagram"></i></a>
+                        <a href="https://www.youtube.com/"><i class="fab fa-youtube"></i></a>
+                    </div>
+                    <div class="payment-methods">
+                        <img src="Image/Icon/symbols.png" alt="Visa" class="reverse-colors">
+                        <img src="Image/Icon/paypal.png" alt="PayPal" class="reverse-colors">
+                        <img src="Image/Icon/blik.png" alt="Blik">
+                        <img src="Image/Icon/apple-pay.png" alt="Apple Pay" class="reverse-colors">
+                    </div>
+
+                    <div class="footer-copyright">
+                        <p>&copy; <?php echo date('Y'); ?> Budex Sp z.o.o. Wszelkie prawa zastrzeżone. All rights reserved. Realizacja: SEF </p>
+                    </div>
+                </div>
+            </footer>
+
         </main>
         
     <button id="scrollToTop">
