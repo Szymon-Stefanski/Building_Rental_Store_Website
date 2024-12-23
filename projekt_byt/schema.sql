@@ -59,7 +59,7 @@ CREATE TABLE Opinie_Produktow (
 
 CREATE TABLE Zamowienia (
     zamowienie_id INT AUTO_INCREMENT PRIMARY KEY,
-    uzytkownik_id INT NOT NULL,
+    uzytkownik_id INT,
     data_zamowienia DATE NOT NULL,
     status VARCHAR(50) NOT NULL,
     FOREIGN KEY (uzytkownik_id) REFERENCES Uzytkownicy(uzytkownik_id) ON DELETE CASCADE

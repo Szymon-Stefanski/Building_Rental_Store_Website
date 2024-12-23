@@ -11,8 +11,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $phone_number = trim($_POST['phone_number']);
     $postal_code = trim($_POST['postal_code']);
     $city = trim($_POST['city']);
+    $house_number = trim($_POST['house_number']);
+    $apartment_number = trim($_POST['apartment_number']);
 
-    $address = $postal_code . ', ' . $city;
+    if (!$apartment_number) {
+        $address = $postal_code . ', ' . $city . ', ' . $house_number;
+    } else{
+        $address = $postal_code . ', ' . $city . ', ' . $house_number . '/' . $apartment_number ;
+    }
 
     if (!$email) {
         echo "Nieprawidłowy email!";
@@ -75,8 +81,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <label for="postal_code">Adres:</label>
             <div class="address-container">
                 <input type="text" id="postal_code" name="postal_code" required placeholder="XX-XXX" pattern="^\d{2}-\d{3}$" maxlength="6">
+                <input type="text" id="city" name="city" required placeholder="Miasto"><br>
 
-                <input type="text" id="city" name="city" required placeholder="Miasto">
+                <input type="text" id="house_number" name="house_number" required placeholder="Numer domu">
+                <input type="text" id="apartment_number" name="apartment_number" placeholder="Numer mieszkania">
             </div>
 
             <button type="submit">Z a r e j e s t r u j</button>
