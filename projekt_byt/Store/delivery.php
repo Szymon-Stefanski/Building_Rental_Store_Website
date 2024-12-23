@@ -42,27 +42,61 @@ function findProductImage($productId, $categoryName, $productName) {
     return null;
 }
 
+    // Autouzupełnianie danych użytkownika jeżeli jest zalogowany
+    if (isset($_SESSION['user_id'])) {
+        $stmt = getDbConnection()->prepare(
+            "SELECT adres, imie, nazwisko, email FROM Uzytkownicy WHERE uzytkownik_id = ?"
+        );
+        $stmt->execute([$_SESSION['user_id']]);
+        $userData = $stmt->fetch(PDO::FETCH_ASSOC);
 
-// Przygotowanie danych koszyka
-$cartData = [];
-$Vat = 0.08;
-if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
-    foreach ($_SESSION['cart'] as $item) {
-        $itemTotal = $item['price'] * $item['quantity'];
-        $itemTotal = $itemTotal + $itemTotal * $Vat;
-        $imagePath = findProductImage($item['id'], 'all', $item['name']);
-        $cartData[] = [
-            'name' => htmlspecialchars($item['name'] ?? 'Produkt bez nazwy'),
-            'price' => number_format($item['price'], 2, '.', ''),
-            'quantity' => htmlspecialchars($item['quantity']),
-            'total' => number_format($itemTotal, 2, '.', ''),
-            'img' => $imagePath
-        ];
+        if ($userData) {
+            // Rozdziel adres na części
+            $addressParts = explode(', ', $userData['adres'] ?? '');
+            $_SESSION['user'] = [
+                'first_name' => $userData['imie'] ?? '',
+                'last_name' => $userData['nazwisko'] ?? '',
+                'email' => $userData['email'] ?? '',
+                'postal_code' => $addressParts[0] ?? '',
+                'city' => $addressParts[1] ?? '',
+                'street' => $addressParts[2] ?? '',
+            ];
+
+            // Rozdziel trzeci element na numer domu i numer mieszkania, jeśli istnieje
+            if (strpos($addressParts[3] ?? '', '/') !== false) {
+                list($houseNumber, $apartmentNumber) = explode('/', $addressParts[3]);
+                $_SESSION['user']['house_number'] = $houseNumber;
+                $_SESSION['user']['apartment_number'] = $apartmentNumber;
+            } else {
+                $_SESSION['user']['house_number'] = $addressParts[3] ?? '';
+                $_SESSION['user']['apartment_number'] = ''; // Brak numeru mieszkania
+            }
+        }
     }
-}
+
+
+
+    // Przygotowanie danych koszyka
+    $cartData = [];
+    $Vat = 0.08;
+    if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
+        foreach ($_SESSION['cart'] as $item) {
+            $itemTotal = $item['price'] * $item['quantity'];
+            $itemTotal = $itemTotal + $itemTotal * $Vat;
+            $imagePath = findProductImage($item['id'], 'all', $item['name']);
+            $cartData[] = [
+                'name' => htmlspecialchars($item['name'] ?? 'Produkt bez nazwy'),
+                'price' => number_format($item['price'], 2, '.', ''),
+                'quantity' => htmlspecialchars($item['quantity']),
+                'total' => number_format($itemTotal, 2, '.', ''),
+                'img' => $imagePath
+            ];
+        }
+    }
 ?>
 <script>
     const cartItems = <?php echo json_encode($cartData, JSON_UNESCAPED_UNICODE); ?>;
+    const userData = <?php echo json_encode($_SESSION['user'] ?? null, JSON_UNESCAPED_UNICODE); ?>;
 </script>
 <!DOCTYPE html>
 <html lang="pl">
@@ -92,6 +126,11 @@ if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
                     <div class="form-group">
                         <label for="lastName">Nazwisko*</label>
                         <input type="text" id="lastName" name="lastName" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">E-mail*</label>
+                        <input type="text" id="email" name="email" required>
                     </div>
 
                     <div class="form-group">
@@ -156,6 +195,19 @@ if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
 
             const loginButton = document.getElementById("loginButton");
             const guestButton = document.getElementById("guestButton");
+
+            // Wycztywanie danych użytkownika, jeśli jest zalogowany
+            if (userData) {
+                document.getElementById("firstName").value = userData.first_name || "";
+                document.getElementById("lastName").value = userData.last_name || "";
+                document.getElementById("email").value = userData.email || "";
+                document.getElementById("postalCode").value = userData.postal_code || "";
+                document.getElementById("city").value = userData.city || "";
+                document.getElementById("street").value = userData.street || "";
+                document.getElementById("houseNumber").value = userData.house_number || "";
+                document.getElementById("apartmentNumber").value = userData.apartment_number || "";
+            }
+
 
 
             // Cena dostawy (przykład: różne ceny na weekend)

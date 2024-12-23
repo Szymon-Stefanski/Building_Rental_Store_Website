@@ -11,13 +11,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $phone_number = trim($_POST['phone_number']);
     $postal_code = trim($_POST['postal_code']);
     $city = trim($_POST['city']);
+    $street = trim($_POST['street']);
     $house_number = trim($_POST['house_number']);
     $apartment_number = trim($_POST['apartment_number']);
 
     if (!$apartment_number) {
-        $address = $postal_code . ', ' . $city . ', ' . $house_number;
+        $address = $postal_code . ', ' . $city . ', ' . $street . ', ' . $house_number;
     } else{
-        $address = $postal_code . ', ' . $city . ', ' . $house_number . '/' . $apartment_number ;
+        $address = $postal_code . ', ' . $city . ', ' . $street . ', ' . $house_number . '/' . $apartment_number ;
     }
 
     if (!$email) {
@@ -83,6 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <input type="text" id="postal_code" name="postal_code" required placeholder="XX-XXX" pattern="^\d{2}-\d{3}$" maxlength="6">
                 <input type="text" id="city" name="city" required placeholder="Miasto"><br>
 
+                <input type="text" id="street" name="street" required placeholder="Ulica">
                 <input type="text" id="house_number" name="house_number" required placeholder="Numer domu">
                 <input type="text" id="apartment_number" name="apartment_number" placeholder="Numer mieszkania">
             </div>
