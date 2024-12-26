@@ -85,6 +85,15 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
 <body>
     <!-- Główny kontener strony -->
     <div class="container">
+        <?php 
+        require 'mail_sender.php';
+        
+        sendEmail(
+                            's22043@pjwstk.edu.pl', 
+                            'Testowy e-mail z PHPMailer', 
+                            'To jest treść testowego e-maila wysłanego za pomocą PHPMailer.'
+        );
+        ?>
 
         <!-- Header Section -->
         <header class="header">
