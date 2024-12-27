@@ -202,7 +202,7 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
             <div class="contact-policy">
                 <p><strong>Adres:</strong> Gdańsk, ul. Budowlana 4</p>
                 <p><strong>Telefon:</strong> +48 555 348 591</p>
-                <p><strong>Email:</strong> Budex@gmail.com</p>
+                <p><strong>Email:</strong> budexgdansk@gmail.com</p>
 
                 <h3>Godziny dostępności:</h3>
                 <ul>
@@ -227,7 +227,7 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
                         <h3>SKONTAKTUJ SIĘ Z NAMI</h3>
                         <ul>
                             <li><i class="fa fa-phone"></i> +48 555 348 591<br> Pn-Pt 8:00-18:00, Sb 9:00-14:00</li>
-                            <li><i class="fa fa-envelope"></i> Budex@gmail.com<br> Odpowiedź do 24H</li>
+                            <li><i class="fa fa-envelope"></i> budexgdansk@gmail.com<br> Odpowiedź do 24H</li>
                             <li><i class="fa fa-map-marker"></i> ul. Budowlana 4, 80-253 Gdańsk</li>
                         </ul>
                     </div>

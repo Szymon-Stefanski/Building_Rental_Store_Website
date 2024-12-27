@@ -1,5 +1,5 @@
 <?php
-require 'vendor/autoload.php';
+require 'vendor/autoload.php'; // Autoload PHPMailer (jeśli używasz Composer)
 
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
@@ -17,6 +17,9 @@ function sendEmail($to, $subject, $body) {
         $mail->Password = 'thclcogenmuslkba';
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port = 587;
+
+        $mail->CharSet = 'UTF-8'; // Kodowanie UTF-8
+        $mail->Encoding = 'base64'; // Kodowanie treści
 
         // Nadawca
         $mail->setFrom('budexgdansk@gmail.com', 'Budex sp z o.o.');
@@ -36,39 +39,63 @@ function sendEmail($to, $subject, $body) {
     }
 }
 
+function loadNotificationLog($filePath) {
+    if (!file_exists($filePath)) {
+        file_put_contents($filePath, json_encode([]));
+    }
+    return json_decode(file_get_contents($filePath), true);
+}
+
+function saveNotificationLog($filePath, $data) {
+    file_put_contents($filePath, json_encode($data));
+}
+
+$logFilePath = 'notification_log.json';
+$notificationLog = loadNotificationLog($logFilePath);
+
 // Połączenie z bazą danych
 $dsn = 'mysql:host=localhost;dbname=Build_Store;charset=utf8';
 $username = 'root';
 $password = '';
 
-    try {
-        $pdo = new PDO($dsn, $username, $password);
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+try {
+    $pdo = new PDO($dsn, $username, $password);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-        // Zapytanie SQL
-        $query = "
-            SELECT p.nazwa_produktu, p.ilosc_w_magazynie, d.email, d.nazwa_dostawcy 
-            FROM Produkty p
-            JOIN Dostawcy d ON p.dostawca_id = d.dostawca_id
-            WHERE p.ilosc_w_magazynie < 50
-        ";
-        $stmt = $pdo->query($query);
+    $query = "
+        SELECT p.produkt_id, p.nazwa_produktu, p.ilosc_w_magazynie, d.email, d.nazwa_dostawcy 
+        FROM Produkty p
+        JOIN Dostawcy d ON p.dostawca_id = d.dostawca_id
+        WHERE p.ilosc_w_magazynie < 50
+    ";
+    $stmt = $pdo->query($query);
 
-        // Przetwarzanie wyników
-        foreach ($stmt as $row) {
-            $productName = $row['nazwa_produktu'];
-            $quantity = $row['ilosc_w_magazynie'];
-            $supplierEmail = $row['email'];
-            $supplierName = $row['nazwa_dostawcy'];
+    // Przetwarzanie wyników
+    foreach ($stmt as $row) {
+        $productId = $row['produkt_id'];
+        $productName = $row['nazwa_produktu'];
+        $quantity = $row['ilosc_w_magazynie'];
+        $supplierEmail = $row['email'];
+        $supplierName = $row['nazwa_dostawcy'];
 
-            // Przygotowanie treści e-maila
-            $subject = "BUDEX - niski stan magazynowy: $productName";
-            $body = "Szanowni Panstwo,\n\nProdukt \"$productName\" ma tylko $quantity sztuk na stanie. Prosimy o uzupelnienie zapasow.\n\nPozdrawiam,\nBudex sp z o.o.";
+        $currentDate = date('Y-m-d');
+        $lastNotificationDate = $notificationLog[$productId] ?? null;
+        $supplyNumber = 100 - $quantity;
 
-            // Wysyłanie e-maila
+        if ($lastNotificationDate === null || strtotime($lastNotificationDate) < strtotime("-7 days")) {
+            $subject = "BUDEX DOSTAWA - niski stan magazynowy: $productName";
+            $body = "Szanowni Państwo, \n\nmamy tylko $quantity sztuk na stanie produktu $productName. Prosimy o uzupełnienie zapasów przy następnej dostawie o liczbę: $supplyNumber sztuk.\n\nPozdrawiamy,\nZespół Budex sp z o.o.";
+
             sendEmail($supplierEmail, $subject, $body);
+
+            $notificationLog[$productId] = $currentDate;
         }
-    } catch (PDOException $e) {
-        echo "Błąd połączenia z bazą danych: " . $e->getMessage();
     }
+
+    saveNotificationLog($logFilePath, $notificationLog);
+
+} catch (PDOException $e) {
+    echo "Błąd połączenia z bazą danych: " . $e->getMessage();
+}
+
 ?>
