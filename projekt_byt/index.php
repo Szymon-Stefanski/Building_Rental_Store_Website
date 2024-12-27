@@ -2,6 +2,8 @@
 session_start();
 require 'database_connection.php';
 
+include 'email_sender.php';
+
 $stmt = getDbConnection()->prepare("
     SELECT k.nazwa_kategorii, p.produkt_id, p.nazwa_produktu, p.cena
     FROM Produkty p
@@ -85,15 +87,6 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
 <body>
     <!-- Główny kontener strony -->
     <div class="container">
-        <?php 
-        require 'mail_sender.php';
-        
-        sendEmail(
-                            's22043@pjwstk.edu.pl', 
-                            'Testowy e-mail z PHPMailer', 
-                            'To jest treść testowego e-maila wysłanego za pomocą PHPMailer.'
-        );
-        ?>
 
         <!-- Header Section -->
         <header class="header">
