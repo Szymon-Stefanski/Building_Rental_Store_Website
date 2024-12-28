@@ -1,6 +1,7 @@
 <?php
 session_start();
 require '../database_connection.php';
+include '../email_sender.php';
 function findProductImage($productId, $categoryName, $productName) {
     global $pdo;
 
@@ -93,6 +94,137 @@ function findProductImage($productId, $categoryName, $productName) {
             ];
         }
     }
+
+
+    // Dodanie zamówiena do bazy danych i wysłanie maila do odbiorcy
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $firstName = trim($_POST['firstName'] ?? '');
+        $lastName = trim($_POST['lastName'] ?? '');
+        $email = trim($_POST['email'] ?? '');
+        $street = trim($_POST['street'] ?? '');
+        $houseNumber = trim($_POST['houseNumber'] ?? '');
+        $apartmentNumber = trim($_POST['apartmentNumber'] ?? '');
+        $city = trim($_POST['city'] ?? '');
+        $postalCode = trim($_POST['postalCode'] ?? '');
+        $deliveryDate = $_POST['deliveryDate'] ?? '';
+        $cart = $_SESSION['cart'] ?? [];
+
+        if (empty($cart)) {
+            echo "Koszyk jest pusty!";
+            exit;
+        }
+
+        if (!$apartmentNumber) {
+            $address = $postalCode . ', ' . $city . ', ' . $street . ', ' . $houseNumber;
+        } else{
+            $address = $postalCode . ', ' . $city . ', ' . $street . ', ' . $houseNumber . '/' . $apartmentNumber ;
+        }
+
+    try {
+
+        $brutto = 0;
+        foreach ($cart as $item) {
+            $brutto += $item['price'] * $item['quantity'];
+        }
+        $brutto += $brutto * $Vat;
+
+        $deliveryCost = floatval($_POST['deliveryCost'] ?? 0);
+
+        $total = $brutto + $deliveryCost;
+
+        $pickupOption = isset($_POST['pickupOption']);
+        if ($pickupOption) {
+            $address = "Odbiór osobisty w sklepie";
+            $deliveryCost = 0;
+        }
+
+        // Dodanie zamówienia
+        $stmt = getDbConnection()->prepare("
+            INSERT INTO Zamowienia (uzytkownik_id, odbiorca_imie, odbiorca_nazwisko, odbiorca_email, adres, data_zamowienia, status) 
+            VALUES (:userId,:firstName, :lastName, :email, :address, :orderDate, :status)
+        ");
+
+        if (isset($_SESSION['user_id'])) {
+            $stmt->execute([
+                ':userId' => $_SESSION['user_id'],
+                ':firstName' => $firstName,
+                ':lastName' => $lastName,
+                ':email' => $email,
+                ':address' => $address,
+                ':orderDate' => date('Y-m-d'),
+                ':status' => 'Nieopłacone'
+            ]);
+        } else {
+            $stmt->execute([
+                ':userId' => null,
+                ':firstName' => $firstName,
+                ':lastName' => $lastName,
+                ':email' => $email,
+                ':address' => $address,
+                ':orderDate' => date('Y-m-d'),
+                ':status' => 'Nieopłacone'
+            ]);
+        }
+
+        $orderId = getDbConnection()->lastInsertId();
+
+        // Dodanie pozycji zamówienia
+        $stmt = getDbConnection()->prepare("
+            INSERT INTO Pozycje_Zamowien (zamowienie_id, produkt_id, ilosc, cena_za_sztuke) 
+            VALUES (:orderId, :productId, :quantity, :price)
+        ");
+        foreach ($cart as $item) {
+            $stmt->execute([
+                ':orderId' => $orderId,
+                ':productId' => $item['id'],
+                ':quantity' => $item['quantity'],
+                ':price' => $item['price']
+            ]);
+        }
+
+        $subject = "Potwierdzenie zamówienia #$orderId";
+        $message = "Szanowny/a $firstName $lastName,
+
+        Dziękujemy za złożenie zamówienia w naszym sklepie budowlanym. Poniżej znajdują się szczegóły Twojego zamówienia:
+
+        Adres dostawy: $address
+        
+        Zamówione produkty:
+        ";
+
+                foreach ($cart as $item) {
+                    $message .= "- " . $item['name'] . " (Ilość: " . $item['quantity'] . ", Cena: " . $item['price'] . " zł)\n";
+                }
+
+                $total = $brutto + $deliveryCost;
+
+                $message .= "
+        Łączna wartość zamówienia (brutto): " . number_format($brutto, 2, '.', '') . " zł
+        Koszt dostawy: " . number_format($deliveryCost, 2, '.', '') . " zł
+        Razem do zapłaty: " . number_format($total, 2, '.', '') . " zł
+        
+        Jeśli zamówienie nie zostało jeszcze opłacone, możesz to zrobić, korzystając z poniższego linku:
+        http://localhost/projekt_byt/Store/payment.php?id=$orderId
+        
+        Twoje zamówienie zostanie dostarczone w dniu: $deliveryDate
+        
+        Jeśli masz jakiekolwiek pytania lub uwagi, prosimy o kontakt z naszym działem obsługi klienta pod adresem: budexgdansk@gmail.com
+        
+        Dziękujemy za zakupy i zapraszamy ponownie!
+        Budex sp z o.o.";
+
+        sendEmail($email, $subject, $message);
+
+        header("Location: payment.php?id=$orderId");
+        unset($_SESSION['cart']); // Wyczyszczenie koszyka po złożeniu zamówienia
+        exit;
+    } catch (Exception $e) {
+        echo "Wystąpił błąd podczas składania zamówienia: " . $e->getMessage();
+    }
+
+
+}
+
 ?>
 <script>
     const cartItems = <?php echo json_encode($cartData, JSON_UNESCAPED_UNICODE); ?>;
@@ -117,7 +249,7 @@ function findProductImage($productId, $categoryName, $productName) {
             <!-- Kontener formularza -->
             <div class="form-container" id="formContainer">
                 <h2>Formularz Dostawy</h2>
-                <form id="deliveryForm">
+                <form method="POST" enctype="multipart/form-data" id="deliveryForm">
                     <div class="form-group">
                         <label for="firstName">Imię*</label>
                         <input type="text" id="firstName" name="firstName" required>
@@ -131,6 +263,11 @@ function findProductImage($productId, $categoryName, $productName) {
                     <div class="form-group">
                         <label for="email">E-mail*</label>
                         <input type="text" id="email" name="email" required>
+                    </div>
+
+                    <div class="form-group">
+                        <input type="checkbox" id="pickupOption" name="pickupOption">
+                        <label for="pickupOption">Odbiór osobisty w sklepie</label>
                     </div>
 
                     <div class="form-group">
@@ -163,10 +300,16 @@ function findProductImage($productId, $categoryName, $productName) {
                         <input type="date" id="deliveryDate" name="deliveryDate" required>
                     </div>
 
+                    <div class="return-button">
+                    <button onclick="window.history.back()">Powrót</button>
+                    </div>
+
                     <div class="submit-button">
-                        <button onclick="window.history.back()">Powrót</button>
                         <button type="submit">Złóż zamówienie</button>
                     </div>
+
+                    <!-- Przekazanie danych obliczanych w js do php -->
+                    <input type="hidden" id="deliveryCost" name="deliveryCost" value="0">
                 </form>
             </div>
             
@@ -209,11 +352,10 @@ function findProductImage($productId, $categoryName, $productName) {
             }
 
 
-
             // Cena dostawy (przykład: różne ceny na weekend)
             const deliveryCosts = {
-                weekday: 15,
-                weekend: 25,
+                weekday: 0,
+                weekend: 10,
             };
 
             const deliveryCities = {
@@ -251,26 +393,59 @@ function findProductImage($productId, $categoryName, $productName) {
                 const houseNumber = document.getElementById("houseNumber");
                 const city = document.getElementById("city");
                 const postalCode = document.getElementById("postalCode");
+                const pickupOption = document.getElementById("pickupOption");
 
                 const nameRegex = /^[a-zA-ZżźćńółęąśŻŹĆĄŚĘŁÓŃ]+$/;
                 const postalCodeRegex = /^\d{2}-\d{3}$/;
 
-                if (
-                    !nameRegex.test(firstName.value) ||
-                    !nameRegex.test(lastName.value) ||
-                    !nameRegex.test(city.value)
-                ) {
-                    alert("Pola Imię, Nazwisko i Miasto mogą zawierać tylko litery.");
-                    return false;
-                }
-
-                if (!postalCodeRegex.test(postalCode.value)) {
-                    alert("Kod pocztowy musi być w formacie XX-XXX.");
-                    return false;
+                if(!pickupOption.checked) {
+                    if(
+                        !nameRegex.test(firstName.value) ||
+                        !nameRegex.test(lastName.value) ||
+                        !nameRegex.test(city.value)
+                    ) {
+                        alert("Pola Imię, Nazwisko i Miasto mogą zawierać tylko litery.");
+                        return false;
+                    }
+                    if (!postalCodeRegex.test(postalCode.value)) {
+                        alert("Kod pocztowy musi być w formacie XX-XXX.");
+                        return false;
+                    }
+                } else {
+                    if(
+                        !nameRegex.test(firstName.value) ||
+                        !nameRegex.test(lastName.value)
+                    ) {
+                        alert("Pola Imię i Nazwisko mogą zawierać tylko litery.");
+                        return false;
+                    }
                 }
 
                 return true;
             }
+
+            // funkcja ukrywania pól adresu po zaznaczeniu checkboxa, nie działa - wartości się czyczczą ale pola nie znikają
+            const pickupOption = document.getElementById("pickupOption");
+            const addressFields = document.querySelectorAll("#street, #houseNumber, #apartmentNumber, #city, #postalCode");
+            const deliveryCostField = document.getElementById("deliveryCost");
+
+            pickupOption.addEventListener("change", () => {
+                if (pickupOption.checked) {
+                    addressFields.forEach(field => {
+                        field.value = "";
+                        field.required = false;
+                        field.closest(".form-group").classList.add("hidden");
+                    });
+                    deliveryCostField.value = "0";
+                    updateSummary();
+                } else {
+                    addressFields.forEach(field => {
+                        field.closest(".form-group").classList.remove("hidden");
+                        field.required = true;
+                    });
+                    updateSummary();
+                }
+            });
 
             // Aktualizacja podsumowania zakupów
             function updateSummary() {
@@ -281,29 +456,29 @@ function findProductImage($productId, $categoryName, $productName) {
                     const itemElement = document.createElement("div");
                     itemElement.classList.add("summary-item");
                     itemElement.innerHTML = `
-                <img src="${item.img}" alt="${item.name}"  width="50" height="50">
-                <div class="details">
-                    <strong>${item.name}</strong>
-                    <p>Cena: ${item.price} zł</p>
-                    <p>Ilość: ${item.quantity}</p>
-                </div>
-            `;
+                    <img src="${item.img}" alt="${item.name}" width="50" height="50">
+                    <div class="details">
+                        <strong>${item.name}</strong>
+                        <p>Cena: ${item.price} zł</p>
+                        <p>Ilość: ${item.quantity}</p>
+                    </div>
+                `;
                     summaryList.appendChild(itemElement);
                     total += parseFloat(item.total);
                 });
 
-                // Uwzględnij koszt dostawy
-                const deliveryDate = document.getElementById("deliveryDate").value;
-                const deliveryCity = document.getElementById("city").value.trim();
+                const pickupOptionChecked = document.getElementById("pickupOption").checked;
+                let deliveryCost = pickupOptionChecked ? 0 : calculateDeliveryCost(
+                    document.getElementById("deliveryDate").value,
+                    document.getElementById("city").value.trim()
+                );
 
-                let deliveryCost = 0;
-                if (total <= 200) {
-                    deliveryCost = calculateDeliveryCost(deliveryDate, deliveryCity);
-                }
-
+                // Zaktualizuj ukryte pole i podsumowanie
+                document.getElementById("deliveryCost").value = deliveryCost.toFixed(2);
                 total += deliveryCost;
                 summaryTotal.textContent = `Razem (brutto): ${total.toFixed(2)} zł`;
             }
+
 
             // Funkcja do obliczania kosztu dostawy
             function calculateDeliveryCost(date,city) {
@@ -321,13 +496,13 @@ function findProductImage($productId, $categoryName, $productName) {
 
             // Walidacja formularza
             deliveryForm.addEventListener("submit", (event) => {
-                event.preventDefault();
-                if (validateForm()) {
-                    alert("Zamówienie zostało złożone!");
-                    deliveryForm.reset();
+                if (!validateForm()) {
+                    event.preventDefault();
+                } else {
                     updateSummary();
                 }
             });
+
 
             // Obsługa zmiany daty dostawy
             document

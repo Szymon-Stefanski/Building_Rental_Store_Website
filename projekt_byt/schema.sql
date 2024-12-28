@@ -60,6 +60,10 @@ CREATE TABLE Opinie_Produktow (
 CREATE TABLE Zamowienia (
     zamowienie_id INT AUTO_INCREMENT PRIMARY KEY,
     uzytkownik_id INT,
+	odbiorca_imie VARCHAR(50),
+	odbiorca_nazwisko VARCHAR(50),
+	odbiorca_email VARCHAR(100),
+	adres TEXT,
     data_zamowienia DATE NOT NULL,
     status VARCHAR(50) NOT NULL,
     FOREIGN KEY (uzytkownik_id) REFERENCES Uzytkownicy(uzytkownik_id) ON DELETE CASCADE
@@ -110,8 +114,8 @@ CREATE TABLE Transakcje (
 
 
 INSERT INTO Uzytkownicy (imie, nazwisko, email, login, haslo, numer_telefonu, adres, rola) VALUES
-('admin', 'admin', 'examplemail@g.pl', 'admin', '$2y$10$eao35AcfQ6kLjBv6piRueu6tspT4EhDCun3L0np4oZ2zeTrOJYx3m', 123456789, "55-555, Gdansk, Example street, 1/2", 'admin'),
-('mod', 'mod', 'examplemail2@g.pl', 'mod', '$2y$10$SHdD2vmY/Ml4P296a6xf8ecRyftAGAUcXPAHxcZ/x4vvjwaQmmRFy', 123456789, "55-555, Gdansk, Example street, 1/2", 'mod');
+('admin', 'admin', 'examplemail@g.pl', 'admin', '$2y$10$eao35AcfQ6kLjBv6piRueu6tspT4EhDCun3L0np4oZ2zeTrOJYx3m', 123456789, "55-555, Gdańsk, Example street, 1/2", 'admin'),
+('mod', 'mod', 'examplemail2@g.pl', 'mod', '$2y$10$SHdD2vmY/Ml4P296a6xf8ecRyftAGAUcXPAHxcZ/x4vvjwaQmmRFy', 123456789, "55-555, Gdańsk, Example street, 1/2", 'mod');
 
 
 INSERT INTO Kategorie (nazwa_kategorii, opis) VALUES 
