@@ -164,8 +164,24 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
                             <?php endif; ?>
                         </div>
                     </div>
-                    
-                    <a href="#">
+
+                    <?php if ($userRole === 'admin' || $userRole === 'mod'): ?>
+                        <a href="Warehouse/deliveryManagement.php">
+                            <img src="Image/Icon/support.png" class="category-icon"> ZARZĄDZANIE ZAMÓWIENIAMI
+                        </a>
+                        <a href="Warehouse/stockManagement.php">
+                            <img src="Image/Icon/support.png" class="category-icon"> ZARZĄDZANIE STANEM MAGAZYNU
+                        </a>
+                        <!-- W trakcie budowy -->
+                        <a href="#">
+                            <img src="Image/Icon/support.png" class="category-icon"> ZARZĄDZANIE WYPOŻYCZENIAMI
+                        </a>
+                        <!-- W trakcie budowy -->
+                        <a href="#">
+                            <img src="Image/Icon/support.png" class="category-icon"> RAPORTY
+                        </a>
+                    <?php else: ?>
+                        <a href="#">
                         <img src="Image/Icon/brickwall.png" class="category-icon"> BUDOWA
                         <img src="Image/Icon/down-arrow.png" alt="Strzałka w dół" class="arrow-icon">
                     </a>
@@ -175,16 +191,12 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
                     </a>
                     <a href="#">
                         <img src="Image/Icon/rent.png" class="category-icon"> WYPOŻYCZALNIA SPRZĘTU
-                        <img src="Image/Icon/down-arrow.png" alt="Strzałka w dół" class="arrow-icon">
+                    <img src="Image/Icon/down-arrow.png" alt="Strzałka w dół" class="arrow-icon">
                     </a>
-                   
+
                     <a href="#">
                         <img src="Image/Icon/discount.png" class="category-icon"> PROMOCJE
                         <img src="Image/Icon/down-arrow.png" alt="Strzałka w dół" class="arrow-icon">
-                    </a>
-                    <?php if ($userRole === 'admin' || $userRole === 'mod'): ?>
-                    <a href="Warehouse/stockManagement.php">
-                        <img src="Image/Icon/support.png" class="category-icon"> ZARZĄDZANIE STANEM MAGAZYNU
                     </a>
                     <?php endif; ?>
                 </div>

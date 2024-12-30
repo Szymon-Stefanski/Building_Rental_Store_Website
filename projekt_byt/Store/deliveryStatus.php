@@ -46,6 +46,11 @@ $pozycje_stmt = $db->prepare("
 ");
 $pozycje_stmt->execute([$zamowienie_id]);
 $pozycje = $pozycje_stmt->fetchAll(PDO::FETCH_ASSOC);
+
+// Pobieranie roli użytkownika
+$stmt = getDbConnection()->prepare("SELECT rola FROM Uzytkownicy WHERE uzytkownik_id = ?");
+$stmt->execute([$_SESSION['user_id']]);
+$userRole = $stmt->fetchColumn();
 ?>
 
 <!DOCTYPE html>
@@ -96,7 +101,9 @@ $pozycje = $pozycje_stmt->fetchAll(PDO::FETCH_ASSOC);
     <p>Brak pozycji w tym zamówieniu.</p>
 <?php endif; ?>
 
-<?php if (isset($_SESSION['user_id'])):?>
+<?php if (isset($_SESSION['user_id']) AND ($userRole === 'admin' || $userRole === 'mod')):?>
+    <a href="../Warehouse/deliveryManagement.php">Zarządzanie zamówieniami</a>
+<?php elseif(isset($_SESSION['user_id'])): ?>
 <a href="userDeliverys.php">Moje zamówienia</a>
 <?php endif; ?>
 <a href="../index.php">Strona główna</a>

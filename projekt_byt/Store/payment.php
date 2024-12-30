@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['mark_paid'])) {
 }
 
 ?>
-<!-- Strona akutalnie posiada tylko i wyłącznie przycisk zmieniający status w bazie i wysyłający krótki email potwierdzenia zapłaty-->
+<!-- Strona akutalnie jest tylko symulacyjna więc posiada tylko i wyłącznie przycisk zmieniający status w bazie i wysyłający krótki email potwierdzenia zapłaty-->
 <!DOCTYPE html>
 <html lang="pl">
 <head>
