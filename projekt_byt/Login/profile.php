@@ -98,5 +98,6 @@ if (isset($_POST['delete_account'])) {
 
 <a href="logout.php">Wyloguj się</a><br>
 <a href="../index.php">Powrót</a>
+<a href="../Store/userDeliverys.php">Moje zamówienia</a>
 </body>
 </html>

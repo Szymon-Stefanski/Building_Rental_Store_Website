@@ -2,8 +2,6 @@
 session_start();
 require '../database_connection.php';
 include '../email_sender.php';
-
-// wyszukiwanie obrazu produktu
 function findProductImage($productId, $categoryName, $productName) {
     global $pdo;
 
@@ -65,13 +63,14 @@ function findProductImage($productId, $categoryName, $productName) {
                 'street' => $addressParts[2] ?? '',
             ];
 
+            // Rozdziel trzeci element na numer domu i numer mieszkania, jeśli istnieje
             if (strpos($addressParts[3] ?? '', '/') !== false) {
                 list($houseNumber, $apartmentNumber) = explode('/', $addressParts[3]);
                 $_SESSION['user']['house_number'] = $houseNumber;
                 $_SESSION['user']['apartment_number'] = $apartmentNumber;
             } else {
                 $_SESSION['user']['house_number'] = $addressParts[3] ?? '';
-                $_SESSION['user']['apartment_number'] = '';
+                $_SESSION['user']['apartment_number'] = ''; // Brak numeru mieszkania
             }
         }
     }
@@ -183,7 +182,6 @@ function findProductImage($productId, $categoryName, $productName) {
             ]);
         }
 
-		//wysyłanie wiadomości e-mail
         $subject = "Potwierdzenie zamówienia #$orderId";
         $message = "Szanowny/a $firstName $lastName,
 
@@ -218,7 +216,7 @@ function findProductImage($productId, $categoryName, $productName) {
         sendEmail($email, $subject, $message);
 
         header("Location: payment.php?id=$orderId");
-        unset($_SESSION['cart']);
+        unset($_SESSION['cart']); // Wyczyszczenie koszyka po złożeniu zamówienia
         exit;
     } catch (Exception $e) {
         echo "Wystąpił błąd podczas składania zamówienia: " . $e->getMessage();
@@ -321,7 +319,7 @@ function findProductImage($productId, $categoryName, $productName) {
             <div class="summary-container">
                 <h3>Podsumowanie Zakupów</h3>
                 <div id="summaryList">
-                    <!-- Elementy podsumowania dodają się dynamicznie -->
+                    <!-- Elementy podsumowania będą dodawane dynamicznie -->
                 </div>
                 <div class="summary-total" id="summaryTotal">Razem (brutto): 0 zł</div>
             </div>
@@ -475,9 +473,8 @@ function findProductImage($productId, $categoryName, $productName) {
                     document.getElementById("city").value.trim()
                 );
 
-                // Aktualizacja ukrytego pola dla php
+                // Zaktualizuj ukryte pole i podsumowanie
                 document.getElementById("deliveryCost").value = deliveryCost.toFixed(2);
-
                 total += deliveryCost;
                 summaryTotal.textContent = `Razem (brutto): ${total.toFixed(2)} zł`;
             }
@@ -486,10 +483,10 @@ function findProductImage($productId, $categoryName, $productName) {
             // Funkcja do obliczania kosztu dostawy
             function calculateDeliveryCost(date,city) {
                 const deliveryCityCost = deliveryCities[city] || deliveryCities["Inne"];
-                if (!date || !city) return 0;
+                if (!date || !city) return 0; // Jeśli brak daty lub miasta - brak kosztu
 
                 const selectedDate = new Date(date);
-                const dayOfWeek = selectedDate.getDay();
+                const dayOfWeek = selectedDate.getDay(); // 0 = Niedziela, 6 = Sobota
 
                 const weekendCost = deliveryCosts.weekend + deliveryCityCost; // Koszt dostawy w weekendy
                 const weekdayCost = deliveryCosts.weekday + deliveryCityCost; // Koszt dostawy w dni robocze
