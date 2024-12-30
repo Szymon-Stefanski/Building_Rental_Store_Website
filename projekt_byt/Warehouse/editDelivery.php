@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         $conn->commit();
-        header("Location: zamowienia.php");
+        header("Location: deliveryManagement.php");
         exit();
     } catch (Exception $e) {
         $conn->rollBack();
