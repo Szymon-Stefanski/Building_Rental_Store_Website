@@ -1,76 +1,35 @@
 <?php
-    session_start();
-    require 'vendor/autoload.php';
-    require '../database_connection.php';
-    $source = isset($_GET['source']) ? $_GET['source'] : '../index.php';
+session_start();
+require 'vendor/autoload.php';
+require '../database_connection.php';
 
-    // Załaduj zmienne środowiskowe z pliku .env
-    $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
-    $dotenv->load();
+$source = isset($_GET['source']) ? $_GET['source'] : '../index.php';
 
-    // Ustawienia Google API Client
-    $client = new Google_Client();
-    $client->setClientId($_ENV['GOOGLE_CLIENT_ID']);
-    $client->setClientSecret($_ENV['GOOGLE_CLIENT_SECRET']);
-    $client->setRedirectUri($_ENV['GOOGLE_REDIRECT_URI']);
-    $client->addScope(Google_Service_Oauth2::USERINFO_EMAIL);
+// Ładowanie zmiennych środowiskowych
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../');
+$dotenv->load();
 
-    // Sprawdź, czy użytkownik jest już zalogowany za pomocą Google
-    if (isset($_GET['code'])) {
-        try {
-            // Autoryzacja użytkownika z kodem autoryzacyjnym
-            $token = $client->fetchAccessTokenWithAuthCode($_GET['code']);
-
-            if (isset($token['error'])) {
-                throw new Exception("Błąd autoryzacji: " . $token['error']);
-            }
-
-            $_SESSION['access_token'] = $token;
-            header('Location: ' . filter_var($client->getRedirectUri(), FILTER_SANITIZE_URL));
-            exit;
-        } catch (Exception $e) {
-            $error = "Błąd autoryzacji: " . $e->getMessage();
-        }
-    }
-
-    // Jeśli istnieje token dostępu w sesji, ustaw go w kliencie Google
-    if (isset($_SESSION['access_token']) && $_SESSION['access_token']) {
-        $client->setAccessToken($_SESSION['access_token']);
-    }
+// Inicjalizacja klienta Google
+$client = new Google_Client();
+$client->setClientId($_ENV['GOOGLE_CLIENT_ID']);
+$client->setClientSecret($_ENV['GOOGLE_CLIENT_SECRET']);
+$client->setRedirectUri($_ENV['GOOGLE_REDIRECT_URI']);
+$client->addScope(Google_Service_Oauth2::USERINFO_EMAIL);
+$client->addScope(Google_Service_Oauth2::USERINFO_PROFILE);
 
 
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $login = $_POST['username'] ?? '';
-        $password = $_POST['password'] ?? '';
-        $source = isset($_POST['source']) ? $_POST['source'] : '..\index.php';
+// Obsługa już zalogowanego użytkownika
+if (isset($_SESSION['access_token']) && $_SESSION['access_token']) {
+    $client->setAccessToken($_SESSION['access_token']);
+}
 
-        if (empty($login) || empty($password)) {
-            $error = "Wszystkie pola są wymagane.";
-        } else {
-            try {
-                $stmt = getDbConnection()->prepare("SELECT uzytkownik_id, login, haslo FROM uzytkownicy WHERE login = ?");
-                $stmt->execute([$login]);
-                $user = $stmt->fetch();
-
-                if ($user && password_verify($password, $user['haslo'])) {
-                    $_SESSION['user_id'] = $user['uzytkownik_id'];
-                    $_SESSION['username'] = $user['login'];
-                    header("Location: $source");
-                    exit;
-                } else {
-                    $error = "Nieprawidłowa nazwa użytkownika lub hasło.";
-                }
-            } catch (PDOException $e) {
-                $error = "Błąd bazy danych: " . $e->getMessage();
-            }
-        }
-    }
-
-    // Utwórz URL autoryzacji Google, jeśli nie ma tokena
-    if (!isset($authUrl)) {
-        $authUrl = $client->createAuthUrl();
-    }
+// Generowanie URL do autoryzacji, jeśli użytkownik nie jest zalogowany
+if (!isset($authUrl)) {
+    $authUrl = $client->createAuthUrl();
+    error_log("Generowanie URL do autoryzacji Google: " . $authUrl);
+}
 ?>
+
 
 <!DOCTYPE html>
 <html>
