@@ -115,7 +115,11 @@ CREATE TABLE Transakcje (
 
 INSERT INTO Uzytkownicy (imie, nazwisko, email, login, haslo, numer_telefonu, adres, rola) VALUES
 ('admin', 'admin', 'examplemail@g.pl', 'admin', '$2y$10$eao35AcfQ6kLjBv6piRueu6tspT4EhDCun3L0np4oZ2zeTrOJYx3m', 123456789, "55-555, Gdańsk, Example street, 1/2", 'admin'),
-('mod', 'mod', 'examplemail2@g.pl', 'mod', '$2y$10$SHdD2vmY/Ml4P296a6xf8ecRyftAGAUcXPAHxcZ/x4vvjwaQmmRFy', 123456789, "55-555, Gdańsk, Example street, 1/2", 'mod');
+('mod', 'mod', 'examplemail2@g.pl', 'mod', '$2y$10$SHdD2vmY/Ml4P296a6xf8ecRyftAGAUcXPAHxcZ/x4vvjwaQmmRFy', 123456789, "55-555, Gdańsk, Example street, 1/2", 'mod'),
+('Ewa', 'Wiśniewska', 'ewa.w@example.com', 'user1', '$2y$10$fblzrGEKuujg4Bx5jnT9P.Kw9INqKOkQSWCgu4IvtORvoC6CC7ru6', 123456789, "55-555, Gdańsk, Example street, 2/3", 'user'),
+('Piotr', 'Zieliński', 'piotr.z@example.com', 'user2', '$2y$10$fblzrGEKuujg4Bx5jnT9P.Kw9INqKOkQSWCgu4IvtORvoC6CC7ru6', 123456789, "55-555, Gdańsk, Example street, 2/4", 'user'),
+('Karolina', 'Kowalczyk', 'karolina.k@example.com', 'user3', '$2y$10$fblzrGEKuujg4Bx5jnT9P.Kw9INqKOkQSWCgu4IvtORvoC6CC7ru6', 123456789, "55-555, Gdańsk, Example street, 4/2", 'user'),
+('Tomasz', 'Lis', 'tomasz.l@example.com', 'user4', '$2y$10$fblzrGEKuujg4Bx5jnT9P.Kw9INqKOkQSWCgu4IvtORvoC6CC7ru6', 123456789, "55-555, Gdańsk, Example street, 4/4", 'user');
 
 
 INSERT INTO Kategorie (nazwa_kategorii, opis) VALUES 
@@ -223,3 +227,29 @@ INSERT INTO Produkty (nazwa_produktu, kategoria_id, dostawca_id, cena, ilosc_w_m
 ('Odkurzacz przemysłowy 1600 W', 4, 3, 1500.00, 100, 'Jeśli masz trudności z doczyszczeniem przestrzeni zwykłym odkurzaczem, warto zastanowić się nad profesjonalnym urządzeniem, który poradzi sobie nawet z ciężkimi zabrudzeniami. Odkurzacz przemysłowy to sprzęt, który znajdzie swoje zastosowanie przy usuwaniu szczególnie trudnego rodzaju zanieczyszczeń. Technologia dwóch kaset filtrujących umożliwia otrząsanie jednego z filtrów, podczas ciągłej pracy drugiego. Dzięki temu zaoszczędzisz czas i koszt pracy. Urządzenie umożliwia pracę z pyłami bez konieczności montaży worków. Odkurzacz przemysłowy wyposażony jest w funkcję pracy na mokro, podczas której nie musisz demontować filtrów. To urządzenie zaprojektowane do nieprzerywanej, wymagającej pracy.'),
 ('Wiertnica do betonu 2000 W', 4, 3, 2500.00, 100, 'Uniwersalna wiertnica diamentowa do pracy ze statywem lub z ręki. Wiertnica ma moc 2200W i pracuje z prędkością 0-1200 obr/min. Umożliwia wiercenie otworów w bardzo szerokim zakresie, wynoszącym od 30mm do 180mm. Maszynę wyposażono w sprzęgło, które dzięki płynnej pracy nie powoduje szarpnięć urządzenia podczas wycinania otworów w żelbecie. Uchwyt wiertła o średnicy 1 1/4" cala jest standardowym uchwytem, pasującym do wszystkich wierteł dostępnych na rynku. W komplecie z urządzeniem dołączony jest statyw wyposażony w przekładnię, dzięki któremu wiercenie w twardych materiałach jak granit czy beton, nie wymaga użycia siły.'),
 ('Drabina teleskopowa 5 m', 4, 3, 1000.00, 100, 'Szukasz kompaktowego, lekkiego, łatwego w transporcie i absolutnie uniwersalnego narzędzia do pracy na wysokości? Drabina teleskopowa z łatwością spełni wszystkie Twoje oczekiwania. Nowoczesna konstrukcja składająca się z aluminiowych rur o różnej średnicy umożliwia złożenie drabiny do niewiarygodnie wręcz małych rozmiarów. Elegancki, czarny pokrowiec ułatwi transport i przechowywanie Twojej nowej maszyny. Od dzisiaj nie musisz posiadać warsztatu, komórki ani nawet piwnicy. Nie potrzebujesz specjalnych uchwytów do transportu drabiny - wsuniesz ją pod łóżko, schowasz do szafy lub zostawisz w bagażniku swojego samochodu, a w razie potrzeby po prostu spakujesz ją w pokrowiec i przeniesiesz w miejsce pracy. ');
+
+-- Przykładowe zamówienia
+INSERT INTO zamowienia (zamowienie_id, uzytkownik_id, odbiorca_imie, odbiorca_nazwisko, odbiorca_email, adres, data_zamowienia, status) VALUES (1, 3, 'Ewa', 'Wiśniewska', 'ewa.w@example.com', '55-555, Kraków, ul. Lipowa 12', '2024-12-02', 'Dostarczone');
+INSERT INTO zamowienia (zamowienie_id, uzytkownik_id, odbiorca_imie, odbiorca_nazwisko, odbiorca_email, adres, data_zamowienia, status) VALUES (2, 3, 'Ewa', 'Wiśniewska', 'ewa.w@example.com', 'Odbiór osobisty w sklepie', '2024-12-04', 'Dostarczone');
+INSERT INTO zamowienia (zamowienie_id, uzytkownik_id, odbiorca_imie, odbiorca_nazwisko, odbiorca_email, adres, data_zamowienia, status) VALUES (3, 4, 'Piotr', 'Zieliński', 'piotr.z@example.com', '55-555, Warszawa, ul. Wiślana 3', '2024-12-10', 'Dostarczone');
+INSERT INTO zamowienia (zamowienie_id, uzytkownik_id, odbiorca_imie, odbiorca_nazwisko, odbiorca_email, adres, data_zamowienia, status) VALUES (4, 4, 'Marek', 'Kowalski', 'marek.k@example.com', 'Odbiór osobisty w sklepie', '2024-12-12', 'Dostarczone');
+INSERT INTO zamowienia (zamowienie_id, uzytkownik_id, odbiorca_imie, odbiorca_nazwisko, odbiorca_email, adres, data_zamowienia, status) VALUES (5, NULL, 'Katarzyna', 'Wiśniewska', 'katarzyna.w@example.com', '55-555, Gdańsk, ul. Świerkowa 14', '2024-12-21', 'Opłacone');
+INSERT INTO zamowienia (zamowienie_id, uzytkownik_id, odbiorca_imie, odbiorca_nazwisko, odbiorca_email, adres, data_zamowienia, status) VALUES (6, NULL, 'Paweł', 'Nowicki', 'pawel.n@example.com', '55-555, Wrocław, ul. Dębowa 7', '2024-12-26', 'Opłacone');
+INSERT INTO zamowienia (zamowienie_id, uzytkownik_id, odbiorca_imie, odbiorca_nazwisko, odbiorca_email, adres, data_zamowienia, status) VALUES (7, 5, 'Karolina', 'Kowalczyk', 'karolina.k@example.com', '55-555, Katowice, ul. Jasna 15', '2024-12-29', 'Opłacone');
+INSERT INTO zamowienia (zamowienie_id, uzytkownik_id, odbiorca_imie, odbiorca_nazwisko, odbiorca_email, adres, data_zamowienia, status) VALUES (8, 5, 'Karolina', 'Kowalczyk', 'karolina.k@example.com', 'Odbiór osobisty w sklepie', '2025-01-05', 'Opłacone');
+INSERT INTO zamowienia (zamowienie_id, uzytkownik_id, odbiorca_imie, odbiorca_nazwisko, odbiorca_email, adres, data_zamowienia, status) VALUES (9, 6, 'Tomasz', 'Lis', 'tomasz.l@example.com', '55-555, Lublin, ul. Słoneczna 20', '2024-01-07', 'Opłacone');
+INSERT INTO zamowienia (zamowienie_id, uzytkownik_id, odbiorca_imie, odbiorca_nazwisko, odbiorca_email, adres, data_zamowienia, status) VALUES (10, 6, 'Tomasz', 'Lis', 'tomasz.l@example.com', 'Odbiór osobisty w sklepie', '2024-01-11', 'Opłacone');
+
+INSERT INTO pozycje_zamowien (pozycja_id, zamowienie_id, produkt_id, ilosc, cena_za_sztuke) VALUES (1, 1, 1, 2, 21.00);
+INSERT INTO pozycje_zamowien (pozycja_id, zamowienie_id, produkt_id, ilosc, cena_za_sztuke) VALUES (2, 1, 2, 1, 25.00);
+INSERT INTO pozycje_zamowien (pozycja_id, zamowienie_id, produkt_id, ilosc, cena_za_sztuke) VALUES (3, 2, 3, 1, 40.00);
+INSERT INTO pozycje_zamowien (pozycja_id, zamowienie_id, produkt_id, ilosc, cena_za_sztuke) VALUES (4, 3, 2, 3, 25.00);
+INSERT INTO pozycje_zamowien (pozycja_id, zamowienie_id, produkt_id, ilosc, cena_za_sztuke) VALUES (5, 4, 23, 4, 5.00);
+INSERT INTO pozycje_zamowien (pozycja_id, zamowienie_id, produkt_id, ilosc, cena_za_sztuke) VALUES (6, 5, 26, 2, 8.00);
+INSERT INTO pozycje_zamowien (pozycja_id, zamowienie_id, produkt_id, ilosc, cena_za_sztuke) VALUES (7, 6, 80, 1, 1000.00);
+INSERT INTO pozycje_zamowien (pozycja_id, zamowienie_id, produkt_id, ilosc, cena_za_sztuke) VALUES (8, 7, 66, 4, 10.00);
+INSERT INTO pozycje_zamowien (pozycja_id, zamowienie_id, produkt_id, ilosc, cena_za_sztuke) VALUES (9, 7, 69, 2, 30.00);
+INSERT INTO pozycje_zamowien (pozycja_id, zamowienie_id, produkt_id, ilosc, cena_za_sztuke) VALUES (10, 8, 76, 1, 700.00);
+INSERT INTO pozycje_zamowien (pozycja_id, zamowienie_id, produkt_id, ilosc, cena_za_sztuke) VALUES (11, 9, 50, 2, 270.00);
+INSERT INTO pozycje_zamowien (pozycja_id, zamowienie_id, produkt_id, ilosc, cena_za_sztuke) VALUES (12, 9, 51, 1, 30.00);
+INSERT INTO pozycje_zamowien (pozycja_id, zamowienie_id, produkt_id, ilosc, cena_za_sztuke) VALUES (13, 10, 59, 3, 80.00);
