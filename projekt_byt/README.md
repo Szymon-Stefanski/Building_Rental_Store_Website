@@ -29,3 +29,9 @@ II PHPMailer - automatyczne wysyłanie emaili:
     Instalacja poprzez composer:
 
     composer require phpmailer/phpmailer
+
+III PHPUnit - framework do testowania funkcji:
+
+    Instalacja poprzez composer:
+
+    composer require --dev phpunit/phpunit
