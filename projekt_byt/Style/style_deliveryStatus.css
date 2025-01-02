@@ -1,14 +1,294 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    color: #333;
+    background-color: #f9f9f9;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+header {
+    background-color: #55aa29;
+    padding: 20px 0;
+}
+
+header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 24px;
+    color: #fff;
+}
+
+header nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+header nav ul li {
+    margin-left: 20px;
+}
+
+header nav ul li a {
+    display: inline-block;
+    padding: 10px 20px;
+    background-color: #1a8e00; /* Zielone tło */
+    color: #fff; /* Biały tekst */
+    text-decoration: none; /* Usuń podkreślenie */
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 5px; /* Zaokrąglone rogi */
+    transition: all 0.3s ease; /* Efekt przejścia */
+}
+
+header nav ul li a:hover {
+    background-color: #145f00; /* Ciemniejszy zielony przy najechaniu */
+    color: #eafce0; /* Jaśniejszy odcień tekstu */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Lekki cień przy najechaniu */
+}
+
+
+header nav ul li a:active {
+    background-color: #0f4800; /* Najciemniejszy zielony przy kliknięciu */
+    transform: scale(0.98); /* Lekko zmniejsz przycisk */
+}
+
+main {
+    background-color: #fff;
+    padding: 20px;
+    margin-top: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+h1, h2 {
+    color: #000;
+}
 
 table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
 }
-th, td {
-    border: 1px solid #ddd;
-    padding: 8px;
+
+table th, table td {
+    border: 1px solid #ccc;
+    padding: 10px;
     text-align: left;
 }
-th {
-    background-color: #f4f4f4;
+
+table th {
+    background-color: #1a8e00;
+    color: #fff;
+}
+
+table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+
+
+/* Styl dla sekcji "Pozycje zamówienia" */
+.order-items {
+    padding: 20px;
+    border: 2px solid #ddd; /* Lekka ramka wokół sekcji */
+    border-radius: 8px;
+    background-color: #f9f9f9; /* Jasne tło dla sekcji */
+    margin-bottom: 20px; /* Odstęp między sekcjami */
+}
+
+.order-items table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.order-items th, .order-items td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.order-items th {
+    background-color: #55aa29; /* Tło dla nagłówków */
+    font-weight: bold;
+}
+
+/* Styl dla komunikatu "Brak pozycji w tym zamówieniu" */
+.order-items p {
+    font-size: 16px;
+    color: #ff3333; /* Czerwony tekst dla komunikatu */
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* Styl dla sekcji "Dane zamówienia" */
+.order-details {
+    padding: 20px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    margin-bottom: 20px;
+}
+
+/* Stylowanie statusu zamówienia */
+.order-details p strong {
+    font-weight: bold;
+}
+
+.order-details p {
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.order-details p span {
+    font-weight: normal; /* Wyrównanie tekstu */
+}
+
+/* Kolorowanie statusu zamówienia */
+.order-details p.status {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.order-details p.status.dostarczone {
+    color: green; /* Kolor zielony dla "Dostarczone" */
+}
+
+.order-details p.status.oplacone {
+    color: #e0d200; /* Kolor żółty dla "Opłacone" */
+}
+
+.order-details p.status.default {
+    color: grey; /* Domyślny kolor, jeśli status nie jest "Dostarczone" ani "Opłacone" */
+}
+
+
+
+.footer {
+    background-color: #333;
+    color: #fff;
+    padding: 40px 20px;
+}
+
+.footer-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.footer-contact {
+    align-content: center;
+    margin-left: 250px;
+}
+
+.footer-container > div {
+    flex: 1;
+    min-width: 200px;
+}
+
+.footer h3 {
+    font-size: 16px;
+    margin-bottom: 15px;
+}
+
+.footer ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer ul li {
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.footer ul li a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.footer ul li a:hover {
+    text-decoration: underline;
+}
+
+
+
+
+.footer-bottom {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 20px 0;
+    border-top: 2px solid #f90;
+    margin-top: 20px;
+}
+
+
+.footer-bottom .social-media,
+.footer-bottom .payment-methods {
+    flex: 1; 
+    text-align: center; 
+}
+
+
+
+.social-media a {
+    display: inline-block;
+    width: 40px; 
+    height: 40px;
+    line-height: 40px; 
+    text-align: center;
+    border: 2px solid #28a745; 
+    border-radius: 50%; 
+    color: #fff; 
+    font-size: 20px; 
+    margin: 0 5px; 
+    transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.social-media a:hover {
+    background-color: #28a745; 
+    color: #fff; 
+    box-shadow: 0 0 10px rgba(40, 167, 69, 0.8);
+}
+
+.payment-methods img {
+    width: 80px; 
+    height: auto; 
+    margin: 0 10px; 
+    object-fit: contain; 
+}
+
+.payment-methods {
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    gap: 10px; 
+    margin-top: 20px; 
+    flex-wrap: wrap; 
+}
+
+.reverse-colors {
+    filter: invert(1); 
+}
+
+.footer-copyright {
+    flex-basis: 100%; 
+    text-align: center; 
+    margin-top: 20px;
+    font-size: 18px;
+    color: #bbb; 
 }

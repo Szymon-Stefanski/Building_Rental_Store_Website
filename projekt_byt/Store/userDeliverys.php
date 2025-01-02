@@ -1,7 +1,4 @@
 <?php
-session_start();
-require '../database_connection.php';
-
 if (!isset($_SESSION['user_id'])) {
     header('Location: login.php');
     exit;
@@ -20,15 +17,6 @@ $query->execute([$userID]);
 $results = $query->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
-<!DOCTYPE html>
-<html lang="pl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Moje Zamówienia</title>
-    <link rel="stylesheet" href="../Style/style_userDeliverys.css">
-</head>
-<body>
 <h1>Moje Zamówienia</h1>
 <?php if (count($results) > 0): ?>
     <table>
@@ -43,11 +31,11 @@ $results = $query->fetchAll(PDO::FETCH_ASSOC);
         <tbody>
         <?php foreach ($results as $row): ?>
             <tr>
-                <td><?php echo $row['adres']; ?></td>
-                <td><?php echo $row['data_zamowienia']; ?></td>
-                <td><?php echo $row['status']; ?></td>
+                <td><?php echo htmlspecialchars($row['adres']); ?></td>
+                <td><?php echo htmlspecialchars($row['data_zamowienia']); ?></td>
+                <td><?php echo htmlspecialchars($row['status']); ?></td>
                 <td>
-                    <a href="deliveryStatus.php?id=<?php echo $row['zamowienie_id']; ?>">Szczegóły zamówienia</a>
+                    <a href="../Store/deliveryStatus.php?id=<?php echo $row['zamowienie_id']; ?>">Szczegóły zamówienia</a>
                 </td>
             </tr>
         <?php endforeach; ?>
@@ -56,7 +44,3 @@ $results = $query->fetchAll(PDO::FETCH_ASSOC);
 <?php else: ?>
     <p>Nie masz jeszcze żadnych zamówień.</p>
 <?php endif; ?>
-<a href="../index.php">Strona główna</a>
-<a href="../Login/profile.php?=<?= $userID ?>">Mój profil</a>
-</body>
-</html>
