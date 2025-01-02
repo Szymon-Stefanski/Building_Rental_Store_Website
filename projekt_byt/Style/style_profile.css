@@ -1,0 +1,586 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    margin: 0;
+    padding: 0;
+    color: #333;
+    
+}
+
+header {
+    background-color: #55aa29;
+    color: #fff;
+    padding: 10px 20px;
+    text-align: center;
+}
+
+main {
+    max-width: 800px;
+    margin: 20px auto;
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+h1, h2 {
+    color: #fff;
+}
+
+/* User info table */
+.user-info table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 16px;
+}
+
+.user-info table th, .user-info table td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+.user-info table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.user-info table tr:hover {
+    background-color: #f1f1f1;
+}
+
+.user-info table th {
+    background-color: #55aa29;
+    color: white;
+    font-weight: bold;
+}
+
+/* Buttons */
+.actions {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.actions .btn {
+    display: inline-block;
+    padding: 10px 20px;
+    margin: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 5px;
+    text-decoration: none;
+    color: white;
+    transition: background-color 0.3s ease;
+}
+
+.actions .btn-logout {
+    background-color: #ff8700;
+}
+
+.actions .btn-logout:hover {
+    background-color: #cf8700;
+}
+
+.actions .btn-back {
+    background-color: #28a745;
+}
+
+.actions .btn-back:hover {
+    background-color: #1e7e34;
+}
+
+.actions .btn-orders {
+    background-color: #007bff;
+}
+
+.actions .btn-orders:hover {
+    background-color: #0056b3;
+}
+
+
+/* Formularz edycji danych */
+.edit-form {
+    margin: 20px 0;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.edit-form h2 {
+    color: #007bff;
+    margin-bottom: 20px;
+}
+
+.edit-form .form-group {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.edit-form .form-group label {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.edit-form .form-group input,
+.edit-form .form-group textarea {
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.edit-form .form-group textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.edit-form .form-actions {
+    text-align: right;
+}
+
+.edit-form .btn-save {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.edit-form .btn-save:hover {
+    background-color: #0056b3;
+}
+
+
+
+/* Sekcja "Usuń konto" */
+.delete-account {
+    margin: 20px 0;
+    padding: 20px;
+    background-color: #fff3f3;
+    border: 1px solid #ffcccc;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.delete-account h2 {
+    color: #cc0000;
+    margin-bottom: 20px;
+}
+
+.delete-account .form-group {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+form label[for="password"] {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #cc0000;
+}
+
+/* Stylizacja pola input */
+form input[type="password"] {
+    padding: 12px;
+    font-size: 16px;
+    color: #333;
+    border: 2px solid #ffcccc;
+    border-radius: 5px;
+    width: 100%;
+    box-sizing: border-box;
+    background-color: #ffe6e6;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+form input[type="password"]:focus {
+    border-color: #ff9999;
+    background-color: #fffafa;
+    outline: none;
+}
+
+
+.delete-account .form-actions {
+    text-align: right;
+}
+/* Panel boczny */
+
+.sidebar {
+    width: 250px;
+    background-color: #e7ebdd;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    font-family: Arial, sans-serif;
+    position: fixed; 
+    height: 230px; 
+    margin-top: 80px;
+    left: 0;
+    z-index: 1000;
+    transition: transform 0.3s ease;
+}
+
+
+.sidebar .menu-item .mirror-icon {
+    transform: scaleX(-1); 
+    transition: transform 0.3s ease; 
+}
+
+.sidebar .menu-item .mirror-icon:hover {
+    transform: scaleX(1); 
+}
+.menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.menu-item {
+    margin-bottom: 15px;
+}
+
+.menu-item:last-child {
+    margin-bottom: 0;
+}
+
+.menu-item a {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: #333;
+    font-size: 16px;
+    font-weight: 500;
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.menu-item a:hover {
+    background-color: #eafce0;
+    color: #1a8e00;
+}
+
+.menu-item a.active  {
+    background-color: #99d98c;
+    color: #fff;
+}
+
+.menu-item .icon {
+    margin-right: 10px;
+    font-size: 20px;
+}
+
+.menu-item.logout a {
+    color: #d90429;
+    font-weight: bold;
+}
+
+.menu-item.logout a:hover {
+    background-color: #ffcccc;
+    color: #a00000;
+}
+
+/* Stylizacja ikon */
+.sidebar .menu-item .icon {
+    display: inline-block;
+    width: 24px; 
+    height: 24px; 
+    margin-right: 10px; 
+    text-align: center; 
+}
+
+.sidebar .menu-item .icon img {
+    max-width: 100%;
+    max-height: 100%;
+    display: block;
+    object-fit: contain;
+}
+
+
+/* Stylizacja przycisku */
+form button[name="delete_account"] {
+    background-color: #cc0000;
+    color: white;
+    border: none;
+    padding: 12px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-radius: 5px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    margin-top: 10px;
+}
+
+form button[name="delete_account"]:hover {
+    background-color: #990000;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+}
+
+form button[name="delete_account"]:active {
+    transform: translateY(0);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.footer {
+    background-color: #333;
+    color: #fff;
+    padding: 40px 20px;
+}
+
+.footer-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.footer-contact {
+    align-content: center;
+    margin-left: 250px;
+}
+
+.footer-container > div {
+    flex: 1;
+    min-width: 200px;
+}
+
+.footer h3 {
+    font-size: 16px;
+    margin-bottom: 15px;
+}
+
+.footer ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer ul li {
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.footer ul li a {
+    color: #fff;
+    text-decoration: none;
+}
+
+.footer ul li a:hover {
+    text-decoration: underline;
+}
+
+
+
+
+.footer-bottom {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 20px 0;
+    border-top: 2px solid #f90;
+    margin-top: 20px;
+}
+
+
+.footer-bottom .social-media,
+.footer-bottom .payment-methods {
+    flex: 1; 
+    text-align: center; 
+}
+
+
+
+.social-media a {
+    display: inline-block;
+    width: 40px; 
+    height: 40px;
+    line-height: 40px; 
+    text-align: center;
+    border: 2px solid #28a745; 
+    border-radius: 50%; 
+    color: #fff; 
+    font-size: 20px; 
+    margin: 0 5px; 
+    transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.social-media a:hover {
+    background-color: #28a745; 
+    color: #fff; 
+    box-shadow: 0 0 10px rgba(40, 167, 69, 0.8);
+}
+
+.payment-methods img {
+    width: 80px; 
+    height: auto; 
+    margin: 0 10px; 
+    object-fit: contain; 
+}
+
+.payment-methods {
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    gap: 10px; 
+    margin-top: 20px; 
+    flex-wrap: wrap; 
+}
+
+.reverse-colors {
+    filter: invert(1); 
+}
+
+.footer-copyright {
+    flex-basis: 100%; 
+    text-align: center; 
+    margin-top: 20px;
+    font-size: 18px;
+    color: #bbb; 
+}
+
+main.has-deliverys {
+    min-height: 70vh; 
+    padding-bottom: 20px; 
+}
+
+/* Ogólny styl dla sekcji "Moje Zamówienia" */
+#user-deliverys {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+}
+
+#user-deliverys h1 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Styl dla tabelki */
+#user-deliverys table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0 auto;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+#user-deliverys th, #user-deliverys td {
+    padding: 12px 15px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+#user-deliverys th {
+    background-color: #99d98c;
+    color: #fff;
+    font-weight: bold;
+}
+
+#user-deliverys tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+#user-deliverys tr:hover {
+    background-color: #eafce0;
+}
+
+/* Styl dla linków w kolumnie Szczegóły */
+#user-deliverys a {
+    color: #1a8e00;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+#user-deliverys a:hover {
+    color: #0f7300;
+}
+
+/* Styl dla pustej wiadomości */
+#user-deliverys p {
+    font-size: 18px;
+    text-align: center;
+    color: #666;
+    margin-top: 20px;
+}
+
+/* Responsywność dla ekranów poniżej 1440px */
+@media (max-width: 1440px) {
+    
+    /* Widoczny przycisk rozwijania na małych ekranach */
+    .sidebar-toggle {
+        display: block;
+    }
+
+    .sidebar.collapsed {
+        transform: translateX(-100%);
+    }
+
+    /* Zmiany po kliknięciu w przycisk rozwijania */
+    .sidebar.open {
+        transform: translateX(0); 
+    }
+
+    /* Styl przycisku rozwijania */
+    .sidebar-toggle {
+        position: fixed;
+        top: 182px;
+        left: 0px; 
+        background-color: #28a745;
+        color: #fff;
+        font-size: 24px;
+        border: none;
+        padding: 10px;
+        border-radius: 0%;
+        border-top-right-radius: 25%;
+        border-bottom-right-radius: 25%;
+        cursor: pointer;
+        z-index: 1100;
+        width: 40px;
+        height: 272px;
+        transition: left 0.3s ease; 
+    }
+
+    /* Pozycja przycisku, kiedy sidebar jest rozwinięty */
+    .sidebar.open + .sidebar-toggle {
+        left: 292px; 
+    }
+
+    .user-info {
+        margin-left: 60px; 
+        margin-right: 60px;
+    }
+
+    .user-info table {
+        width: calc(100% - 60px); 
+    }
+
+    
+
+    /* Wyśrodkowanie tabeli */
+    .user-info table {
+        margin: 0 auto; 
+    }
+
+    .user-info h2 {
+        text-align: center; 
+    }
+}
+
+@media (min-width: 1441px) {
+    .sidebar-toggle {
+        display: none;
+    }
+}
