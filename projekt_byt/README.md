@@ -35,3 +35,7 @@ III PHPUnit - framework do testowania funkcji:
     Instalacja poprzez composer:
 
     composer require --dev phpunit/phpunit
+
+    Przykład wywołania testu:
+
+    php vendor/bin/phpunit Tests/Test_database/DatabaseTest.php
