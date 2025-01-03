@@ -12,22 +12,47 @@ body {
     padding: 20px;
 }
 
+.logo {
+    flex: 0 0 auto; /* Logo pozostaje po lewej */
+}
+
+.logo img {
+    width: 200px;
+    height: auto;
+    object-fit: contain;
+    box-shadow: 
+        0 0 0 3px gray,  
+        0 0 0 5px gold;
+    border-radius: 10px;
+}
+
+.napis {
+    position: absolute;
+    left: 50%; /* Wyśrodkowanie poziome względem kontenera */
+    transform: translateX(-50%); /* Przesunięcie, aby napis był idealnie na środku */
+    font-size: 42px;
+    font-family: fantasy;
+    color: #fff;
+    text-align: center;
+}
+
+
 header {
     background-color: #55aa29;
     padding: 20px 0;
 }
 
-header .container {
+.header-container {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    align-items: center; /* Wyrównuje elementy w pionie */
+    justify-content: space-between; /* Logo po lewej, napis na środku */
+    padding: 10px;
+    background-color: #55aa29; /* Opcjonalne tło nagłówka */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Opcjonalny cień */
+    position: relative; /* Potrzebne dla centralnego wyśrodkowania napisu */
 }
 
-header h1 {
-    margin: 0;
-    font-size: 24px;
-    color: #fff;
-}
+
 
 header nav ul {
     list-style: none;
