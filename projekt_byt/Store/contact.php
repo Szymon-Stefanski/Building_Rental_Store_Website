@@ -75,10 +75,11 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sklep Budowlany</title>
+    <title>Sklep Budowlany Budex</title>
     <link rel="stylesheet" href="../Style/style_contact.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="../Image/Icon/budex.png">
 </head>
 <body>
 <!-- Główny kontener strony -->
@@ -111,7 +112,9 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
 
         <div class="header-container">
             <div class="logo">
-                <img src="../Image/Icon/budex.png" alt="Logo sklepu" />
+                <a href="../index.php">
+                    <img src="../Image/Icon/budex.png" alt="Logo sklepu" />
+                </a>
             </div>
             <div class="search-bar">
                 <input type="text" placeholder="Wpisz nazwę lub kod produktu..." id="search-input" />
@@ -120,6 +123,14 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
                     Szukaj
                 </button>
             </div>
+            <div class="header-favorites">
+                    <a href="favorites.php">
+                        <div class="header-favorites-icon">
+                            <img src="../Image/Icon/favourite.png" alt="Ulubione">
+                            <span class="header-favorite-count">0</span>
+                        </div>
+                    </a>
+                </div>
             <div class="cart-info">
                     <span style="font-weight: bold; text-align: center; margin-left: 15px;">Koszyk:<span id="total-price" style="margin-right: 10px; padding-left: 5px;"><?= number_format($totalPrice, 2) ?> zł</span><!--</p>-->
                     <?php
