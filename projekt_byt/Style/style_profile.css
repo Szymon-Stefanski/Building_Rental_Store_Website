@@ -7,11 +7,14 @@ body {
     
 }
 
-header {
-    background-color: #55aa29;
-    color: #fff;
-    padding: 10px 20px;
-    text-align: center;
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 10px;
+    background-color: rgba(255, 120, 54, 0.5);
+    flex-wrap: wrap; /* Pozwala na zawijanie elementów, gdy jest to konieczne */
+    gap: 20px; /* Odstępy między elementami w kontenerze */
 }
 
 main {
@@ -516,6 +519,42 @@ main.has-deliverys {
     margin-top: 20px;
 }
 
+.header-container {
+    display: flex;
+    align-items: center; /* Wyrównuje elementy w pionie */
+    justify-content: space-between; /* Logo po lewej, napis na środku */
+    padding: 10px;
+    background-color: #55aa29; /* Opcjonalne tło nagłówka */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Opcjonalny cień */
+    position: relative; /* Potrzebne dla centralnego wyśrodkowania napisu */
+}
+
+.logo {
+    flex: 0 0 auto; /* Logo pozostaje po lewej */
+}
+
+.logo img {
+    width: 200px;
+    height: auto;
+    object-fit: contain;
+    box-shadow: 
+        0 0 0 3px gray,  
+        0 0 0 5px gold;
+    border-radius: 10px;
+}
+
+.napis {
+    position: absolute;
+    left: 50%; /* Wyśrodkowanie poziome względem kontenera */
+    transform: translateX(-50%); /* Przesunięcie, aby napis był idealnie na środku */
+    font-size: 42px;
+    font-family: fantasy;
+    color: #fff;
+    text-align: center;
+}
+
+
+
 /* Responsywność dla ekranów poniżej 1440px */
 @media (max-width: 1440px) {
     
@@ -536,7 +575,7 @@ main.has-deliverys {
     /* Styl przycisku rozwijania */
     .sidebar-toggle {
         position: fixed;
-        top: 182px;
+        top: 222px;
         left: 0px; 
         background-color: #28a745;
         color: #fff;

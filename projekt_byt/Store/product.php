@@ -92,89 +92,100 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Szczegóły Produktu</title>
+    <title>Sklep Budowlany Budex</title>
     <link rel="stylesheet" href="../Style/style_product.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <link rel="icon" type="image/png" href="../Image/Icon/budex.png">
 </head>
 <body>
-<!-- Nagłówek strony -->
-<header class="header">
-    <div class="top-bar">
-        <div class="top-links">
-            <a href="deliveryCost.php">Koszty dostawy</a>
-            <a href="reclamation.php">Reklamacje i zwroty</a>
-            <a href="contact.php">Kontakt</a>
-        </div>
-        <div class="language-currency">
-            <?php if (isset($_SESSION['user_id'])): ?>
-                <?php
-                $username = ($_SESSION['username']);
-                ?>
-                <p><a href="../login/profile.php?id=<?php echo $_SESSION['user_id']; ?>">
-                        Witaj <?php echo $username; ?> !
-                    </a></p>
-            <?php else: ?>
-                <a href="../Login/login.php?source=<?php echo $current_url;?>">
-                    <img src="../Image/Icon/user.png" alt="logowanie">
-                    Logowanie
-                </a>
-            <?php endif; ?>
-        </div>
-    </div>
-
-    <div class="header-container">
-        <div class="logo">
-            <img src="../Image/Icon/budex.png" alt="Logo sklepu" />
-        </div>
-        <div class="search-bar">
-            <input type="text" placeholder="Wpisz nazwę lub kod produktu..." id="search-input" />
-            <button id="search-button">
-                <img src="../Image/Icon/magnifying-glass.png" alt="Szukaj" class="search-icon">
-                Szukaj
-            </button>
-        </div>
-        <div class="cart-info">
-            <span style="font-weight: bold;">Twój koszyk: <span id="total-price"><?= number_format($totalPrice, 2) ?> zł</span></p>
-            <?php
-            $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
-            ?>
-            <a href="cart.php?source=<?php echo $current_url; ?>"> <!-- Link do strony koszyka -->
-                <div class="cart-icon">
-                    <img src="../Image/Icon/pngegg.png" alt="Koszyk">
-                    <span id="cart-count"><?= $itemCount ?></span> <!-- Liczba produktów w koszyku -->
+    <div class="container">
+        <header class="header">
+            <div class="top-bar">
+                <div class="top-links">
+                    <a href="deliveryCost.php">Koszty dostawy</a>
+                    <a href="reclamation.php">Reklamacje i zwroty</a>
+                    <a href="contact.php">Kontakt</a>
                 </div>
-            </a>
-        </div>
-    </div>
+                <div class="language-currency">
+                    <?php if (isset($_SESSION['user_id'])): ?>
+                        <?php
+                        $username = ($_SESSION['username']);
+                        ?>
+                        <p><a href="../login/profile.php?id=<?php echo $_SESSION['user_id']; ?>">
+                                Witaj <?php echo $username; ?> !
+                            </a></p>
+                    <?php else: ?>
+                        <a href="../Login/login.php?source=<?php echo $current_url;?>">
+                            <img src="../Image/Icon/user.png" alt="logowanie">
+                            Logowanie
+                        </a>
+                    <?php endif; ?>
+                </div>
+            </div>
+
+            <div class="header-container">
+                <div class="logo">
+                            <a href="../index.php">
+                                <img src="../Image/Icon/budex.png" alt="Logo sklepu" />
+                            </a>
+                        </div>
+                <div class="search-bar">
+                    <input type="text" placeholder="Wpisz nazwę lub kod produktu..." id="search-input" />
+                    <button id="search-button">
+                        <img src="../Image/Icon/magnifying-glass.png" alt="Szukaj" class="search-icon">
+                        Szukaj
+                    </button>
+                </div>
+                <div class="cart-info">
+                    <span style="font-weight: bold; text-align: center; margin-left: 15px;">Twój koszyk: <span id="total-price" style="margin-right: 10px; padding-left: 5px;"><?= number_format($totalPrice, 2) ?> zł</span></p>
+                    <?php
+                    $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
+                    ?>
+                    <a href="cart.php?source=<?php echo $current_url; ?>"> <!-- Link do strony koszyka -->
+                        <div class="cart-icon">
+                            <img src="../Image/Icon/pngegg.png" alt="Koszyk">
+                            <span id="cart-count"><?= $itemCount ?></span> <!-- Liczba produktów w koszyku -->
+                        </div>
+                    </a>
+                </div>
+            </div>
 
 
 
-    <nav class="main-navigation">
-        <button class="category-dropdown">
-            <img src="../Image/Icon/menu.png" alt="Kategoria" class="button-icon"> KATEGORIE
-            <img src="../Image/Icon/down-arrow.png" alt="Strzałka w dół" class="arrow-icon">
-        </button>
-        <div class="nav-links">
-            <a href="#">
-                <img src="../Image/Icon/brickwall.png" class="category-icon"> BUDOWA
-                <img src="../Image/Icon/down-arrow.png" alt="Strzałka w dół" class="arrow-icon">
-            </a>
-            <a href="#">
-                <img src="../Image/Icon/furnace.png" class="category-icon"> INSTALACJE
-                <img src="../Image/Icon/down-arrow.png" alt="Strzałka w dół" class="arrow-icon">
-            </a>
-            <a href="#">
-                <img src="../Image/Icon/rent.png" class="category-icon"> WYPOŻYCZALNIA SPRZĘTU
-                <img src="../Image/Icon/down-arrow.png" alt="Strzałka w dół" class="arrow-icon">
-            </a>
-            <a href="#">
-                <img src="../Image/Icon/discount.png" class="category-icon"> PROMOCJE
-                <img src="../Image/Icon/down-arrow.png" alt="Strzałka w dół" class="arrow-icon">
-            </a>
-        </div>
-    </nav>
-</header>
+            <nav class="main-navigation">
+                
+                <div class="nav-links">
+                    <a href="../index.php" class="back">
+                        <img src="../Image/Icon/log-in.png" class="category-icon"> POWRÓT
+                    </a>
+                    <button class="category-dropdown" style="color:white;">
+                        <img src="../Image/Icon/menu.png" alt="Kategoria" class="button-icon"> KATEGORIE
+                        <img src="../Image/Icon/down-arrow.png" alt="Strzałka w dół" class="arrow-icon">
+                    </button>
+                    <a href="#">
+                        <img src="../Image/Icon/brickwall.png" class="category-icon"> BUDOWA
+                        <img src="../Image/Icon/down-arrow.png" alt="Strzałka w dół" class="arrow-icon">
+                    </a>
+                    <a href="#">
+                        <img src="../Image/Icon/furnace.png" class="category-icon"> INSTALACJE
+                        <img src="../Image/Icon/down-arrow.png" alt="Strzałka w dół" class="arrow-icon">
+                    </a>
+                    <a href="#">
+                        <img src="../Image/Icon/rent.png" class="category-icon"> WYPOŻYCZALNIA SPRZĘTU
+                        <img src="../Image/Icon/down-arrow.png" alt="Strzałka w dół" class="arrow-icon">
+                    </a>
+                    <a href="#">
+                        <img src="../Image/Icon/discount.png" class="category-icon"> PROMOCJE
+                        <img src="../Image/Icon/down-arrow.png" alt="Strzałka w dół" class="arrow-icon">
+                    </a>
 
-<div id="no-results-message" class="no-results-message" style="display: none;">
+
+
+                </div>
+            </nav>
+        </header>
+        <div id="no-results-message" class="no-results-message" style="display: none;">
     Nie ma takiego produktu.
 </div>
 
@@ -182,9 +193,7 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
 <main class="main-content">
     <div class="container">
 
-        <div class="back-button-container">
-            <a href="../index.php" class="back-button">◄  Powrót do strony głównej</a>
-        </div>
+        
 
         <div class="product-container">
             <!-- Sekcja zdjęć produktu -->
@@ -244,50 +253,154 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
         </div>
 
         <!-- Opis produktu poniżej -->
-        <div class="product-description">
-            <h3>Opis produktu</h3>
-            <p><?php echo $product['opis']; ?></p>
-        </div>
-        <div class="product-opinions">
-            <h3>Opinie produktu</h3>
-            <?php if (empty($opinions)): ?>
-                <p>Brak komentarzy.</p>
-            <?php else: ?>
-                <?php foreach ($opinions as $opinion): ?>
-                    <div class="comment">
-                        <p><?php echo nl2br(($opinion['tresc_opinii'])); ?></p>
-                        <p>Autor:
-                            <?php
-                            if ($opinion['login']) {
-                                echo ($opinion['login']);
-                            } else {
-                                echo "Gość";
-                            }
-                            ?>
-                        </p>
-                        <p>Data: <?php echo $opinion['data_opinii']; ?></p>
+            <div class="product-description">
+                <h3>Opis produktu</h3>
+                <p><?php echo $product['opis']; ?></p>
+            </div>
+        
+            <div class="product-opinions">
+            <h3 id="toggle-opinions">
+                Opinie produktu (<span id="opinion-count"><?php echo count($opinions); ?></span>)
+                <img class="arrow" src="../Image/Icon/arrow2.png" alt="Strzałka w dół">
+            </h3>
+
+            <div id="opinions-container" class="hidden">
+                <?php if (empty($opinions)): ?>
+                    <p>Brak komentarzy.</p>
+                <?php else: ?>
+                    <div class="comments-container">
+                        <?php foreach ($opinions as $opinion): ?>
+                            <div class="comment">
+                                <div class="stars">
+                                    <?php for ($i = 0; $i < $opinion['ocena']; $i++): ?>
+                                        <span class="star">&#9733;</span>
+                                    <?php endfor; ?>
+                                </div>
+
+                                <p><?php echo nl2br(($opinion['tresc_opinii'])); ?></p>
+                                <p>Autor:
+                                    <?php
+                                    if ($opinion['login']) {
+                                        echo ($opinion['login']);
+                                    } else {
+                                        echo "Gość";
+                                    }
+                                    ?>
+                                </p>
+                                <p>Data: <?php echo $opinion['data_opinii']; ?></p>
+                            </div>
+                        <?php endforeach; ?>
                     </div>
-                <?php endforeach; ?>
-            <?php endif; ?>
+                <?php endif; ?>
+            </div>
+
             <h2>Dodaj Opinię</h2>
             <form method="POST">
-                <textarea name="opinion" required></textarea>
-                <select name="rating" required>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                </select>
-                <button type="submit">Dodaj Opinię</button>
+                <textarea name="opinion" required placeholder="Napisz swoją opinię..."></textarea>
+
+                <div class="rating">
+                    <label>
+                        <input type="radio" name="rating" value="1" required>
+                        <span class="star">&#9733;</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="rating" value="2">
+                        <span class="star">&#9733;</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="rating" value="3">
+                        <span class="star">&#9733;</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="rating" value="4">
+                        <span class="star">&#9733;</span>
+                    </label>
+                    <label>
+                        <input type="radio" name="rating" value="5">
+                        <span class="star">&#9733;</span>
+                    </label>
+                </div>
+
+                <button type="submit">
+                    <img src="../Image/Icon/plus.png" alt="Ikona opinii">
+                    Dodaj Opinię
+                </button>
             </form>
         </div>
+
     </div>
 </main>
 
-<footer>
-    <p>&copy; 2024 Budex Sp z.o.o . Wszelkie prawa zastrzeżone.</p>
-</footer>
+<footer class="footer">
+                <div class="footer-container">
+                    <div class="footer-contact">
+                        <h3>SKONTAKTUJ SIĘ Z NAMI</h3>
+                        <ul>
+                            <li><i class="fa fa-phone"></i> +48 555 348 591<br> Pn-Pt 8:00-18:00, Sb 9:00-14:00</li>
+                            <li><i class="fa fa-envelope"></i> budexgdansk@gmail.com<br> Odpowiedź do 24H</li>
+                            <li><i class="fa fa-map-marker"></i> ul. Budowlana 4, 80-253 Gdańsk</li>
+                        </ul>
+                    </div>
+                    <div class="footer-links">
+                        <h3>INFORMACJE</h3>
+                        <ul>
+                            <li><a href="#">O nas</a></li>
+                            <li><a href="#">Rabaty</a></li>
+                            <li><a href="#">Sprzedaż hurtowa</a></li>
+                            <li><a href="#">Regulamin</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-links">
+                        <h3>OBSŁUGA KLIENTA</h3>
+                        <ul>
+                            <li><a href="#">Najczęściej zadawane pytania</a></li>
+                            <li><a href="#">Koszty dostawy</a></li>
+                            <li><a href="#">Reklamacje</a></li>
+                            <li><a href="#">Zwroty</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-links">
+                        <h3>KONTO</h3>
+                        <ul>
+                            <li><a href="#">Dane osobowe</a></li>
+                            <li><a href="#">Zamówienia</a></li>
+                            <li><a href="#">Adresy</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-newsletter">
+                        <h3>NEWSLETTER</h3>
+                        <p>Chcesz być na bieżąco z najlepszymi ofertami? Zapisz się do newslettera i nie przegap okazji!</p>
+                        <button type="submit"><i class="fa fa-arrow-right"></i> ZAPISZ SIĘ</button>
+                        
+                        
+                    </div>
+
+                </div>
+                <div class="footer-bottom">
+                    <div class="social-media">
+                        <h3>OBSERWUJ NAS</h3>
+                        <a href="https://www.facebook.com/"><i class="fab fa-facebook"></i></a>
+                        <a href="https://x.com/home"><i class="fab fa-x"></i></a>
+                        <a href="https://www.instagram.com/"><i class="fab fa-instagram"></i></a>
+                        <a href="https://www.youtube.com/"><i class="fab fa-youtube"></i></a>
+                    </div>
+                    <div class="payment-methods">
+                        <img src="../Image/Icon/symbols.png" alt="Visa" class="reverse-colors">
+                        <img src="../Image/Icon/paypal.png" alt="PayPal" class="reverse-colors">
+                        <img src="../Image/Icon/blik.png" alt="Blik">
+                        <img src="../Image/Icon/apple-pay.png" alt="Apple Pay" class="reverse-colors">
+                    </div>
+
+                    <div class="footer-copyright">
+                        <p>&copy; <?php echo date('Y'); ?> Budex Sp z.o.o. Wszelkie prawa zastrzeżone. All rights reserved. Realizacja: SEF </p>
+                    </div>
+                </div>
+            </footer>
+
+    </div>
+        
+
+
 <script>
     let cart = [];
 
@@ -368,6 +481,59 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
         formQuantityInput.value = input.value;
     }
 
+    
+            document.addEventListener('DOMContentLoaded', () => {
+            const stars = document.querySelectorAll('.rating .star');
+            const inputs = document.querySelectorAll('.rating input[type="radio"]');
+
+            inputs.forEach((input, index) => {
+                input.addEventListener('change', () => {
+                    highlightStars(index + 1);
+                });
+            });
+
+            stars.forEach((star, index) => {
+                star.addEventListener('mouseover', () => {
+                    highlightStars(index + 1);
+                });
+
+                star.addEventListener('mouseout', () => {
+                    const checkedInput = document.querySelector('.rating input[type="radio"]:checked');
+                    if (checkedInput) {
+                        highlightStars(parseInt(checkedInput.value));
+                    } else {
+                        resetStars();
+                    }
+                });
+            });
+
+            function highlightStars(count) {
+                stars.forEach((star, index) => {
+                    star.style.color = index < count ? '#ffd700' : '#ccc';
+                });
+            }
+
+            function resetStars() {
+                stars.forEach((star) => {
+                    star.style.color = '#ccc';
+                });
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+        const toggleOpinions = document.getElementById('toggle-opinions');
+        const opinionsContainer = document.getElementById('opinions-container');
+        const arrow = toggleOpinions.querySelector('.arrow');
+
+        toggleOpinions.addEventListener('click', () => {
+            opinionsContainer.classList.toggle('hidden');
+            arrow.classList.toggle('up');
+        });
+    });
+
+    
+    
+    
 
     // Funkcja do filtrowania produktów
     function filterProducts() {

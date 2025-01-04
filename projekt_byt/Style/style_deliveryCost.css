@@ -233,6 +233,58 @@ body {
     flex-wrap: wrap;
 }
 
+
+.header-favorites {
+    position: relative;
+    display: inline-block;
+    align-items: center;
+    justify-content: center;
+}
+
+.header-favorites-icon {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    border: 3px solid white; 
+    border-radius: 50%; 
+    transition: border-width 0.3s ease; 
+    background-color: #fff;
+}
+
+.header-favorites-icon:hover {
+    background-color: #ff0000; 
+    cursor: pointer; 
+}
+
+.header-favorites:hover .header-favorites-icon {
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 1); 
+    transition: box-shadow 0.3s ease; 
+}
+
+.header-favorites-icon.active {
+    border-width: 6px; 
+}
+
+.header-favorites-icon img {
+    width: 100%;
+    height: 100%;
+}
+
+.header-favorite-count {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: greenyellow;
+    color: #000;
+    border-radius: 50%;
+    padding: 2px 6px;
+    font-size: 12px;
+    font-weight: bold;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+
 /* Styl dla tekstu i linków */
 .language-currency p {
     margin: 0;

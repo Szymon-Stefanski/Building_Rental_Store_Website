@@ -63,9 +63,16 @@ $userRole = $stmt->fetchColumn();
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    <header>
-        <div class="container">
-            
+    <header class="header-container">
+        
+            <div class="logo">
+                <a href="../index.php">
+                    <img src="../Image/Icon/budex.png" alt="Logo sklepu" />
+                </a>
+            </div>
+            <div class="napis">
+                Moje Konto
+            </div>
             <nav>
                 <ul>
                     <li><a href="../index.php">Strona główna</a></li>
@@ -75,7 +82,7 @@ $userRole = $stmt->fetchColumn();
                     <?php endif; ?>
                 </ul>
             </nav>
-        </div>
+        
     </header>
 
     <main>
