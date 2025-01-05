@@ -4,7 +4,7 @@ use PHPUnit\Framework\TestCase;
 use PHPMailer\PHPMailer\PHPMailer;
 
 require_once __DIR__ . '/../../vendor/autoload.php';
-require_once __DIR__ . '../helpers.php';
+require_once __DIR__ . '/../../email_sender.php';
 
 class NotificationTest extends TestCase
 {
@@ -12,7 +12,6 @@ class NotificationTest extends TestCase
 
     protected function setUp(): void
     {
-
         if (file_exists($this->testFile)) {
             unlink($this->testFile);
         }
@@ -20,7 +19,6 @@ class NotificationTest extends TestCase
 
     protected function tearDown(): void
     {
-
         if (file_exists($this->testFile)) {
             unlink($this->testFile);
         }
@@ -28,32 +26,33 @@ class NotificationTest extends TestCase
 
     public function testSendEmail()
     {
-        $mail = $this->createMock(PHPMailer::class);
-
-        $mail->method('send')->willReturn(true);
-        $this->assertTrue($mail->send());
+        $this->expectNotToPerformAssertions();
+        sendEmail('test@example.com', 'Test Subject', 'Test Body');
     }
 
     public function testLoadNotificationLog()
     {
-
-        file_put_contents($this->testFile, 'Test log content');
-
+        file_put_contents($this->testFile, json_encode(['test_key' => 'test_value']));
 
         $logContent = loadNotificationLog($this->testFile);
-        $this->assertEquals('Test log content', $logContent);
 
-        unlink($this->testFile);
+        $this->assertIsArray($logContent);
+        $this->assertArrayHasKey('test_key', $logContent);
+        $this->assertEquals('test_value', $logContent['test_key']);
     }
 
     public function testSaveNotificationLog()
     {
+        $data = ['test_key' => 'test_value'];
 
-        saveNotificationLog('Test log content', $this->testFile);
-
+        saveNotificationLog($this->testFile, $data);
+        
         $this->assertFileExists($this->testFile);
 
-        $this->assertEquals('Test log content', file_get_contents($this->testFile));
+        $savedData = json_decode(file_get_contents($this->testFile), true);
+        $this->assertIsArray($savedData);
+        $this->assertArrayHasKey('test_key', $savedData);
+        $this->assertEquals('test_value', $savedData['test_key']);
     }
 }
 
