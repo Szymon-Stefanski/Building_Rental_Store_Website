@@ -137,6 +137,14 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
                         Szukaj
                     </button>
                 </div>
+                <div class="header-favorites">
+                    <a href="Store/favorites.php">
+                        <div class="header-favorites-icon">
+                            <img src="../Image/Icon/favourite.png" alt="Ulubione">
+                            <span class="header-favorite-count">0</span>
+                        </div>
+                    </a>
+                </div>
                 <div class="cart-info">
                     <span style="font-weight: bold; text-align: center; margin-left: 15px;">Twój koszyk: <span id="total-price" style="margin-right: 10px; padding-left: 5px;"><?= number_format($totalPrice, 2) ?> zł</span></p>
                     <?php
@@ -674,7 +682,36 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
             }
         });
     });
+        
+    
+        function toggleFavorite(productId) {
+        let favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+        if (favorites.includes(productId)) {
+            favorites = favorites.filter(id => id !== productId); // Usuń produkt z ulubionych
+        } else {
+            favorites.push(productId); // Dodaj produkt do ulubionych
+        }
+        localStorage.setItem('favorites', JSON.stringify(favorites));
+        updateFavoriteCount();
+        }
 
+        function updateFavoriteCount() {
+            const favorites = JSON.parse(localStorage.getItem('favorites')) || [];
+            const favoriteCountElement = document.querySelector('.header-favorite-count');
+            const favoriteIconElement = document.querySelector('.header-favorites-icon');
+
+            // Aktualizacja licznika
+            favoriteCountElement.innerText = favorites.length;
+
+            
+            if (favorites.length > 0) {
+                favoriteIconElement.classList.add('active');
+            } else {
+                favoriteIconElement.classList.remove('active');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', updateFavoriteCount);
 
 
 </script>

@@ -183,29 +183,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sklep Budowlany</title>
+    <title>Sklep Budowlany Budex</title>
     <link rel="stylesheet" href="../Style/style_stockManagement.css">
-
+    <link rel="icon" type="image/png" href="../Image/Icon/budex.png">
 </head>
 <body>
 <div class="container">
 
     <header>
         <nav class="main-navigation">
-                <div class="index-button-container">
-                    <a href="../index.php" class="index-button">◄  Do strony głównej</a>
+                
+                <div class="nav-links">
+                    
+                    <a href="../index.php" class="back">
+                        <img src="../Image/Icon/log-in.png" class="category-icon"> POWRÓT
+                    </a>
+                    
+                    <a href="#">
+                        <img src="../Image/Icon/discount.png" class="category-icon"> PROMOCJE
+                        <img src="../Image/Icon/down-arrow.png" alt="Strzałka w dół" class="arrow-icon">
+                    </a>
+
+
+
                 </div>
-                <div class="index-button-container">
-                   <a href="suppliersManagement.php" class="index-button">◄  Dostawcy</a>
-                </div>
-            <div class="nav-links">
-                <a href="#">
-                    <img src="../Image/Icon/discount.png" class="category-icon"> PROMOCJE
-                    <img src="../Image/Icon/down-arrow.png" alt="Strzałka w dół" class="arrow-icon">
-                </a>
-            </div>
-        </nav>
+            </nav>
     </header>
+        <div class="add-category-container">
+            <form action="<?= $_SERVER['PHP_SELF'] ?>" method="POST">
+                <input type="hidden" name="action" value="add_category">
+                <label for="new_category_name">Nowa kategoria:</label>
+                <input type="text" name="new_category_name" id="new_category_name" placeholder="Nazwa kategorii" required>
+                <button type="submit">Dodaj kategorię</button>
+            </form>
+        </div>
 
     <main class="main-content">
         <!-- Wyświetla wiadomości z przekierowań np. o dodaniu produktu $_SESSION['success_message'] = "Produkt został pomyślnie dodany."; -->
@@ -222,22 +233,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php foreach ($groupedProducts as $category => $products): ?>
                 <section class="products">
                     <div class="category-container">
+                        <button class="add-to-cart">
+                            <a href="addProduct.php?id=<?= $groupedProducts[$category]['id'] ?>">Dodaj produkt do tej kategorii</a>
+                        </button>
                         <h2>
                             <span class="category-name"><?= ($category) ?></span>
                             <button class="edit-category-button" onclick="showEditCategoryForm(this)">Zmień nazwę</button>
+                            
                             <form action="<?= $_SERVER['PHP_SELF'] ?>" method="POST" class="edit-category-form" style="display: none;">
                                 <input type="hidden" name="action" value="rename_category">
                                 <input type="hidden" name="old_category_name" value="<?= ($category) ?>">
-                                <label for="new_category_name">Nowa nazwa:</label>
+                                <label for="new_category_name" class="newname">Nowa nazwa:</label>
                                 <input type="text" name="new_category_name" required>
-                                <button type="submit">Zapisz</button>
-                                <button type="button" onclick="hideEditCategoryForm(this)">Anuluj</button>
+                                <button type="submit" class="save">Zapisz</button>
+                                <button type="button" class="cancel" onclick="hideEditCategoryForm(this)">Anuluj</button>
+                                
                             </form>
                             <form action="<?= $_SERVER['PHP_SELF'] ?>" method="POST" style="display: inline;">
                                 <input type="hidden" name="action" value="delete_category">
                                 <input type="hidden" name="category_id" value="<?= $groupedProducts[$category]['id'] ?>">
-                                <button type="submit" onclick="return confirm('Czy na pewno chcesz usunąć tę kategorię?')">Usuń</button>
+                                <button type="button" class="delete">Usuń</button>
                             </form>
+                            <div id="confirm-modal" class="modal" style="display: none;">
+                                <div class="modal-content">
+                                    <p class="modal-text">Czy na pewno chcesz usunąć tę kategorię?</p>
+                                    <div class="modal-buttons">
+                                        <button id="confirm-yes" class="confirm-button">Tak</button>
+                                        <button id="confirm-no" class="cancel-button">Nie</button>
+                                    </div>
+                                </div>
+                            </div>
                         </h2>
                         <?php if (!empty($products[0]['produkt_id'])): ?>
                             <div class="product-grid">
@@ -249,8 +274,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                      alt="Obraz produktu: <?= ($product['nazwa_produktu']) ?>">
 
                                                 <h3><?= ($product['nazwa_produktu']) ?></h3>
-                                                <p class="product-price"><?= number_format($product['ilosc_w_magazynie']) ?> sztuk</p>
-                                                <p class="product-price"><?= number_format($product['cena'], 2, ',', ' ') ?> zł/szt.</p>
+                                                <p class="product-price-ilosc"><?= number_format($product['ilosc_w_magazynie']) ?> sztuk</p>
+                                                <p class="product-price-cena"><?= number_format($product['cena'], 2, ',', ' ') ?> zł/szt.</p>
                                             </a>
                                             <div class="quantity-cart-container">
                                                 <!-- Formularz zmiany ilości -->
@@ -259,7 +284,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                     <input type="hidden" name="product_id" value="<?= ($product['produkt_id']) ?>">
                                                     <label for="new_quantity">Nowa ilość:</label>
                                                     <input type="number" name="new_quantity" min="0" value="<?= ($product['ilosc_w_magazynie']) ?>" required>
-                                                    <button type="submit">Zmień ilość</button>
+                                                    <button type="submit" class="ilosc">Zmień ilość</button>
                                                 </form>
 
                                                 <!-- Formularz zmiany ceny -->
@@ -268,10 +293,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                     <input type="hidden" name="product_id" value="<?= ($product['produkt_id']) ?>">
                                                     <label for="new_price">Nowa cena:</label>
                                                     <input type="text" name="new_price" value="<?= (number_format($product['cena'], 2, '.', '')) ?>" required>
-                                                    <button type="submit">Zmień cenę</button>
+                                                    <button type="submit" id="cena">Zmień cenę</button>
                                                 </form>
 
-                                                <button class="add-to-cart" ="addToCart(this)">
+                                                <button class="edit-product" onclick="addToCart(this)">
                                                 <a href="editProduct.php?id=<?=$product['produkt_id']?>"> Edytuj Szczegóły produktu </a>
                                                 </button>
                                             </div>
@@ -282,9 +307,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <?php else: ?>
                             <p>Brak produktów w tej kategorii.</p>
                         <?php endif; ?>
-                        <button class="add-to-cart">
-                            <a href="addProduct.php?id=<?= $groupedProducts[$category]['id'] ?>">Dodaj produkt do tej kategorii</a>
-                        </button>
+                        
                     </div>
                 </section>
             <?php endforeach; ?>
@@ -294,14 +317,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 Brak produktów i kategorii.
             </div>
         <?php endif; ?>
-        <div class="add-category-container">
-            <form action="<?= $_SERVER['PHP_SELF'] ?>" method="POST">
-                <input type="hidden" name="action" value="add_category">
-                <label for="new_category_name">Nowa kategoria:</label>
-                <input type="text" name="new_category_name" id="new_category_name" placeholder="Nazwa kategorii" required>
-                <button type="submit">Dodaj kategorię</button>
-            </form>
-        </div>
+        
     </main>
 </div>
 <script>
@@ -343,6 +359,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 alert('Wystąpił błąd: ' + error.message);
             });
     }
+    
+        document.querySelectorAll('.delete').forEach(button => {
+        button.addEventListener('click', function (event) {
+            // Zatrzymaj domyślne działanie formularza
+            event.preventDefault();
+
+            // Pobierz modal i wyświetl go
+            const modal = document.getElementById('confirm-modal');
+            modal.style.display = 'flex';
+
+            const confirmYes = document.getElementById('confirm-yes');
+            const confirmNo = document.getElementById('confirm-no');
+
+            // Obsługa kliknięcia na "Tak"
+            confirmYes.onclick = function () {
+                modal.style.display = 'none';
+                button.closest('form').submit();
+            };
+
+            // Obsługa kliknięcia na "Nie"
+            confirmNo.onclick = function () {
+                modal.style.display = 'none';
+            };
+        });
+    });
+
+
 </script>
 </body>
 </html>
