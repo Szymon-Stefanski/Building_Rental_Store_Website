@@ -3,30 +3,6 @@ session_start();
 // zapisywanie przekierowania do zmiennej by zapobiec pętli przy odświeżaniu
 $source = isset($_GET['source']) ? $_GET['source'] : '../index.php';
 
-// funkca dodająca ilość produktów otrzymanych z różnych źródeł np. index.php, product.php
-$product_id = isset($_POST['id']) ? $_POST['id'] : null;
-$product_name = isset($_POST['name']) ? $_POST['name'] : null;
-$product_price = isset($_POST['price']) ? $_POST['price'] : null;
-$product_quantity = isset($_POST['quantity']) ? $_POST['quantity'] : 1;
-if ($product_id) {
-    $found = false;
-    foreach ($_SESSION['cart'] as &$item) {
-        if ($item['id'] == $product_id) {
-            $item['quantity'] += $product_quantity;
-            $found = true;
-            break;
-        }
-    }
-    if (!$found) {
-        $_SESSION['cart'][] = [
-            'id' => $product_id,
-            'name' => $product_name,
-            'price' => $product_price,
-            'quantity' => $product_quantity
-        ];
-    }
-}
-
 if (!isset($_SESSION['user_id'])) {
     $logged_in = false;
     $user_id = null;
@@ -42,6 +18,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'clear_cart') {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
     if (isset($_POST['action'])) {
         if ($_POST['action'] === 'update_quantity' && isset($_POST['item_index'], $_POST['change'])) {
             $index = intval($_POST['item_index']);
@@ -66,40 +43,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit();
 }
 
-function displayCart() {
-    if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
-        echo "<form action='update_cart.php' method='post'>
-                <table class='cart-table'>
-                    <thead>
-                        <tr>
-                            <th>Produkt</th>
-                            <th>Cena</th>
-                            <th>Ilość</th>
-                            <th>Łączna cena</th>
-                        </tr>
-                    </thead>
-                    <tbody>";
-
-        foreach ($_SESSION['cart'] as $key => $item) {
-            $totalPrice = $item['price'] * $item['quantity'];
-            echo "<tr>
-                    <td><img src='{$item['image']}' alt='{$item['name']}' style='width: 50px;'> {$item['name']}</td>
-                    <td>{$item['price']} zł</td>
-                    <td>
-                        <input type='number' name='quantity[{$key}]' value='{$item['quantity']}' min='1' />
-                    </td>
-                    <td>{$totalPrice} zł</td>
-                  </tr>";
-        }
-
-        echo "</tbody></table>
-              <button type='submit'>Zaktualizuj koszyk</button>
-              </form>";
-    } else {
-        echo "<p>Twój koszyk jest pusty.</p>";
-    }
-}
-
 
 $Total = 0;
 $Vat = 0.08;
@@ -118,6 +61,7 @@ $stmt = getDbConnection()->prepare("
     SELECT k.nazwa_kategorii, p.produkt_id, p.nazwa_produktu, p.cena
     FROM Produkty p
     LEFT JOIN Kategorie k ON p.kategoria_id = k.kategoria_id
+    WHERE p.wynajem = 'TAK'
     ORDER BY RAND() LIMIT 1
 ");
 
@@ -220,10 +164,10 @@ if ($product) {
                 </thead>
                 <tbody>
                     <?php
-                        if (!isset($_SESSION['cart']) || empty($_SESSION['cart'])) {
-                            echo '<tr><td colspan="6">Koszyk jest pusty.</td></tr>';
+                        if (!isset($_SESSION['rental']) || empty($_SESSION['rental'])) {
+                            echo '<tr><td colspan="6">Brak sprzętu do wypożyczenia.</td></tr>';
                         } else {
-                            foreach ($_SESSION['cart'] as $index => $item) {
+                            foreach ($_SESSION['rental'] as $index => $item) {
                                 $itemTotal = $item['price'] * $item['quantity'];
 
                                 $imagePath = findProductImage($item['id'], 'all', $item['name']);
@@ -362,54 +306,6 @@ if ($product) {
         const shippingCost = 13.99; // Koszt wysyłki
         const vatRate = 0.23; // Stawka VAT
 
-        // Funkcja do zmiany koloru paska postępu
-        function updateProgressColor(progressElement, progress) {
-            if (progress <= 20) {
-                progressElement.style.backgroundColor = '#8B0000'; // Czerwony
-            } else if (progress <= 40) {
-                progressElement.style.backgroundColor = '#FF0000'; // Intensywny czerwony
-            } else if (progress <= 60) {
-                progressElement.style.backgroundColor = '#FFA500'; // Pomarańczowy
-            } else if (progress <= 80) {
-                progressElement.style.backgroundColor = '#FFFF00'; // Żółty
-            } else {
-                progressElement.style.backgroundColor = '#28a745'; // Zielony
-            }
-        }
-
-        function updateProgressBar(total, threshold) {
-            const progressBar = document.getElementById('progress-bar');
-            const remainingAmount = document.getElementById('remaining-amount');
-
-            const progress = Math.min((total / threshold) * 100, 100);
-            progressBar.style.width = `${progress}%`;
-
-            // Zmieniamy kolor w zależności od wartości
-            if (progress <= 20) {
-                progressBar.style.backgroundColor = '#8B0000'; // Czerwony
-            } else if (progress <= 40) {
-                progressBar.style.backgroundColor = '#FF4500'; // Pomarańczowy
-            } else if (progress <= 60) {
-                progressBar.style.backgroundColor = '#FFD700'; // Żółty
-            } else if (progress <= 80) {
-                progressBar.style.backgroundColor = '#32CD32'; // Zielony jasny
-            } else {
-                progressBar.style.backgroundColor = '#008000'; // Zielony ciemny
-            }
-
-            // Aktualizacja pozostałej kwoty do darmowej dostawy
-            const remaining = threshold - total;
-            remainingAmount.textContent = remaining > 0 ? `${remaining.toFixed(2)} zł` : '0.00 zł';
-        }
-
-        // Wywołaj funkcję na podstawie wartości PHP
-        document.addEventListener('DOMContentLoaded', () => {
-            const total = <?php echo $Total; ?>; // Łączna kwota koszyka
-            const threshold = 200; // Próg darmowej dostawy
-            updateProgressBar(total, threshold);
-        });
-
-
 
         // Funkcja do aktualizowania cen w koszyku
         function updateCart() {
@@ -483,80 +379,6 @@ if ($product) {
 
 
             alert('Koszyk został opróżniony.');
-        }
-
-
-        function addRecommendedProduct() {
-            // Pobierz element przycisku polecanego produktu
-            const button = document.querySelector('.add-to-cart');
-
-            // Dane polecanego produktu (pobrane dynamicznie z atrybutów przycisku)
-            const recommendedProduct = {
-                id: button.getAttribute('data-id'),
-                name: button.getAttribute('data-name'),
-                image: button.getAttribute('data-image'),
-                price: parseFloat(button.getAttribute('data-price')),
-                quantity: 1, // Domyślna ilość
-                availability: "Dostępny" // Jeśli to statyczna wartość, można ją zmienić
-            };
-
-            // Znajdź tabelę koszyka
-            const cartTable = document.querySelector('.cart-table tbody');
-
-            // Sprawdź, czy produkt już istnieje w koszyku
-            let existingProductRow = null;
-            const rows = Array.from(cartTable.querySelectorAll('tr'));
-            rows.forEach(row => {
-                const productName = row.querySelector('.product-info p');
-                if (productName && productName.textContent.trim() === recommendedProduct.name) {
-                    existingProductRow = row;
-                }
-            });
-
-            if (existingProductRow) {
-                // Jeśli produkt już istnieje, zaktualizuj ilość
-                const quantityInput = existingProductRow.querySelector('.quantity');
-                quantityInput.value = parseInt(quantityInput.value) + 1;
-
-                // Zaktualizuj cenę całkowitą
-                const unitPrice = parseFloat(existingProductRow.querySelector('.unit-price').textContent);
-                const newTotalPrice = unitPrice * parseInt(quantityInput.value);
-                existingProductRow.querySelector('.total-price').textContent = `${newTotalPrice.toFixed(2)} zł`;
-            } else {
-                // Jeśli produkt nie istnieje, dodaj nowy wiersz do koszyka
-                const newRow = document.createElement('tr');
-                newRow.innerHTML = `
-                    <td class="product-info">
-                        <img src="${recommendedProduct.image}" alt="${recommendedProduct.name}" style="width: 50px; height: auto;">
-                        <div>
-                            <p>${recommendedProduct.name}</p>
-                        </div>
-                    </td>
-                    <td class="availability">
-                        <span class="status available">${recommendedProduct.availability}</span>
-                    </td>
-                    <td class="unit-price">
-                        ${recommendedProduct.price.toFixed(2)} zł
-                    </td>
-                    <td>
-                        <div class="quantity-control">
-                            <button class="decrease-quantity" onclick="changeQuantity(this, -1)">-</button>
-                            <input type="text" value="${recommendedProduct.quantity}" min="1" class="quantity" onchange="updateCart()">
-                            <button class="increase-quantity" onclick="changeQuantity(this, 1)">+</button>
-                        </div>
-                    </td>
-                    <td class="total-price">${(recommendedProduct.price * recommendedProduct.quantity).toFixed(2)} zł</td>
-                `;
-
-                // Dodaj wiersz do tabeli koszyka
-                cartTable.appendChild(newRow);
-            }
-
-            // Zaktualizuj koszyk (jeśli masz funkcję `updateCart`)
-            updateCart();
-
-            // Komunikat o sukcesie
-            alert('Polecany produkt dodany do koszyka!');
         }
 
 
