@@ -164,44 +164,87 @@ if ($product) {
                 </thead>
                 <tbody>
                     <?php
-                        if (!isset($_SESSION['rental']) || empty($_SESSION['rental'])) {
-                            echo '<tr><td colspan="6">Brak sprzętu do wypożyczenia.</td></tr>';
-                        } else {
-                            foreach ($_SESSION['rental'] as $index => $item) {
-                                $itemTotal = $item['price'] * $item['quantity'];
+                        try {
+                            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-                                $imagePath = findProductImage($item['id'], 'all', $item['name']);
+                            // Pobieranie produktów, gdzie wynajem = 'TAK'
+                            $query = "SELECT * FROM Produkty WHERE wynajem = 'TAK'";
+                            $stmt = $pdo->prepare($query);
+                            $stmt->execute();
 
-                                echo '<tr>';
-                                echo '<td class="product-info">
-                                        <img src="' . $imagePath . '" alt="' . htmlspecialchars($item['name'] ?? 'Produkt bez nazwy') . '" width="50" height="50">
-                                        <div>
-                                            <p>' . htmlspecialchars($item['name'] ?? 'Produkt bez nazwy') . '</p>
-                                        </div>
-                                    </td>';
-                                echo '<td class="availability"><span class="status available">Dostępny</span></td>';
-                                echo '<td class="unit-price">' . number_format($item['price'], 2) . ' zł</td>';
-                                echo '<td>
-                                        <div class="quantity-control">
-                                            <form method="post" class="quantity-form">
-                                                <input type="hidden" name="action" value="update_quantity">
-                                                <input type="hidden" name="item_index" value="' . $index . '">
-                                                <button type="submit" name="change" value="-1">-</button>
-                                                <input type="text" name="quantity" value="' . $item['quantity'] . '" min="1">
-                                                <button type="submit" name="change" value="1">+</button>
-                                            </form>
-                                        </div>
-                                    </td>';
-                                echo '<td class="total-price">' . number_format($itemTotal, 2) . ' zł</td>';
-                                echo '<td>
-                                        <form method="post">
-                                            <input type="hidden" name="action" value="remove_item">
-                                            <input type="hidden" name="item_index" value="' . $index . '">
-                                            <button type="submit" class="remove-button">Usuń</button>
-                                        </form>
-                                    </td>';
-                                echo '</tr>';
+                            $wynajemProdukty = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                            if (empty($wynajemProdukty) && (!isset($_SESSION['rental']) || empty($_SESSION['rental']))) {
+                                echo '<tr><td colspan="6">Brak sprzętu do wypożyczenia.</td></tr>';
+                            } else {
+                                // Wyświetlanie produktów z bazy danych
+                                foreach ($wynajemProdukty as $produkt) {
+                                    $imagePath = findProductImage($produkt['produkt_id'], 'all', $produkt['nazwa_produktu']);
+                                    echo '<tr>';
+                                    echo '<td class="product-info">
+                                            <img src="' . $imagePath . '" alt="' . htmlspecialchars($produkt['nazwa_produktu'] ?? 'Produkt bez nazwy') . '" width="50" height="50">
+                                            <div>
+                                                <p>' . htmlspecialchars($produkt['nazwa_produktu'] ?? 'Produkt bez nazwy') . '</p>
+                                            </div>
+                                        </td>';
+                                    echo '<td class="availability"><span class="status available">Dostępny</span></td>';
+                                    echo '<td class="unit-price">' . number_format($produkt['cena']/10, 2) . ' zł</td>';
+                                    echo '<td>
+                                            <div class="quantity-control">
+                                                <form method="post" class="quantity-form">
+                                                    <input type="hidden" name="action" value="add">
+                                                    <input type="hidden" name="product_id" value="' . $produkt['produkt_id'] . '">
+                                                    <input type="hidden" name="product_name" value="' . htmlspecialchars($produkt['nazwa_produktu']) . '">
+                                                    <input type="hidden" name="product_price" value="' . $produkt['cena'] . '">
+                                                    <input type="hidden" name="quantity" value="1">
+                                                    <button type="submit" class="add-button">Dodaj</button>
+                                                </form>
+                                            </div>
+                                        </td>';
+                                    echo '<td class="total-price">-</td>';
+                                    echo '<td>-</td>';
+                                    echo '</tr>';
+                                }
+
+                                // Wyświetlanie sprzętu z sesji
+                                if (isset($_SESSION['rental']) && !empty($_SESSION['rental'])) {
+                                    foreach ($_SESSION['rental'] as $index => $item) {
+                                        $itemTotal = $item['price'] * $item['quantity'];
+                                        $imagePath = findProductImage($item['id'], 'all', $item['name']);
+                                        echo '<tr>';
+                                        echo '<td class="product-info">
+                                                <img src="' . $imagePath . '" alt="' . htmlspecialchars($item['name'] ?? 'Produkt bez nazwy') . '" width="50" height="50">
+                                                <div>
+                                                    <p>' . htmlspecialchars($item['name'] ?? 'Produkt bez nazwy') . '</p>
+                                                </div>
+                                            </td>';
+                                        echo '<td class="availability"><span class="status available">Dostępny</span></td>';
+                                        echo '<td class="unit-price">' . number_format($item['price'], 2) . ' zł</td>';
+                                        echo '<td>
+                                                <div class="quantity-control">
+                                                    <form method="post" class="quantity-form">
+                                                        <input type="hidden" name="action" value="update_quantity">
+                                                        <input type="hidden" name="item_index" value="' . $index . '">
+                                                        <button type="submit" name="change" value="-1">-</button>
+                                                        <input type="text" name="quantity" value="' . $item['quantity'] . '" min="1">
+                                                        <button type="submit" name="change" value="1">+</button>
+                                                    </form>
+                                                </div>
+                                            </td>';
+                                        echo '<td class="total-price">' . number_format($itemTotal, 2)/10 . ' zł</td>';
+                                        echo '<td>
+                                                <form method="post">
+                                                    <input type="hidden" name="action" value="remove_item">
+                                                    <input type="hidden" name="item_index" value="' . $index . '">
+                                                    <button type="submit" class="remove-button">Usuń</button>
+                                                </form>
+                                            </td>';
+                                        echo '</tr>';
+                                    }
+                                }
                             }
+                        } catch (PDOException $e) {
+                            echo "<tr><td colspan='6'>Błąd połączenia z bazą danych: " . htmlspecialchars($e->getMessage()) . "</td></tr>";
                         }
                     ?>
                 </tbody>
@@ -335,7 +378,7 @@ if ($product) {
                 }
 
                 // Obliczamy cenę całkowitą dla tego produktu
-                const productTotalPrice = unitPrice * quantity;
+                const productTotalPrice = (unitPrice) * quantity;
 
                 // Aktualizujemy cenę całkowitą dla produktu
                 totalPriceElement.textContent = `${productTotalPrice.toFixed(2)} zł`;
