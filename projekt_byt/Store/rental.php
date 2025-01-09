@@ -187,23 +187,27 @@ if ($product) {
                                                 <p>' . htmlspecialchars($produkt['nazwa_produktu'] ?? 'Produkt bez nazwy') . '</p>
                                             </div>
                                         </td>';
-                                    echo '<td class="availability"><span class="status available">Dostępny</span></td>';
-                                    echo '<td class="unit-price">' . number_format($produkt['cena']/10, 2) . ' zł</td>';
-                                    echo '<td>
-                                            <div class="quantity-control">
-                                                <form method="post" class="quantity-form">
+                                        echo '<td class="availability"><span class="status available">Dostępny</span></td>';
+                                        echo '<td class="unit-price">' . number_format($produkt['cena'] / 10, 2) . ' zł</td>';
+                                        echo '<td>
+                                                <div class="day-control" style="display: flex; align-items: center; gap: 5px;">
+                                                    <button type="button" class="decrease-day" onclick="updateDays(\'decrease\', ' . $produkt['produkt_id'] . ', ' . $produkt['cena'] . ')">-</button>
+                                                    <input type="text" id="days-' . $produkt['produkt_id'] . '" value="0" readonly>
+                                                    <button type="button" class="increase-day" onclick="updateDays(\'increase\', ' . $produkt['produkt_id'] . ', ' . $produkt['cena'] . ')">+</button>
+                                                </div>
+                                                <form method="post" class="add-to-cart-form">
                                                     <input type="hidden" name="action" value="add">
                                                     <input type="hidden" name="product_id" value="' . $produkt['produkt_id'] . '">
                                                     <input type="hidden" name="product_name" value="' . htmlspecialchars($produkt['nazwa_produktu']) . '">
                                                     <input type="hidden" name="product_price" value="' . $produkt['cena'] . '">
-                                                    <input type="hidden" name="quantity" value="1">
-                                                    <button type="submit" class="add-button">Dodaj</button>
+                                                    <input type="hidden" id="days-hidden-' . $produkt['produkt_id'] . '" name="rental_days" value="0">
                                                 </form>
-                                            </div>
-                                        </td>';
-                                    echo '<td class="total-price">-</td>';
-                                    echo '<td>-</td>';
-                                    echo '</tr>';
+                                            </td>';
+                                        echo '<td class="total-price" id="total-price-' . $produkt['produkt_id'] . '">0,00 zł</td>';
+                                        echo '<td>
+                                                <input type="checkbox" name="product_select[]" value="' . $produkt['produkt_id'] . '">
+                                            </td>';
+                                        echo '</tr>';
                                 }
 
                                 // Wyświetlanie sprzętu z sesji
@@ -292,6 +296,62 @@ if ($product) {
             </div>
         </aside>
     </div>
+
+    <style>
+        .day-control {
+            display: inline-flex;
+            align-items: center;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            padding: 5px;
+            background-color: #f9f9f9;
+        }
+
+        .day-control button {
+            background: none;
+            border: none;
+            font-size: 16px;
+            color: #27ae60; /* Zielony kolor przycisków */
+            cursor: pointer;
+            outline: none;
+            padding: 0 10px;
+        }
+
+        .day-control button:hover {
+            color: #2ecc71; /* Jaśniejszy zielony podczas najechania */
+        }
+
+        .day-control input {
+            width: 30px;
+            text-align: center;
+            border: none;
+            outline: none;
+            font-size: 14px;
+            background-color: transparent;
+        }
+    </style>
+
+    <script>
+        function updateDays(action, productId, price) {
+            const daysInput = document.getElementById(`days-${productId}`);
+            const hiddenDaysInput = document.getElementById(`days-hidden-${productId}`);
+            const totalPriceField = document.getElementById(`total-price-${productId}`);
+            let days = parseInt(daysInput.value);
+
+            if (action === 'increase') {
+                days += 1;
+            } else if (action === 'decrease' && days > 0) {
+                days -= 1;
+            }
+
+            daysInput.value = days;
+            hiddenDaysInput.value = days; // Aktualizacja ukrytego pola formularza
+
+            // Obliczanie całkowitej ceny brutto
+            const totalPrice = days * (price / 10);
+            totalPriceField.textContent = totalPrice.toFixed(2) + ' zł';
+        }
+    </script>
 
     <script>
 
