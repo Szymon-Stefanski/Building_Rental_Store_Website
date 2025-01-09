@@ -181,33 +181,35 @@ if ($product) {
                                 foreach ($wynajemProdukty as $produkt) {
                                     $imagePath = findProductImage($produkt['produkt_id'], 'all', $produkt['nazwa_produktu']);
                                     echo '<tr>';
+                                    echo '<tr id="row-' . $produkt['produkt_id'] . '" class="product-row">'; // Dodajemy klasę dla wiersza
                                     echo '<td class="product-info">
-                                            <img src="' . $imagePath . '" alt="' . htmlspecialchars($produkt['nazwa_produktu'] ?? 'Produkt bez nazwy') . '" width="50" height="50">
+                                            <img src="' . $imagePath . '" alt="' . htmlspecialchars($produkt['nazwa_produktu']) . '" width="50" height="50">
                                             <div>
-                                                <p>' . htmlspecialchars($produkt['nazwa_produktu'] ?? 'Produkt bez nazwy') . '</p>
+                                                <p>' . htmlspecialchars($produkt['nazwa_produktu']) . '</p>
                                             </div>
                                         </td>';
-                                        echo '<td class="availability"><span class="status available">Dostępny</span></td>';
-                                        echo '<td class="unit-price">' . number_format($produkt['cena'] / 10, 2) . ' zł</td>';
-                                        echo '<td>
-                                                <div class="day-control" style="display: flex; align-items: center; gap: 5px;">
-                                                    <button type="button" class="decrease-day" onclick="updateDays(\'decrease\', ' . $produkt['produkt_id'] . ', ' . $produkt['cena'] . ')">-</button>
-                                                    <input type="text" id="days-' . $produkt['produkt_id'] . '" value="0" readonly>
-                                                    <button type="button" class="increase-day" onclick="updateDays(\'increase\', ' . $produkt['produkt_id'] . ', ' . $produkt['cena'] . ')">+</button>
-                                                </div>
-                                                <form method="post" class="add-to-cart-form">
-                                                    <input type="hidden" name="action" value="add">
-                                                    <input type="hidden" name="product_id" value="' . $produkt['produkt_id'] . '">
-                                                    <input type="hidden" name="product_name" value="' . htmlspecialchars($produkt['nazwa_produktu']) . '">
-                                                    <input type="hidden" name="product_price" value="' . $produkt['cena'] . '">
-                                                    <input type="hidden" id="days-hidden-' . $produkt['produkt_id'] . '" name="rental_days" value="0">
-                                                </form>
-                                            </td>';
-                                        echo '<td class="total-price" id="total-price-' . $produkt['produkt_id'] . '">0,00 zł</td>';
-                                        echo '<td>
-                                                <input type="checkbox" name="product_select[]" value="' . $produkt['produkt_id'] . '">
-                                            </td>';
-                                        echo '</tr>';
+                                    echo '<td class="availability"><span class="status available">Dostępny</span></td>';
+                                    echo '<td class="unit-price">' . number_format($produkt['cena'] / 10, 2) . ' zł</td>';
+                                    echo '<td>
+                                            <div class="day-control" style="display: flex; align-items: center; gap: 5px;">
+                                                <button type="button" class="decrease-day" onclick="updateDays(\'decrease\', ' . $produkt['produkt_id'] . ', ' . $produkt['cena'] . ')">-</button>
+                                                <input type="text" id="days-' . $produkt['produkt_id'] . '" value="0" readonly>
+                                                <button type="button" class="increase-day" onclick="updateDays(\'increase\', ' . $produkt['produkt_id'] . ', ' . $produkt['cena'] . ')">+</button>
+                                            </div>
+                                            <form method="post" class="add-to-cart-form">
+                                                <input type="hidden" name="action" value="add">
+                                                <input type="hidden" name="product_id" value="' . $produkt['produkt_id'] . '">
+                                                <input type="hidden" name="product_name" value="' . htmlspecialchars($produkt['nazwa_produktu']) . '">
+                                                <input type="hidden" name="product_price" value="' . $produkt['cena'] . '">
+                                                <input type="hidden" id="days-hidden-' . $produkt['produkt_id'] . '" name="rental_days" value="0">
+                                            </form>
+                                        </td>';
+                                    echo '<td class="total-price" id="total-price-' . $produkt['produkt_id'] . '">0,00 zł</td>';
+                                    echo '<td>
+                                        <input type="checkbox" id="checkbox-' . $produkt['produkt_id'] . '" name="product_select[]" value="' . $produkt['produkt_id'] . '" class="highlight-checkbox" onclick="toggleRowVisibility(' . $produkt['produkt_id'] . ')">
+                                    </td>';
+                                    echo '</tr>';
+                                                                       
                                 }
 
                                 // Wyświetlanie sprzętu z sesji
@@ -329,6 +331,27 @@ if ($product) {
             font-size: 14px;
             background-color: transparent;
         }
+
+        .highlight-checkbox:checked + label {
+            background-color: rgba(255, 165, 0, 0.7);
+        }
+
+        /* Stylowanie samego checkboxa */
+        .highlight-checkbox {
+            width: 20px;
+            height: 20px;
+            appearance: none;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            background-color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .highlight-checkbox:checked {
+            background-color: rgba(255, 165, 0, 0.7);
+            border-color: rgba(255, 165, 0, 1);
+        }
     </style>
 
     <script>
@@ -351,6 +374,44 @@ if ($product) {
             const totalPrice = days * (price / 10);
             totalPriceField.textContent = totalPrice.toFixed(2) + ' zł';
         }
+
+        function toggleRowHighlight(productId) {
+            const row = document.getElementById(`row-${productId}`);
+            const checkbox = document.getElementById(`checkbox-${productId}`);
+            
+            if (checkbox.checked) {
+                row.classList.add('highlighted-row');
+            } else {
+                row.classList.remove('highlighted-row');
+            }
+        }
+
+        function toggleRowVisibility(productId) {
+            const row = document.getElementById(`row-${productId}`);
+            const checkbox = document.getElementById(`checkbox-${productId}`);
+            const cell = checkbox.closest('td'); // Pobieramy komórkę z checkboxem
+
+            if (checkbox.checked) {
+                row.classList.remove('dimmed'); // Usuwamy przyciemnienie
+                cell.style.backgroundColor = 'rgba(255, 165, 0, 0.7)'; // Ustawiamy pomarańczowy kolor tła
+            } else {
+                row.classList.add('dimmed'); // Dodajemy przyciemnienie
+                cell.style.backgroundColor = ''; // Przywracamy domyślne tło
+            }
+        }
+
+        // Automatyczne przyciemnienie na starcie dla niezaznaczonych checkboxów
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.highlight-checkbox').forEach(checkbox => {
+                const productId = checkbox.id.split('-')[1];
+                const cell = checkbox.closest('td');
+                if (!checkbox.checked) {
+                    document.getElementById(`row-${productId}`).classList.add('dimmed');
+                } else {
+                    cell.style.backgroundColor = 'rgba(255, 165, 0, 0.7)';
+                }
+            });
+        });
     </script>
 
     <script>
