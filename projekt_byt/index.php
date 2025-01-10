@@ -193,7 +193,6 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
                     </a>
                     <a href="Store/rental.php?source=<?php echo $current_url; ?>">
                         <img src="Image/Icon/rent.png" class="category-icon"> WYPOŻYCZALNIA SPRZĘTU
-                    <img src="Image/Icon/down-arrow.png" alt="Strzałka w dół" class="arrow-icon">
                     </a>
 
                     <a href="#">

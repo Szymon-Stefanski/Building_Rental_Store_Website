@@ -189,11 +189,11 @@ if ($product) {
                                             </div>
                                         </td>';
                                     echo '<td class="availability"><span class="status available">Dostępny</span></td>';
-                                    echo '<td class="unit-price">' . number_format($produkt['cena'] / 20, 2) . ' zł</td>';
+                                    echo '<td id="unit-price-' . $produkt['produkt_id'] . '" class="unit-price">' . number_format($produkt['cena'] / 20, 2) . ' zł</td>';
                                     echo '<td>
                                             <div class="quantity-control rent-days" id="rent-days-' . $produkt['produkt_id'] . '">
                                                 <button type="button" class="minus-button" onclick="updateRentDays(' . $produkt['produkt_id'] . ', -1)">-</button>
-                                                <span id="rent-days-value-' . $produkt['produkt_id'] . '">0</span>
+                                                <span id="rent-days-value-' . $produkt['produkt_id'] . '">1</span>
                                                 <button type="button" class="plus-button" onclick="updateRentDays(' . $produkt['produkt_id'] . ', 1)">+</button>
                                             </div>
                                             <form method="post" class="add-to-cart-form">
@@ -224,7 +224,7 @@ if ($product) {
                                                 </div>
                                             </td>';
                                         echo '<td class="availability"><span class="status available">Dostępny</span></td>';
-                                        echo '<td class="unit-price">' . number_format($item['price'], 2) . ' zł</td>';
+                                        echo '<td id="unit-price-' . $produkt['id'] . '" class="unit-price">' . number_format($produkt['cena'] / 20, 2) . ' zł</td>';
                                         echo '<td>
                                                 <div class="quantity-control">
                                                     <form method="post" class="quantity-form">
@@ -303,6 +303,8 @@ if ($product) {
                 <li><strong>Kara za zwłokę:</strong> <br> W przypadku opóźnienia w zwrocie sprzętu, za każdy dzień zwłoki naliczana jest kara w wysokości <strong>100% dziennej stawki wynajmu</strong>.</li>
                 <br>
                 <li><strong>Odwołanie wynajmu:</strong> <br> W przypadku odwołania chęci wynajmu, za każdy dzień który upłynął od zgłoszenia naliczana jest <strong>stawka dzienna wynajmu</strong>.</li>
+                <br>
+                <li><strong>Akceptacja warunków:</strong> <br> zgłoszenie chęć wynajęcia sprzętu dokonane przez klient rozumiane jest jako <strong>akceptacja powyższych warunków</strong>.</li>
                 <br>
             </ol>
         </div>
@@ -408,14 +410,21 @@ if ($product) {
             const totalPrice = document.getElementById(`total-price-${productId}`);
             const rentDaysValue = document.getElementById(`rent-days-value-${productId}`);
             const tdElement = document.getElementById(`td-checkbox-${productId}`);
+            const priceElement = document.getElementById(`unit-price-${productId}`);
+            const pricePerDay = parseFloat(priceElement.textContent.trim()); 
 
             if (checkbox.checked) {
                 rentDays.style.display = 'flex';
                 tdElement.classList.add('highlighted');
+                const days = parseInt(rentDaysValue.value || 1, 10);
+                const total = pricePerDay * days;
+
+                // Wyświetl obliczoną wartość
+                totalPrice.textContent = total.toFixed(2) + ' zł';
             } else {
                 tdElement.classList.remove('highlighted');
                 rentDays.style.display = 'none';
-                rentDaysValue.textContent = '0';
+                rentDaysValue.textContent = '1';
                 totalPrice.textContent = '0.00 zł';
             }
         }
