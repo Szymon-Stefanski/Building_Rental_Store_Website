@@ -285,6 +285,15 @@ align-items: center;
   background-color: #89ad6a;
  
 }
+.nav-links .delivery{
+  background-color: #66cc33;
+    justify-content: flex-start;
+  
+}
+.nav-links .delivery:hover{
+  background-color: #55aa29;
+ 
+}
 
 /* Styl dla ikon kategorii */
 .category-icon {
