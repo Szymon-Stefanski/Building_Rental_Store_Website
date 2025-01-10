@@ -205,11 +205,10 @@ if ($product) {
                                             </form>
                                         </td>';
                                     echo '<td class="total-price" id="total-price-' . $produkt['produkt_id'] . '">0,00 zł</td>';
-                                    echo '<td>
+                                    echo '<td id="td-checkbox-' . $produkt['produkt_id'] . '" class="highlight-checkbox-td">
                                         <input type="checkbox" id="checkbox-' . $produkt['produkt_id'] . '" name="product_select[]" value="' . $produkt['produkt_id'] . '" class="highlight-checkbox" onclick="toggleRentControls(' . $produkt['produkt_id'] . ')">
                                     </td>';
-                                    echo '</tr>';
-                                                                       
+                                    echo '</tr>';                            
                                 }
 
                                 // Wyświetlanie sprzętu z sesji
@@ -290,6 +289,24 @@ if ($product) {
 
             </div>
         </div>
+        <!-- Sekcja z polecanym produktem -->
+        <aside class="recommended-product">
+        <h3 style="color: red; text-align: center;">Warunki wynajmu sprzętu:</h3>
+        <div class="terms-container">
+            <ol style="text-align: justify; margin: 20px; font-size: 16px;">
+                <li><strong>Dni wynajmu liczą się od dnia zgłoszenia wynajmu:</strong> <br> Wynajem rozpoczyna się w momencie dokonania opłaty i zarejestrowania zgłoszenia wynajmu, niezależnie od godziny odbioru sprzętu.</li>
+                <br>
+                <li><strong>Płatność dokonywana z góry:</strong> <br> Wszystkie opłaty za wynajem należy uiścić przed odbiorem sprzętu - w przeciwnym wypadku zgłoszenie nie zostanie zarejestrowane.</li>
+                <br>
+                <li><strong>Odpowiedzialność za uszkodzenia:</strong> <br> W przypadku uszkodzenia wypożyczonego sprzętu, klient zobowiązany jest do pokrycia pełnej wartości sprzętu zgodnie z jego ceną rynkową.</li>
+                <br>
+                <li><strong>Kara za zwłokę:</strong> <br> W przypadku opóźnienia w zwrocie sprzętu, za każdy dzień zwłoki naliczana jest kara w wysokości <strong>100% dziennej stawki wynajmu</strong>.</li>
+                <br>
+                <li><strong>Odwołanie wynajmu:</strong> <br> W przypadku odwołania chęci wynajmu, za każdy dzień który upłynął od zgłoszenia naliczana jest <strong>stawka dzienna wynajmu</strong>.</li>
+                <br>
+            </ol>
+        </div>
+
             <!-- Podsumowanie koszyka -->
             <div class="summary">
                 <p>Produkty: <span id="products-total"><?php echo $Total;?> zł</span></p>
@@ -297,6 +314,7 @@ if ($product) {
                 <p>VAT (wliczony): <span id="vat-amount"><?php echo $Vat*100;?>%</span></p>
             </div>
         </aside>
+    </div>
     </div>
 
     <style>
@@ -315,6 +333,16 @@ if ($product) {
             background-color: #fff;
             cursor: pointer;
             transition: background-color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .highlight-checkbox-td {
+            transition: background-color 0.3s ease;
+            background-color: transparent; /* Domyślnie przezroczysty */
+        }
+
+        /* Zmieniony wygląd, gdy checkbox jest zaznaczony */
+        .highlight-checkbox-td.highlighted {
+            background-color: rgba(255, 165, 0, 0.5); /* Transparentny pomarańczowy */
         }
 
         .rent-days {
@@ -379,13 +407,16 @@ if ($product) {
             const rentDays = document.getElementById(`rent-days-${productId}`);
             const totalPrice = document.getElementById(`total-price-${productId}`);
             const rentDaysValue = document.getElementById(`rent-days-value-${productId}`);
+            const tdElement = document.getElementById(`td-checkbox-${productId}`);
 
             if (checkbox.checked) {
-                rentDays.style.display = 'flex'; // Pokaż licznik dni wynajmu
+                rentDays.style.display = 'flex';
+                tdElement.classList.add('highlighted');
             } else {
-                rentDays.style.display = 'none'; // Ukryj licznik dni wynajmu
-                rentDaysValue.textContent = '0'; // Resetuj licznik dni
-                totalPrice.textContent = '0.00 zł'; // Zresetuj pole "Razem (brutto)"
+                tdElement.classList.remove('highlighted');
+                rentDays.style.display = 'none';
+                rentDaysValue.textContent = '0';
+                totalPrice.textContent = '0.00 zł';
             }
         }
 
