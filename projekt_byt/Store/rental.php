@@ -158,7 +158,7 @@ if ($product) {
                         <th>Produkt</th>
                         <th>Dostępność</th>
                         <th>Cena za dzień (brutto)</th>
-                        <th>Liczba dni</th>
+                        <th>Liczba dni wynajmu</th>
                         <th>Razem (brutto)</th>
                     </tr>
                 </thead>
@@ -168,7 +168,7 @@ if ($product) {
                             $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
                             // Pobieranie produktów, gdzie wynajem = 'TAK'
-                            $query = "SELECT * FROM Produkty WHERE wynajem = 'TAK'";
+                            $query = "SELECT * FROM Produkty WHERE wynajem = 'TAK' OR wynajem = 'NIE'";
                             $stmt = $pdo->prepare($query);
                             $stmt->execute();
 
@@ -189,12 +189,12 @@ if ($product) {
                                             </div>
                                         </td>';
                                     echo '<td class="availability"><span class="status available">Dostępny</span></td>';
-                                    echo '<td class="unit-price">' . number_format($produkt['cena'] / 10, 2) . ' zł</td>';
+                                    echo '<td class="unit-price">' . number_format($produkt['cena'] / 20, 2) . ' zł</td>';
                                     echo '<td>
-                                            <div class="day-control" style="display: flex; align-items: center; gap: 5px;">
-                                                <button type="button" class="decrease-day" onclick="updateDays(\'decrease\', ' . $produkt['produkt_id'] . ', ' . $produkt['cena'] . ')">-</button>
-                                                <input type="text" id="days-' . $produkt['produkt_id'] . '" value="0" readonly>
-                                                <button type="button" class="increase-day" onclick="updateDays(\'increase\', ' . $produkt['produkt_id'] . ', ' . $produkt['cena'] . ')">+</button>
+                                            <div class="quantity-control rent-days" id="rent-days-' . $produkt['produkt_id'] . '">
+                                                <button type="button" class="minus-button" onclick="updateRentDays(' . $produkt['produkt_id'] . ', -1)">-</button>
+                                                <span id="rent-days-value-' . $produkt['produkt_id'] . '">0</span>
+                                                <button type="button" class="plus-button" onclick="updateRentDays(' . $produkt['produkt_id'] . ', 1)">+</button>
                                             </div>
                                             <form method="post" class="add-to-cart-form">
                                                 <input type="hidden" name="action" value="add">
@@ -206,7 +206,7 @@ if ($product) {
                                         </td>';
                                     echo '<td class="total-price" id="total-price-' . $produkt['produkt_id'] . '">0,00 zł</td>';
                                     echo '<td>
-                                        <input type="checkbox" id="checkbox-' . $produkt['produkt_id'] . '" name="product_select[]" value="' . $produkt['produkt_id'] . '" class="highlight-checkbox" onclick="toggleRowVisibility(' . $produkt['produkt_id'] . ')">
+                                        <input type="checkbox" id="checkbox-' . $produkt['produkt_id'] . '" name="product_select[]" value="' . $produkt['produkt_id'] . '" class="highlight-checkbox" onclick="toggleRentControls(' . $produkt['produkt_id'] . ')">
                                     </td>';
                                     echo '</tr>';
                                                                        
@@ -237,7 +237,7 @@ if ($product) {
                                                     </form>
                                                 </div>
                                             </td>';
-                                        echo '<td class="total-price">' . number_format($itemTotal, 2)/10 . ' zł</td>';
+                                        echo '<td class="total-price">' . number_format($itemTotal, 2) . ' zł</td>';
                                         echo '<td>
                                                 <form method="post">
                                                     <input type="hidden" name="action" value="remove_item">
@@ -300,40 +300,9 @@ if ($product) {
     </div>
 
     <style>
-        .day-control {
-            display: inline-flex;
-            align-items: center;
-            border: 1px solid #ccc;
-            border-radius: 20px;
-            padding: 5px;
-            background-color: #f9f9f9;
-        }
-
-        .day-control button {
-            background: none;
-            border: none;
-            font-size: 16px;
-            color: #27ae60; /* Zielony kolor przycisków */
-            cursor: pointer;
-            outline: none;
-            padding: 0 10px;
-        }
-
-        .day-control button:hover {
-            color: #2ecc71; /* Jaśniejszy zielony podczas najechania */
-        }
-
-        .day-control input {
-            width: 30px;
-            text-align: center;
-            border: none;
-            outline: none;
-            font-size: 14px;
-            background-color: transparent;
-        }
-
-        .highlight-checkbox:checked + label {
+        .highlight-checkbox:checked{
             background-color: rgba(255, 165, 0, 0.7);
+            border-color: rgba(255, 165, 0, 1);
         }
 
         /* Stylowanie samego checkboxa */
@@ -348,9 +317,28 @@ if ($product) {
             transition: background-color 0.3s ease, border-color 0.3s ease;
         }
 
-        .highlight-checkbox:checked {
-            background-color: rgba(255, 165, 0, 0.7);
-            border-color: rgba(255, 165, 0, 1);
+        .rent-days {
+            display: none;
+        }
+
+        .highlight-checkbox:checked + .rent-days {
+            display: flex;
+            align-items: center;
+        }
+
+        .minus-button,
+        .plus-button {
+            padding: 5px 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f5f5f5;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .minus-button:hover,
+        .plus-button:hover {
+            background-color: #ddd;
         }
     </style>
 
@@ -386,35 +374,37 @@ if ($product) {
             }
         }
 
-        function toggleRowVisibility(productId) {
-            const row = document.getElementById(`row-${productId}`);
+        function toggleRentControls(productId) {
             const checkbox = document.getElementById(`checkbox-${productId}`);
-            const cell = checkbox.closest('td'); // Pobieramy komórkę z checkboxem
+            const rentDays = document.getElementById(`rent-days-${productId}`);
+            const totalPrice = document.getElementById(`total-price-${productId}`);
+            const rentDaysValue = document.getElementById(`rent-days-value-${productId}`);
 
             if (checkbox.checked) {
-                row.classList.remove('dimmed'); // Usuwamy przyciemnienie
-                cell.style.backgroundColor = 'rgba(255, 165, 0, 0.7)'; // Ustawiamy pomarańczowy kolor tła
+                rentDays.style.display = 'flex'; // Pokaż licznik dni wynajmu
             } else {
-                row.classList.add('dimmed'); // Dodajemy przyciemnienie
-                cell.style.backgroundColor = ''; // Przywracamy domyślne tło
+                rentDays.style.display = 'none'; // Ukryj licznik dni wynajmu
+                rentDaysValue.textContent = '0'; // Resetuj licznik dni
+                totalPrice.textContent = '0.00 zł'; // Zresetuj pole "Razem (brutto)"
             }
         }
 
-        // Automatyczne przyciemnienie na starcie dla niezaznaczonych checkboxów
-        document.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('.highlight-checkbox').forEach(checkbox => {
-                const productId = checkbox.id.split('-')[1];
-                const cell = checkbox.closest('td');
-                if (!checkbox.checked) {
-                    document.getElementById(`row-${productId}`).classList.add('dimmed');
-                } else {
-                    cell.style.backgroundColor = 'rgba(255, 165, 0, 0.7)';
-                }
-            });
-        });
-    </script>
+        function updateRentDays(productId, change) {
+            const rentDaysValue = document.getElementById(`rent-days-value-${productId}`);
+            const totalPrice = document.getElementById(`total-price-${productId}`);
+            const unitPrice = parseFloat(document.querySelector(`#row-${productId} .unit-price`).textContent.replace(' zł', ''));
 
-    <script>
+            let currentDays = parseInt(rentDaysValue.textContent, 10) || 0;
+            currentDays += change;
+
+            if (currentDays < 0) {
+                currentDays = 0;
+            }
+
+            rentDaysValue.textContent = currentDays;
+            const total = currentDays * unitPrice;
+            totalPrice.textContent = total.toFixed(2) + ' zł';
+        }
 
             window.onload = function() {
             // Pobranie danych koszyka z localStorage
