@@ -198,6 +198,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <a href="../index.php" class="back">
                         <img src="../Image/Icon/log-in.png" class="category-icon"> POWRÓT
                     </a>
+                    <a href="suppliersManagement.php" class="delivery">
+                        <img src="../Image/Icon/delivery.png" class="category-icon"> DOSTAWCY
+                    </a>
                     
                     <a href="#">
                         <img src="../Image/Icon/discount.png" class="category-icon"> PROMOCJE
