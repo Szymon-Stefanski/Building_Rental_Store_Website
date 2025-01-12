@@ -11,6 +11,9 @@ I Logowanie poprzez google
     			GOOGLE_CLIENT_SECRET=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
     			GOOGLE_REDIRECT_URI=http://localhost/projekt_byt/redirect.php
 
+    Ściągnij composer z poniżeszego linku:
+    https://getcomposer.org/
+
     1. Open CMD
 
     2. cd C:\xampp\htdocs\projekt_byt\Login
