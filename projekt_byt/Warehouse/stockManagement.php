@@ -2,6 +2,15 @@
 session_start();
 require '../database_connection.php';
 
+$stmt = getDbConnection()->prepare("SELECT rola FROM Uzytkownicy WHERE uzytkownik_id = ?");
+$stmt->execute([$_SESSION['user_id']]);
+$userRole = $stmt->fetchColumn();
+
+if (!in_array($userRole, ['mod', 'admin'])) {
+    header('Location: ../index.php');
+    exit;
+}
+
 $stmt = getDbConnection()->prepare("
     SELECT k.nazwa_kategorii, p.produkt_id, p.nazwa_produktu, p.cena, p.ilosc_w_magazynie
     FROM Kategorie k
@@ -172,6 +181,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
+    if ($action === 'delete_product') {
+        $productId = isset($_POST['product_id']) ? $_POST['product_id'] : null;
+
+        if ($productId) {
+            $deleteProductStmt = getDbConnection()->prepare("
+            DELETE FROM Produkty WHERE produkt_id = :productId
+        ");
+            $deleteProductStmt->execute([':productId' => $productId]);
+
+            $_SESSION['success_message'] = 'Produkt został usunięty.';
+        } else {
+            $_SESSION['error_message'] = 'Nie udało się usunąć produktu.';
+        }
+    }
+
     header('Location: ' . $_SERVER['PHP_SELF']);
     exit;
 }
@@ -212,6 +236,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             </nav>
     </header>
+    <?php if ($userRole === 'admin'): ?>
         <div class="add-category-container">
             <form action="<?= $_SERVER['PHP_SELF'] ?>" method="POST">
                 <input type="hidden" name="action" value="add_category">
@@ -220,7 +245,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <button type="submit">Dodaj kategorię</button>
             </form>
         </div>
-
+    <?php endif; ?>
     <main class="main-content">
         <!-- Wyświetla wiadomości z przekierowań np. o dodaniu produktu $_SESSION['success_message'] = "Produkt został pomyślnie dodany."; -->
         <?php if (isset($_SESSION['success_message'])): ?>
@@ -239,6 +264,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <button class="add-to-cart">
                             <a href="addProduct.php?id=<?= $groupedProducts[$category]['id'] ?>">Dodaj produkt do tej kategorii</a>
                         </button>
+                        <?php if ($userRole === 'admin'): ?>
                         <h2>
                             <span class="category-name"><?= ($category) ?></span>
                             <button class="edit-category-button" onclick="showEditCategoryForm(this)">Zmień nazwę</button>
@@ -267,6 +293,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 </div>
                             </div>
                         </h2>
+                        <?php endif; ?>
                         <?php if (!empty($products[0]['produkt_id'])): ?>
                             <div class="product-grid">
                                 <?php foreach ($products as $product): ?>
@@ -299,9 +326,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                     <button type="submit" id="cena">Zmień cenę</button>
                                                 </form>
 
-                                                <button class="edit-product" onclick="addToCart(this)">
+                                                <button class="edit-product"">
                                                 <a href="editProduct.php?id=<?=$product['produkt_id']?>"> Edytuj Szczegóły produktu </a>
                                                 </button>
+                                                <?php if ($userRole === 'admin'): ?>
+                                                <form action="<?= $_SERVER['PHP_SELF'] ?>" method="POST" onsubmit="return confirm('Czy na pewno chcesz usunąć ten produkt?')">
+                                                    <input type="hidden" name="action" value="delete_product">
+                                                    <input type="hidden" name="product_id" value="<?= $product['produkt_id'] ?>">
+                                                    <button type="submit" class="delete-product">Usuń produkt</button>
+                                                </form>
+                                                <?php endif;?>
                                             </div>
                                         </div>
                                     <?php endif; ?>
