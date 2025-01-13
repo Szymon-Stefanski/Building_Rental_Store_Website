@@ -28,6 +28,21 @@ if (!isset($authUrl)) {
     $authUrl = $client->createAuthUrl();
     error_log("Generowanie URL do autoryzacji Google: " . $authUrl);
 }
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+$login = $_POST['username'];
+$password = $_POST['password'];
+$stmt = getDbConnection()->prepare("SELECT uzytkownik_id, login, haslo FROM uzytkownicy WHERE login = ?");
+$stmt->execute([$login]);
+$user = $stmt->fetch();
+if ($user && password_verify($password, $user['haslo'])) {
+    $_SESSION['user_id'] = $user['uzytkownik_id'];
+    $_SESSION['username'] = $user['login'];
+    header("Location: $source");
+    exit;
+} else {
+$error = "Nieprawidłowa nazwa użytkownika lub hasło.";
+}}
 ?>
 
 

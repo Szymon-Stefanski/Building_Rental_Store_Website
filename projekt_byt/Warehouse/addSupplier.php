@@ -2,6 +2,15 @@
 session_start();
 require '../database_connection.php';
 
+$stmt = getDbConnection()->prepare("SELECT rola FROM Uzytkownicy WHERE uzytkownik_id = ?");
+$stmt->execute([$_SESSION['user_id']]);
+$userRole = $stmt->fetchColumn();
+
+if (!in_array($userRole, ['mod', 'admin'])) {
+    header('Location: ../index.php');
+    exit;
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $supplier_name = isset($_POST['supplier_name']) ? $_POST['supplier_name'] : null;
     $contact_person = isset($_POST['contact_person']) ? $_POST['contact_person'] : null;

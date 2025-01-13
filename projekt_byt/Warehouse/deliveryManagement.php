@@ -2,6 +2,15 @@
 session_start();
 require '../database_connection.php';
 
+$stmt = getDbConnection()->prepare("SELECT rola FROM Uzytkownicy WHERE uzytkownik_id = ?");
+$stmt->execute([$_SESSION['user_id']]);
+$userRole = $stmt->fetchColumn();
+
+if (!in_array($userRole, ['mod', 'admin'])) {
+    header('Location: ../index.php');
+    exit;
+}
+
 try {
     $stmt = getDbConnection()->prepare("SELECT zamowienie_id, odbiorca_imie, odbiorca_nazwisko, data_zamowienia, status FROM Zamowienia");
     $stmt->execute();
@@ -58,10 +67,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
                 <td>
                     <a href="../Store/deliveryStatus.php?id=<?= $zamowienie['zamowienie_id'] ?>">Szczegóły</a> |
                     <a href="editDelivery.php?id=<?= $zamowienie['zamowienie_id'] ?>">Edytuj</a> |
+                    <?php if ($userRole === 'admin'): ?>
                     <form action="" method="POST" style="display:inline;">
                         <input type="hidden" name="delete_id" value="<?= $zamowienie['zamowienie_id'] ?>">
                         <button type="submit" onclick="return confirm('Czy na pewno chcesz usunąć to zamówienie?')">Usuń</button>
                     </form>
+                    <?php endif; ?>
                 </td>
             </tr>
         <?php endforeach; ?>

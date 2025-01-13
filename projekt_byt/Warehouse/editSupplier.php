@@ -2,6 +2,15 @@
 session_start();
 require '../database_connection.php';
 
+$stmt = getDbConnection()->prepare("SELECT rola FROM Uzytkownicy WHERE uzytkownik_id = ?");
+$stmt->execute([$_SESSION['user_id']]);
+$userRole = $stmt->fetchColumn();
+
+if (!in_array($userRole, ['mod', 'admin'])) {
+    header('Location: ../index.php');
+    exit;
+}
+
 if (!isset($_GET['id'])) {
     echo "Brak ID dostawcy w URL.";
     exit;

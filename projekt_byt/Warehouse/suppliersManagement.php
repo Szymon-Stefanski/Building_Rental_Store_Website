@@ -2,6 +2,15 @@
 session_start();
 require '../database_connection.php';
 
+$stmt = getDbConnection()->prepare("SELECT rola FROM Uzytkownicy WHERE uzytkownik_id = ?");
+$stmt->execute([$_SESSION['user_id']]);
+$userRole = $stmt->fetchColumn();
+
+if (!in_array($userRole, ['mod', 'admin'])) {
+    header('Location: ../index.php');
+    exit;
+}
+
 try {
     // Pobieranie dostawców
     $stmt = getDbConnection()->prepare("SELECT * FROM Dostawcy");
@@ -81,7 +90,9 @@ try {
                         <td><?php echo htmlspecialchars($supplier['adres']); ?></td>
                         <td>
                             <a href="editSupplier.php?id=<?php echo $supplier['dostawca_id']; ?>">Edytuj</a> |
+                            <?php if ($userRole === 'admin'): ?>
                             <a href="?delete_id=<?php echo $supplier['dostawca_id']; ?>" onclick="return confirm('Czy na pewno chcesz usunąć tego dostawcę?');">Usuń</a>
+                            <?php endif; ?>
                         </td>
                     </tr>
                 <?php endforeach; ?>
