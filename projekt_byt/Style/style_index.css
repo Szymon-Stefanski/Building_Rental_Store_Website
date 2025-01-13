@@ -526,13 +526,6 @@ body {
   font-size: 14px; 
 }
 
-.main-navigation,
-.nav-links a,
-.category-dropdown,
-.top-bar {
-  font-family: "Brush Script MT";
-}
-
 /* Styl dla linków w nawigacji */
 .nav-links {
   display: flex;
@@ -790,12 +783,6 @@ body {
 
 /* Cena produktu */
 .product-price {
-  /*
-    font-size: 18px;
-    font-family: 'Arial', sans-serif;
-    color: #ff6600;
-    margin-bottom: 10px;
-*/
   font-size: 18px;
   font-family: "Arial", sans-serif;
   color: #ff6600;
@@ -806,10 +793,7 @@ body {
 
 /* Kontener dla kontrolki ilości i przycisku Do koszyka */
 .quantity-cart-container {
-  /* display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 10px;*/
+
   margin-top: auto; /* Umieszcza kontener z przyciskiem na dole */
   display: flex;
   justify-content: space-around;
@@ -1074,7 +1058,7 @@ body {
 }
 
 /* Dla telefonów - 2 produkty w rzędzie z przewijaniem poziomym */
-@media (max-width: 768px) {
+@media (max-width: 868px){
   .header-container {
     
     align-items: center;
@@ -1212,7 +1196,7 @@ body {
 }
 
 /* Dostosowanie od 1170px do 769px - 3 produkty w rzędzie */
-@media (max-width: 1170px) and (min-width: 769px) {
+@media (max-width: 1170px) and (min-width: 869px) {
   .product-grid {
     display: flex;
     flex-wrap: wrap;
