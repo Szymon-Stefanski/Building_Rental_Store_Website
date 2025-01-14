@@ -140,7 +140,6 @@ if ($product) {
 </head>
 <body>
     <div class="cart-container">
-        <!-- Główna sekcja koszyka -->
         <div class="main-cart">
             <div class="breadcrumbs">
                 <?php
@@ -268,7 +267,7 @@ if ($product) {
                     $username = ($_SESSION['username']);
                     ?>
                     <button id="guestButton" class="guest-button">
-                        <a href="delivery.php">
+                        <a href="rentalForm.php">
                             <img src="../Image/Icon/user.png" alt="Ikona gościa"> Przejdź do dostawy
                         </a>
                     </button>
@@ -280,7 +279,7 @@ if ($product) {
                     </button>
 
                     <button id="guestButton" class="guest-button">
-                        <a href="delivery.php">
+                        <a href="rentalForm.php">
                             <img src="../Image/Icon/user.png" alt="Ikona gościa"> WYPOŻYCZ JAKO GOŚĆ
                         </a>
                     </button>
