@@ -86,45 +86,53 @@ function findProductImage($productId, $categoryName, $productName) {
 <head>
     <meta charset="UTF-8">
     <title>Edytuj Zamówienie</title>
+    <link rel="stylesheet" href="../Style/style_edit_order.css">
 </head>
 <body>
-<h1>Edytuj Zamówienie #<?= htmlspecialchars($zamowienie_id) ?></h1>
+    <header class="header">
+        <h1>Edytuj Zamówienie #<?= htmlspecialchars($zamowienie_id) ?></h1>
+        <a href="deliveryManagement.php" class="back-button">
+            <img src="../Image/Icon/log-in.png" alt="Powrót" class="button-icon"> Powrót
+        </a>
+    </header>
 
-<form method="post">
-    <h2>Dane odbiorcy</h2>
-    <label>
-        Imię: <input type="text" name="odbiorca_imie" value="<?= htmlspecialchars($zamowienie['odbiorca_imie']) ?>">
-    </label><br>
-    <label>
-        Nazwisko: <input type="text" name="odbiorca_nazwisko" value="<?= htmlspecialchars($zamowienie['odbiorca_nazwisko']) ?>">
-    </label><br>
-    <label>
-        Email: <input type="email" name="odbiorca_email" value="<?= htmlspecialchars($zamowienie['odbiorca_email']) ?>">
-    </label><br>
-    <label>
-        Adres: <textarea name="adres"><?= htmlspecialchars($zamowienie['adres']) ?></textarea>
-    </label><br>
-    <label>
-        Status: <input type="text" name="status" value="<?= htmlspecialchars($zamowienie['status']) ?>">
-    </label><br>
-
-    <h2>Pozycje Zamówienia</h2>
-    <?php foreach ($pozycje as $pozycja): ?>
-        <div>
-            <strong><?= htmlspecialchars($pozycja['produkt_nazwa']) ?></strong><br>
-            <img src="<?= findProductImage($pozycja['produkt_id'], htmlspecialchars($pozycja['nazwa_kategorii'] ?? 'unknown'), $pozycja['produkt_nazwa']) ?>"
+    <form method="post" class="order-form">
+        <section class="customer-data">
+            <h2 class="odbiorca">Dane odbiorcy</h2>
             <label>
-                Ilość: <input type="number" name="pozycje[<?= $pozycja['pozycja_id'] ?>][ilosc]" value="<?= htmlspecialchars($pozycja['ilosc']) ?>">
+                Imię: <input type="text" name="odbiorca_imie" value="<?= htmlspecialchars($zamowienie['odbiorca_imie']) ?>">
             </label><br>
             <label>
-                Cena za sztukę: <input type="number" step="0.01" name="pozycje[<?= $pozycja['pozycja_id'] ?>][cena_za_sztuke]" value="<?= htmlspecialchars($pozycja['cena_za_sztuke']) ?>">
+                Nazwisko: <input type="text" name="odbiorca_nazwisko" value="<?= htmlspecialchars($zamowienie['odbiorca_nazwisko']) ?>">
             </label><br>
-        </div>
-    <?php endforeach; ?>
+            <label>
+                Email: <input type="email" name="odbiorca_email" value="<?= htmlspecialchars($zamowienie['odbiorca_email']) ?>">
+            </label><br>
+            <label>
+                Adres: <textarea name="adres"><?= htmlspecialchars($zamowienie['adres']) ?></textarea>
+            </label ><br>
+            <label>
+                Status: <input type="text" name="status" value="<?= htmlspecialchars($zamowienie['status']) ?>">
+            </label><br>
+        </section>
 
-    <button type="submit">Zapisz zmiany</button>
-</form>
+        <section class="order-items">
+            <h2 class="pozycje">Pozycje Zamówienia</h2>
+            <?php foreach ($pozycje as $pozycja): ?>
+                <div class="order-item">
+                    <strong><?= htmlspecialchars($pozycja['produkt_nazwa']) ?></strong><br>
+                    <img src="<?= findProductImage($pozycja['produkt_id'], htmlspecialchars($pozycja['nazwa_kategorii'] ?? 'unknown'), $pozycja['produkt_nazwa']) ?>" alt="Produkt">
+                    <label>
+                        Ilość: <input type="number" name="pozycje[<?= $pozycja['pozycja_id'] ?>][ilosc]" value="<?= htmlspecialchars($pozycja['ilosc']) ?>">
+                    </label><br>
+                    <label>
+                        Cena za sztukę: <input type="number" step="0.01" name="pozycje[<?= $pozycja['pozycja_id'] ?>][cena_za_sztuke]" value="<?= htmlspecialchars($pozycja['cena_za_sztuke']) ?>">
+                    </label><br>
+                </div>
+            <?php endforeach; ?>
+        </section>
 
-<a href="deliveryManagement.php">Powrót do listy zamówień</a>
+        <button type="submit" class="submit-button">Zapisz zmiany</button>
+    </form>
 </body>
 </html>
