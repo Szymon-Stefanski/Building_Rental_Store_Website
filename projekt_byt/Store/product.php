@@ -167,10 +167,12 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
                     <a href="../index.php" class="back">
                         <img src="../Image/Icon/log-in.png" class="category-icon"> POWRÓT
                     </a>
-                    <button class="category-dropdown" style="color:white;">
-                        <img src="../Image/Icon/menu.png" alt="Kategoria" class="button-icon"> KATEGORIE
+                    
+                    <a href="#" style="background-color: #4caf50;">
+                        <img src="../Image/Icon/menu.png" alt="Kategoria" class="category-icon"> PRODUKTY
                         <img src="../Image/Icon/down-arrow.png" alt="Strzałka w dół" class="arrow-icon">
-                    </button>
+                    </a>
+                    
                     <a href="#">
                         <img src="../Image/Icon/brickwall.png" class="category-icon"> BUDOWA
                         <img src="../Image/Icon/down-arrow.png" alt="Strzałka w dół" class="arrow-icon">
@@ -180,7 +182,7 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
                         <img src="../Image/Icon/down-arrow.png" alt="Strzałka w dół" class="arrow-icon">
                     </a>
                     <a href="#">
-                        <img src="../Image/Icon/rent.png" class="category-icon"> WYPOŻYCZALNIA SPRZĘTU
+                        <img src="../Image/Icon/rent.png" class="category-icon"> WYPOŻYCZALNIA
                         <img src="../Image/Icon/down-arrow.png" alt="Strzałka w dół" class="arrow-icon">
                     </a>
                     <a href="#">

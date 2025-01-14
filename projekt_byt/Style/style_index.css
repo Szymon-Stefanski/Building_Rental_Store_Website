@@ -746,6 +746,7 @@ body {
   transition: transform 0.3s ease;
   position: relative;
   padding-bottom: 10px; /* Odstęp na dole dla przycisków */
+  box-shadow: 11px 11px 6px rgba(0, 0, 0, 0.1);
 }
 
 .product-card:hover {
@@ -754,16 +755,14 @@ body {
 
 .product-card img {
   width: 100%;
-  max-height: 150px;
-  object-fit: cover;
-  object-position: center; /* Wyśrodkowanie zdjęcia w kontenerze ssssssssssssssssssssssssss*/
+  max-height: 200px;
+  object-fit: contain;
+  object-position: center;
+  mix-blend-mode: multiply;
+  border-bottom: 2px solid #ccc; 
 }
 
 .product-card h3 {
-  /*font-size: 18px;
-    margin: 10px 0;
-    padding: 0 10px;
-    color: #333;*/
   font-size: 18px;
   margin: 10px 0;
   padding: 0 10px;
