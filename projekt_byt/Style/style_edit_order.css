@@ -1,0 +1,165 @@
+/* Globalne style */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f9;
+    color: #333;
+}
+
+/* Styl dla nagłówka */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f8f9fa; 
+    padding: 20px;
+    border-bottom: 2px solid #ccc; 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+    position: relative; 
+}
+
+/* Styl dla tytułu w nagłówku */
+.header h1 {
+    font-size: 24px;
+    color: #333; 
+    margin: 0;
+    font-weight: bold;
+    position: absolute; 
+    left: 50%; 
+    transform: translateX(-50%); 
+}
+
+.back-button {
+    display: inline-flex; 
+    align-items: center; 
+    gap: 8px; 
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #fff;
+    text-decoration: none;
+    background-color: #89ad00; 
+    border-radius: 5px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.back-button:hover {
+    background-color: #89ad6a;
+    transform: translateY(-2px);
+}
+
+.button-icon {
+    width: 20px; 
+    height: 20px; 
+    vertical-align: middle; 
+    transition: transform 0.3s ease; 
+}
+
+.back-button:hover .button-icon {
+    transform: scale(1.1); 
+}
+
+/* Formularz */
+.order-form {
+    max-width: 800px;
+    margin: 20px auto;
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.odbiorca {
+    color: white;
+    margin-bottom: 10px;
+    font-size: 20px;
+    background-color: #ff6600; 
+    padding: 10px 20px; 
+    
+}
+.pozycje {
+    color: white;
+    margin-bottom: 10px;
+    font-size: 20px;
+    background-color: #ff6600; 
+    padding: 10px 20px; 
+    
+}
+
+label{
+    font-weight: bold;
+}
+
+/* Pola formularza */
+input[type="text"], input[type="email"], textarea, input[type="number"] {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+    background-color: #f8f9fa;
+}
+
+textarea {
+    resize: vertical;
+    height: 100px;
+}
+
+
+textarea {
+    resize: vertical;
+    height: 100px;
+    background-color: #f8f9fa;
+}
+
+button.submit-button {
+    padding: 12px 20px;
+    font-size: 16px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-weight: bold;
+}
+
+button.submit-button:hover {
+    background-color: #218838;
+}
+
+/* Pozycje zamówienia */
+.order-items .order-item {
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+}
+
+.order-item img {
+    max-width: 200px;
+    margin: 10px 0;
+    display: block;
+}
+
+/* Responsywność */
+@media (max-width: 768px) {
+    .order-form {
+        padding: 15px;
+    }
+
+    .order-items .order-item {
+        padding-bottom: 10px;
+    }
+}
+
+@media (max-width: 1920px) {
+       .header a {
+    
+    margin-right: auto; 
+    margin-left: 76px;
+    }
+}
+
