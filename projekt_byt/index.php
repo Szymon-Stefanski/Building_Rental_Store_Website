@@ -95,6 +95,9 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
                     <a href="Store/deliveryCost.php">Koszty dostawy</a>
                     <a href="Store/reclamation.php">Reklamacje i zwroty</a>
                     <a href="Store/contact.php">Kontakt</a>
+                    <?php if ($userRole === 'admin' || $userRole === 'mod'): ?>
+                        <a href="configNewsletter.php">Ustaw newsletter</a>
+                    <?php endif; ?>
                 </div>
                 <div class="language-currency">
                     <?php if (isset($_SESSION['user_id'])): ?>
@@ -317,9 +320,13 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
                         </ul>
                     </div>
                     <div class="footer-newsletter">
-                        <h3>NEWSLETTER</h3>
+                    <h3>NEWSLETTER</h3>
                         <p>Chcesz być na bieżąco z najlepszymi ofertami? Zapisz się do newslettera i nie przegap okazji!</p>
-                        <button type="submit"><i class="fa fa-arrow-right"></i> ZAPISZ SIĘ</button>
+                        <form action="newsletter.php" method="GET">
+                            <button type="submit">
+                                <i class="fa fa-arrow-right"></i> ZAPISZ SIĘ
+                            </button>
+                        </form>
                         
                         
                     </div>
