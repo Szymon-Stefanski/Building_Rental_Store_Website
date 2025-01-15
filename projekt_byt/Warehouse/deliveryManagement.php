@@ -38,7 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
         <header class="header">
             <h1>Lista Zamówień</h1>
             <a href="../index.php" class="back-button">
-                <img src="../Image/Icon/log-in.png" alt="Powrót" class="button-icon"> Powrót
+                <img src="../Image/Icon/back.png" alt="Powrót" class="button-icon"> Powrót
             </a>
         </header>
         
