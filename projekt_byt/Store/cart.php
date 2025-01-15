@@ -193,6 +193,8 @@ if ($product) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Koszyk</title>
     <link rel="stylesheet" href="../Style/style_cart.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+
 </head>
 <body>
     <div class="cart-container">
@@ -200,7 +202,9 @@ if ($product) {
         <div class="main-cart">
             <div class="breadcrumbs">
                 <?php
-                echo '<a href="' . $source . '" class="back-button">◄ Powrót</a>';
+                echo '<a href="' . $source . '" class="back-button">
+                        <img src="../Image/Icon/back.png" alt="Ikona Powrotu" class="icon"> Powrót
+                     </a>';
                 ?>
             </div>
 
@@ -208,65 +212,75 @@ if ($product) {
                 <h2>KOSZYK</h2>
 
             </div>
-            <table class="cart-table">
-                <thead>
-                    <tr>
-                        <th>Produkt</th>
-                        <th>Dostępność</th>
-                        <th>Cena (brutto)</th>
-                        <th>Ilość</th>
-                        <th>Razem (brutto)</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php
-                        if (!isset($_SESSION['cart']) || empty($_SESSION['cart'])) {
-                            echo '<tr><td colspan="6">Koszyk jest pusty.</td></tr>';
-                        } else {
-                            foreach ($_SESSION['cart'] as $index => $item) {
-                                $itemTotal = $item['price'] * $item['quantity'];
+            <div class="cart-table-container">
+                <table class="cart-table">
+                    <thead>
+                        <tr>
+                            <th>Produkt</th>
+                            <th>Dostępność</th>
+                            <th>Cena (brutto)</th>
+                            <th>Ilość</th>
+                            <th>Razem (brutto)</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                            if (!isset($_SESSION['cart']) || empty($_SESSION['cart'])) {
+                                echo '<tr><td colspan="6">Koszyk jest pusty.</td></tr>';
+                            } else {
+                                foreach ($_SESSION['cart'] as $index => $item) {
+                                    $itemTotal = $item['price'] * $item['quantity'];
 
-                                $imagePath = findProductImage($item['id'], 'all', $item['name']);
+                                    $imagePath = findProductImage($item['id'], 'all', $item['name']);
 
-                                echo '<tr>';
-                                echo '<td class="product-info">
-                                        <img src="' . $imagePath . '" alt="' . htmlspecialchars($item['name'] ?? 'Produkt bez nazwy') . '" width="50" height="50">
-                                        <div>
-                                            <p>' . htmlspecialchars($item['name'] ?? 'Produkt bez nazwy') . '</p>
-                                        </div>
-                                    </td>';
-                                echo '<td class="availability"><span class="status available">Dostępny</span></td>';
-                                echo '<td class="unit-price">' . number_format($item['price'], 2) . ' zł</td>';
-                                echo '<td>
-                                        <div class="quantity-control">
-                                            <form method="post" class="quantity-form">
-                                                <input type="hidden" name="action" value="update_quantity">
+                                    echo '<tr>';
+                                    echo '<td class="product-info">
+                                            <div class="product-name">
+                                                <p>' . htmlspecialchars($item['name'] ?? 'Produkt bez nazwy') . '</p>
+                                            </div>
+                                            <div class="product-image">
+                                                <img src="' . $imagePath . '" alt="' . htmlspecialchars($item['name'] ?? 'Produkt bez nazwy') . '" width="50" height="50">
+                                            </div>
+                                        </td>';
+                                    echo '<td class="availability"><span class="status available">Dostępny</span></td>';
+                                    echo '<td class="unit-price">' . number_format($item['price'], 2) . ' zł</td>';
+                                    echo '<td>
+                                            <div class="quantity-control">
+                                                <form method="post" class="quantity-form">
+                                                    <input type="hidden" name="action" value="update_quantity">
+                                                    <input type="hidden" name="item_index" value="' . $index . '">
+                                                    <button type="submit" name="change" value="-1">-</button>
+                                                    <input type="text" name="quantity" value="' . $item['quantity'] . '" min="1">
+                                                    <button type="submit" name="change" value="1">+</button>
+                                                </form>
+                                            </div>
+                                        </td>';
+                                    echo '<td class="total-price">' . number_format($itemTotal, 2) . ' zł</td>';
+                                    echo '<td>
+                                            <form method="post">
+                                                <input type="hidden" name="action" value="remove_item">
                                                 <input type="hidden" name="item_index" value="' . $index . '">
-                                                <button type="submit" name="change" value="-1">-</button>
-                                                <input type="text" name="quantity" value="' . $item['quantity'] . '" min="1">
-                                                <button type="submit" name="change" value="1">+</button>
+                                                <button type="submit" class="remove-button">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
                                             </form>
-                                        </div>
-                                    </td>';
-                                echo '<td class="total-price">' . number_format($itemTotal, 2) . ' zł</td>';
-                                echo '<td>
-                                        <form method="post">
-                                            <input type="hidden" name="action" value="remove_item">
-                                            <input type="hidden" name="item_index" value="' . $index . '">
-                                            <button type="submit" class="remove-button">Usuń</button>
-                                        </form>
-                                    </td>';
-                                echo '</tr>';
+                                        </td>';
+                                    echo '</tr>';
+                                }
                             }
-                        }
-                    ?>
-                </tbody>
-            </table>
-
+                        ?>
+                    </tbody>
+                </table>
+            </div>
             <!-- Sekcja kodu rabatowego i darmowej dostawy -->
             <div class="cart-summary">
                 <div class="promo-code">
-                    <button>WPISZ KOD RABATOWY / BON PODARUNKOWY</button>
+                    <button id="toggle-code-btn">WPISZ KOD RABATOWY / BON PODARUNKOWY</button>
+                    <div id="promo-code-input" style="display: none; margin-top: 10px;">
+                        <input type="text" placeholder="Wpisz kod rabatowy" style="padding: 10px; width: 100%; box-sizing: border-box;">
+                        <button id="apply-code-btn" style="margin-top: 5px; padding: 10px; width: 100%;">Zastosuj kod</button>
+                    </div>
                 </div>
                 <div class="free-shipping">
                     <?php
@@ -314,7 +328,8 @@ if ($product) {
                 <?php else: ?>
                     <button id="loginButton" class="login-button">
                         <a href="../Login/login.php">
-                            <img src="../Image/Icon/log-in.png" alt="Ikona logowania"> Zaloguj się
+                            <img src="../Image/Icon/log-in.png" alt="Ikona logowania">
+                            <span>Zaloguj się</span>
                         </a>
                     </button>
 
@@ -353,7 +368,7 @@ if ($product) {
             <!-- Podsumowanie koszyka -->
             <div class="summary">
                 <p>Produkty: <span id="products-total"><?php echo $Total;?> zł</span></p>
-                <p>RAZEM (BRUTTO): <strong id="cart-total"></strong> <?php echo $Brutto;?> zł</p>
+                <p>RAZEM (BRUTTO): <strong><span id="cart-total"> <?php echo $Brutto;?> zł</span></strong></p>
                 <p>VAT (wliczony): <span id="vat-amount"><?php echo $Vat*100;?>%</span></p>
             </div>
         </aside>
@@ -639,6 +654,19 @@ if ($product) {
         window.onload = function() {
             updateCart();
         }
+        
+        
+        
+        //Kod rabatowy
+        document.getElementById("toggle-code-btn").addEventListener("click", () => {
+        const promoCodeInput = document.getElementById("promo-code-input");
+            
+            if (promoCodeInput.style.display === "none" || promoCodeInput.style.display === "") {
+                promoCodeInput.style.display = "block";
+            } else {
+                promoCodeInput.style.display = "none";
+            }
+        });
     </script>
 </body>
 </html>

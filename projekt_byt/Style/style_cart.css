@@ -9,6 +9,12 @@ body {
   font-family: Arial, sans-serif;
   background-color: #f9f9f9;
   padding: 20px;
+    
+  background-image: url("../Image/Icon/brickwallpaper.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
 /* Kontener koszyka */
@@ -26,7 +32,7 @@ body {
   background: #fff;
   padding: 20px;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 6px 9px 4px rgba(0, 0, 0, 0.24);
 }
 
 /* Breadcrumbs */
@@ -36,14 +42,45 @@ body {
   color: #555;
 }
 
-.breadcrumbs a {
-  color: #007bff;
-  text-decoration: none;
-}
 
 .breadcrumbs a:hover {
   text-decoration: underline;
 }
+
+.back-button {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #89ad00;
+    color: #fff; 
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: bold;
+    transition: background-color 0.3s, transform 0.2s;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+}
+
+.back-button:hover {
+    background-color: #89ad6a; 
+    transform: translateY(-2px); 
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15); 
+}
+
+.back-button:active {
+    transform: translateY(0); 
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+}
+
+.back-button .icon {
+    width: 20px; 
+    height: 20px; 
+    margin-right: 10px; 
+    display: inline-block;
+    filter: invert(1);
+}
+
+
 
 /* Nagłówek koszyka */
 .cart-header {
@@ -74,15 +111,16 @@ body {
 /* Tabela koszyka */
 .cart-table {
   width: 100%;
-  border-collapse: separate; /* Użyj separate, aby border-spacing działało */
-  border-spacing: 10px 0; /* Dodaj odstępy między kolumnami (10px poziomo) */
+  border-spacing: 10px 0; 
   margin: 20px 0;
+  border-collapse: collapse;
 }
 
 .cart-table th,
 .cart-table td {
   padding: 5px;
   text-align: center;
+   
 }
 
 .cart-table th {
@@ -91,35 +129,51 @@ body {
 
 /* Zmiana klasy .product-info w celu zwiększenia rozmiaru zdjęcia */
 .cart-table .product-info {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px; /* Dodanie przestrzeni między obrazkiem a tekstem */
+    display: flex;
+    flex-direction: column; 
+    align-items: center; 
+    text-align: center; 
+    width: 100%; 
+    
+    padding: 10px 0; 
+}
+.cart-table .product-info .product-name {
+    width: 100%; 
+    margin-bottom: 10px; 
+    font-size: 1rem; 
+    color: gray;
+    font-weight: bold;
+    
+}
+tr {
+    border-bottom: 1px solid #ccc; 
 }
 
 .cart-table .product-info img {
-  width: 200px; /* Zwiększona szerokość obrazka */
-  height: 200px; /* Zwiększona wysokość obrazka */
-  object-fit: contain; /* Zachowanie proporcji obrazu */
+  width: 200px; 
+  height: 150px; 
+  object-fit: contain; 
+    
 }
 
 /* Kolumny w tabeli - wyrównanie w pionie */
 .cart-table td {
-  vertical-align: middle; /* Wyrównanie w pionie */
+  vertical-align: middle;
+  
 }
 
 /* Poprawiony styl przycisku Usuń */
 .cart-table .remove-button {
-  background-color: #ff4d4d;
-  color: white;
-  border: none;
-  padding: 5px 10px;
-  cursor: pointer;
-  border-radius: 5px;
+    background: none;
+    border: none;
+    color: #ff0000; 
+    font-size: 1.2em; 
+    cursor: pointer;
+    padding: 0;
 }
 
 .cart-table .remove-button:hover {
-  background-color: #ff1a1a;
+  color: #cc0000;;
 }
 
 .product-info {
@@ -130,6 +184,7 @@ body {
 .product-info img {
   width: 50px;
   margin-right: 10px;
+    
 }
 
 .availability .status {
@@ -197,12 +252,26 @@ body {
 
 .promo-code button {
   background: none;
-  border: 1px solid #ddd;
+  border: 2px solid #ddd;
   padding: 10px;
   cursor: pointer;
   width: 100%;
   text-align: center;
 }
+.promo-code button:hover {
+  background-color: #73daff;
+    
+}
+
+#apply-code-btn{
+    background-color: antiquewhite;
+    font-weight: bold;
+}
+
+#apply-code-btn:hover{
+    background-color: #e3d5c3;
+} 
+
 
 .free-shipping {
   background-color: #f8f8f8;
@@ -238,7 +307,8 @@ body {
   background: #fff;
   padding: 20px;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: 6px 9px 4px rgba(0, 0, 0, 0.24);
+  max-height: 600px;
 }
 
 .recommended-product h3 {
@@ -251,11 +321,15 @@ body {
   align-items: center;
   text-align: center;
   margin-bottom: 20px;
+  
+    
 }
 
 .product-card img {
   width: 100%;
   margin-bottom: 10px;
+  object-fit: contain; 
+  max-height: 300px;
 }
 
 .add-to-cart {
@@ -275,24 +349,33 @@ body {
   transition: background-color 0.3s ease;
   font-weight: bold;
 }
-
-/* Ustawienia ikony koszyka */
-.add-to-cart .icon-basket {
-  background-image: url("../Image/Icon/pngegg.png");
-  background-size: cover;
-  width: 24px;
-  height: 24px;
-  margin-right: 12px;
-}
 .add-to-cart:hover {
   background-color: #7cb342;
 }
 
 /* Podsumowanie */
+.summary {
+  padding: 10px;
+  max-height: 200px; 
+  overflow-y: auto; 
+}
+.summary #cart-total {
+  color: #ff6600; 
+  font-weight: bold; 
+  font-size: 18px; 
+  margin-left: 15px; 
+}
+
+#products-total{
+    margin-left: 10px; 
+}
+
 .summary p {
   display: flex;
   justify-content: space-between;
   margin: 5px 0;
+  border-bottom: 1px solid #ccc; 
+  padding-bottom: 5px; 
 }
 
 .summary strong {
@@ -304,6 +387,7 @@ body {
   display: flex;
   justify-content: space-between;
   margin-top: 20px;
+  flex-wrap: wrap;
 }
 
 .empty-cart,
@@ -333,6 +417,7 @@ body {
   font-weight: bold;
   transition: background-color 0.3s ease;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    
 }
 
 .bottom-buttons button:hover {
@@ -420,4 +505,63 @@ body {
   outline: none;
   background-color: #fff;
   height: 100%;
+}
+
+
+@media (max-width: 930px) {
+    .cart-table-container {
+        overflow-x: scroll;
+    }
+
+    .cart-table th,
+    .cart-table td {
+        white-space: nowrap;
+        text-align: left;
+    }
+
+    .cart-table td.product-info {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .quantity-control {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .remove-button {
+        margin-top: 10px;
+    }
+}
+
+
+@media (max-width: 835px) {
+  .add-to-cart {
+    font-size: 14px; 
+    padding: 10px 20px; 
+    max-width: 200px; 
+  }
+}
+
+@media (max-width: 690px) {
+  .summary {
+    padding: 10px;
+    max-height: 180px; 
+      overflow-y: auto;  
+  }
+
+  .summary p {
+    font-size: 14px;
+    margin: 5px 0;
+  }
+
+  .summary strong {
+    font-size: 16px;
+  }
+    
+  .summary #cart-total {
+    font-size: 16px; 
+  }
+
 }

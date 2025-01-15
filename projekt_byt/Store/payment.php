@@ -59,8 +59,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['mark_paid'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Status zamówienia</title>
+    <link rel="stylesheet" href="../Style/style_payment.css">
 </head>
 <body>
+    <div id="loading">
+    <div></div>
+    <div></div>
+    <div></div>
+    </div>
 <h1>Status zamówienia</h1>
 <?php if ($status === 'Opłacone'): ?>
     <p>To zamówienie jest opłacone.</p>
@@ -72,5 +78,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['mark_paid'])) {
         <button type="submit" name="mark_paid">Opłać</button>
     </form>
 <?php endif; ?>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const loader = document.getElementById("loading");
+            setTimeout(() => {
+                loader.style.display = "none";
+            }, 20000); 
+        });
+    </script>
 </body>
 </html>

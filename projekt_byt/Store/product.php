@@ -165,7 +165,7 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
                 
                 <div class="nav-links">
                     <a href="../index.php" class="back">
-                        <img src="../Image/Icon/log-in.png" class="category-icon"> POWRÓT
+                        <img src="../Image/Icon/back.png" class="category-icon"> POWRÓT
                     </a>
                     
                     <a href="#" style="background-color: #4caf50;">

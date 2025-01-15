@@ -220,7 +220,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="nav-links">
                     
                     <a href="../index.php" class="back">
-                        <img src="../Image/Icon/log-in.png" class="category-icon"> POWRÓT
+                        <img src="../Image/Icon/back.png" class="category-icon"> POWRÓT
                     </a>
                     <a href="suppliersManagement.php" class="delivery">
                         <img src="../Image/Icon/delivery.png" class="category-icon"> DOSTAWCY
