@@ -1,5 +1,6 @@
 <?php
 session_start();
+
 // zapisywanie przekierowania do zmiennej by zapobiec pętli przy odświeżaniu
 $source = isset($_GET['source']) ? $_GET['source'] : '../index.php';
 
@@ -11,6 +12,7 @@ if (!isset($_SESSION['user_id'])) {
     $user_id = $_SESSION['user_id'];
 }
 
+// Czyszczenie koszyka
 if (isset($_POST['action']) && $_POST['action'] === 'clear_cart') {
     unset($_SESSION['cart']);
     header("Refresh:0");
@@ -19,7 +21,32 @@ if (isset($_POST['action']) && $_POST['action'] === 'clear_cart') {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
+    // Obsługa dodawania i aktualizowania produktów w koszyku
     if (isset($_POST['action'])) {
+
+        // Dodawanie nowego produktu lub aktualizacja
+        if ($_POST['action'] === 'add') {
+            $productId = $_POST['product_id'];
+            $productName = $_POST['product_name'];
+            $productPrice = $_POST['product_price'];
+            $rentalDays = $_POST['rental_days'];
+
+            // Jeżeli produkt już istnieje w sesji, to aktualizujemy dni wynajmu
+            if (isset($_SESSION['cart'][$productId])) {
+                $_SESSION['cart'][$productId]['quantity'] += 1; // Zwiększamy ilość
+                $_SESSION['cart'][$productId]['rental_days'] = $rentalDays; // Aktualizujemy dni wynajmu
+            } else {
+                // Dodajemy nowy produkt do sesji
+                $_SESSION['cart'][$productId] = [
+                    'name' => $productName,
+                    'price' => $productPrice,
+                    'quantity' => 1,
+                    'rental_days' => $rentalDays
+                ];
+            }
+        }
+
+        // Aktualizacja ilości produktów
         if ($_POST['action'] === 'update_quantity' && isset($_POST['item_index'], $_POST['change'])) {
             $index = intval($_POST['item_index']);
             $change = intval($_POST['change']);
@@ -31,6 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
+        // Usuwanie przedmiotu z koszyka
         if ($_POST['action'] === 'remove_item' && isset($_POST['item_index'])) {
             $index = intval($_POST['item_index']);
             if (isset($_SESSION['cart'][$index])) {
@@ -39,19 +67,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
     }
+
     header("Refresh:0");
     exit();
 }
 
-
 $Total = 0;
 $Vat = 0.08;
-                    if (isset($_SESSION['cart'])) {
-                        foreach ($_SESSION['cart'] as $item) {
-                            $itemTotal = $item['price'] * $item['quantity'];
-                            $Total += $itemTotal;
-                        }
-                    }
+if (isset($_SESSION['cart'])) {
+    foreach ($_SESSION['cart'] as $item) {
+        $itemTotal = $item['price'] * $item['quantity'];
+        $Total += $itemTotal;
+    }
+}
 $Brutto = $Total + $Total * $Vat;
 
 // Losowe wyświetlanie produktów z bazy
@@ -162,95 +190,97 @@ if ($product) {
                     </tr>
                 </thead>
                 <tbody>
-                    <?php
-                        try {
-                            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                <?php
+                    try {
+                        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-                            // Pobieranie produktów, gdzie wynajem = 'TAK'
-                            $query = "SELECT * FROM Produkty WHERE wynajem = 'TAK' OR wynajem = 'NIE'";
-                            $stmt = $pdo->prepare($query);
-                            $stmt->execute();
+                        // Pobieranie produktów, gdzie wynajem = 'TAK'
+                        $query = "SELECT * FROM Produkty WHERE wynajem = 'TAK' OR wynajem = 'NIE'";
+                        $stmt = $pdo->prepare($query);
+                        $stmt->execute();
 
-                            $wynajemProdukty = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                        $wynajemProdukty = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-                            if (empty($wynajemProdukty) && (!isset($_SESSION['rental']) || empty($_SESSION['rental']))) {
-                                echo '<tr><td colspan="6">Brak sprzętu do wypożyczenia.</td></tr>';
-                            } else {
-                                // Wyświetlanie produktów z bazy danych
-                                foreach ($wynajemProdukty as $produkt) {
-                                    $imagePath = findProductImage($produkt['produkt_id'], 'all', $produkt['nazwa_produktu']);
+                        if (empty($wynajemProdukty) && (!isset($_SESSION['rental']) || empty($_SESSION['rental']))) {
+                            echo '<tr><td colspan="6">Brak sprzętu do wypożyczenia.</td></tr>';
+                        } else {
+                            // Wyświetlanie produktów z bazy danych
+                            foreach ($wynajemProdukty as $produkt) {
+                                $imagePath = findProductImage($produkt['produkt_id'], 'all', $produkt['nazwa_produktu']);
+                                echo '<tr>';
+                                echo '<tr id="row-' . $produkt['produkt_id'] . '" class="product-row">'; // Dodajemy klasę dla wiersza
+                                echo '<td class="product-info">
+                                        <img src="' . $imagePath . '" alt="' . htmlspecialchars($produkt['nazwa_produktu']) . '" width="50" height="50">
+                                        <div>
+                                            <p>' . htmlspecialchars($produkt['nazwa_produktu']) . '</p>
+                                        </div>
+                                    </td>';
+                                echo '<td class="availability"><span class="status available">Dostępny</span></td>';
+                                echo '<td id="unit-price-' . $produkt['produkt_id'] . '" class="unit-price">' . number_format($produkt['cena'] / 20, 2) . ' zł</td>';
+                                echo '<td>
+                                        <div class="quantity-control rent-days" id="rent-days-' . $produkt['produkt_id'] . '">
+                                            <button type="button" class="minus-button" onclick="updateRentDays(' . $produkt['produkt_id'] . ', -1)">-</button>
+                                            <span id="rent-days-value-' . $produkt['produkt_id'] . '">1</span>
+                                            <button type="button" class="plus-button" onclick="updateRentDays(' . $produkt['produkt_id'] . ', 1)">+</button>
+                                        </div>
+                                        <form method="post" action="rentalForm.php" class="add-to-cart-form" id="form-' . $produkt['produkt_id'] . '">
+                                            <input type="hidden" name="action" value="add">
+                                            <input type="hidden" name="product_id" value="' . $produkt['produkt_id'] . '">
+                                            <input type="hidden" name="product_name" value="' . htmlspecialchars($produkt['nazwa_produktu']) . '">
+                                            <input type="hidden" name="product_price" value="' . $produkt['cena'] . '">
+                                            <input type="hidden" id="days-hidden-' . $produkt['produkt_id'] . '" name="rental_days" value="1"> <!-- Domyślnie 1 -->
+                                        </form>
+                                    </td>';
+                                echo '<td class="total-price" id="total-price-' . $produkt['produkt_id'] . '">0,00 zł</td>';
+                                echo '<td id="td-checkbox-' . $produkt['produkt_id'] . '" class="highlight-checkbox-td">
+                                    <input type="checkbox" id="checkbox-' . $produkt['produkt_id'] . '" name="product_select[]" value="' . $produkt['produkt_id'] . '" class="highlight-checkbox" onclick="toggleRentControls(' . $produkt['produkt_id'] . ')">
+                                </td>';
+                                echo '</tr>';         
+                            }
+
+                            // Wyświetlanie sprzętu z sesji
+                            if (isset($_SESSION['rental']) && !empty($_SESSION['rental'])) {
+                                foreach ($_SESSION['rental'] as $index => $item) {
+                                    $itemTotal = $item['price'] * $item['quantity'];
+                                    $imagePath = findProductImage($item['id'], 'all', $item['name']);
                                     echo '<tr>';
-                                    echo '<tr id="row-' . $produkt['produkt_id'] . '" class="product-row">'; // Dodajemy klasę dla wiersza
                                     echo '<td class="product-info">
-                                            <img src="' . $imagePath . '" alt="' . htmlspecialchars($produkt['nazwa_produktu']) . '" width="50" height="50">
+                                            <img src="' . $imagePath . '" alt="' . htmlspecialchars($item['name'] ?? 'Produkt bez nazwy') . '" width="50" height="50">
                                             <div>
-                                                <p>' . htmlspecialchars($produkt['nazwa_produktu']) . '</p>
+                                                <p>' . htmlspecialchars($item['name'] ?? 'Produkt bez nazwy') . '</p>
                                             </div>
                                         </td>';
                                     echo '<td class="availability"><span class="status available">Dostępny</span></td>';
-                                    echo '<td id="unit-price-' . $produkt['produkt_id'] . '" class="unit-price">' . number_format($produkt['cena'] / 20, 2) . ' zł</td>';
+                                    echo '<td id="unit-price-' . $produkt['id'] . '" class="unit-price">' . number_format($produkt['cena'] / 20, 2) . ' zł</td>';
                                     echo '<td>
-                                            <div class="quantity-control rent-days" id="rent-days-' . $produkt['produkt_id'] . '">
-                                                <button type="button" class="minus-button" onclick="updateRentDays(' . $produkt['produkt_id'] . ', -1)">-</button>
-                                                <span id="rent-days-value-' . $produkt['produkt_id'] . '">1</span>
-                                                <button type="button" class="plus-button" onclick="updateRentDays(' . $produkt['produkt_id'] . ', 1)">+</button>
+                                            <div class="quantity-control">
+                                                <form method="post" class="quantity-form">
+                                                    <input type="hidden" name="action" value="update_quantity">
+                                                    <input type="hidden" name="item_index" value="' . $index . '">
+                                                    <button type="submit" name="change" value="-1">-</button>
+                                                    <input type="text" name="quantity" value="' . $item['quantity'] . '" min="1">
+                                                    <input type="hidden" id="days-hidden-1" name="rental_days" value="1">
+                                                    <button type="submit" name="change" value="1">+</button>
+                                                </form>
                                             </div>
-                                            <form method="post" class="add-to-cart-form">
-                                                <input type="hidden" name="action" value="add">
-                                                <input type="hidden" name="product_id" value="' . $produkt['produkt_id'] . '">
-                                                <input type="hidden" name="product_name" value="' . htmlspecialchars($produkt['nazwa_produktu']) . '">
-                                                <input type="hidden" name="product_price" value="' . $produkt['cena'] . '">
-                                                <input type="hidden" id="days-hidden-' . $produkt['produkt_id'] . '" name="rental_days" value="0">
+                                        </td>';
+                                    echo '<td class="total-price">' . number_format($itemTotal, 2) . ' zł</td>';
+                                    echo '<td>
+                                            <form method="post">
+                                                <input type="hidden" name="action" value="remove_item">
+                                                <input type="hidden" name="item_index" value="' . $index . '">
+                                                <button type="submit" class="remove-button">Usuń</button>
                                             </form>
                                         </td>';
-                                    echo '<td class="total-price" id="total-price-' . $produkt['produkt_id'] . '">0,00 zł</td>';
-                                    echo '<td id="td-checkbox-' . $produkt['produkt_id'] . '" class="highlight-checkbox-td">
-                                        <input type="checkbox" id="checkbox-' . $produkt['produkt_id'] . '" name="product_select[]" value="' . $produkt['produkt_id'] . '" class="highlight-checkbox" onclick="toggleRentControls(' . $produkt['produkt_id'] . ')">
-                                    </td>';
-                                    echo '</tr>';                            
-                                }
-
-                                // Wyświetlanie sprzętu z sesji
-                                if (isset($_SESSION['rental']) && !empty($_SESSION['rental'])) {
-                                    foreach ($_SESSION['rental'] as $index => $item) {
-                                        $itemTotal = $item['price'] * $item['quantity'];
-                                        $imagePath = findProductImage($item['id'], 'all', $item['name']);
-                                        echo '<tr>';
-                                        echo '<td class="product-info">
-                                                <img src="' . $imagePath . '" alt="' . htmlspecialchars($item['name'] ?? 'Produkt bez nazwy') . '" width="50" height="50">
-                                                <div>
-                                                    <p>' . htmlspecialchars($item['name'] ?? 'Produkt bez nazwy') . '</p>
-                                                </div>
-                                            </td>';
-                                        echo '<td class="availability"><span class="status available">Dostępny</span></td>';
-                                        echo '<td id="unit-price-' . $produkt['id'] . '" class="unit-price">' . number_format($produkt['cena'] / 20, 2) . ' zł</td>';
-                                        echo '<td>
-                                                <div class="quantity-control">
-                                                    <form method="post" class="quantity-form">
-                                                        <input type="hidden" name="action" value="update_quantity">
-                                                        <input type="hidden" name="item_index" value="' . $index . '">
-                                                        <button type="submit" name="change" value="-1">-</button>
-                                                        <input type="text" name="quantity" value="' . $item['quantity'] . '" min="1">
-                                                        <button type="submit" name="change" value="1">+</button>
-                                                    </form>
-                                                </div>
-                                            </td>';
-                                        echo '<td class="total-price">' . number_format($itemTotal, 2) . ' zł</td>';
-                                        echo '<td>
-                                                <form method="post">
-                                                    <input type="hidden" name="action" value="remove_item">
-                                                    <input type="hidden" name="item_index" value="' . $index . '">
-                                                    <button type="submit" class="remove-button">Usuń</button>
-                                                </form>
-                                            </td>';
-                                        echo '</tr>';
-                                    }
+                                    echo '</tr>';
                                 }
                             }
-                        } catch (PDOException $e) {
-                            echo "<tr><td colspan='6'>Błąd połączenia z bazą danych: " . htmlspecialchars($e->getMessage()) . "</td></tr>";
                         }
-                    ?>
+                    } catch (PDOException $e) {
+                        echo "<tr><td colspan='6'>Błąd połączenia z bazą danych: " . htmlspecialchars($e->getMessage()) . "</td></tr>";
+                    }
+                ?>
+
                 </tbody>
             </table>
             <!-- Przycisk na dole -->
@@ -278,18 +308,87 @@ if ($product) {
                         </a>
                     </button>
 
-                    <button id="guestButton" class="guest-button">
-                        <a href="rentalForm.php">
+                    <form method="post" action="rentalForm.php" id="rentForm">
+                        <input type="hidden" name="action" value="add">
+                        <input type="hidden" name="product_id" value="<?php echo $produkt['produkt_id']; ?>">
+                        <input type="hidden" name="product_name" value="<?php echo htmlspecialchars($produkt['nazwa_produktu']); ?>">
+                        <input type="hidden" name="product_price" value="<?php echo $produkt['cena']; ?>">
+                        <input type="hidden" id="days-hidden-<?php echo $produkt['produkt_id']; ?>" name="rental_days" value="1">
+                        
+                        <button type="button" class="guest-button" id="guestButton">
                             <img src="../Image/Icon/user.png" alt="Ikona gościa"> WYPOŻYCZ JAKO GOŚĆ
-                        </a>
-                    </button>
+                        </button>
+                    </form>
+
+                    <script>
+                        document.getElementById('guestButton').addEventListener('click', function(event) {
+                            event.preventDefault();  // Zapobiega przeładowaniu strony
+
+                            var selectedProducts = [];
+                            var rentalDays = [];
+                            var productPrices = [];
+
+                            // Zbieramy zaznaczone produkty, ich dni wynajmu i ceny
+                            document.querySelectorAll('.highlight-checkbox:checked').forEach(function(checkbox) {
+                                var productId = checkbox.value;
+                                selectedProducts.push(productId);
+
+                                // Pobieramy liczbę dni wynajmu dla produktu
+                                var daysInput = document.getElementById('rent-days-value-' + productId);
+                                rentalDays.push({
+                                    productId: productId,
+                                    days: daysInput ? daysInput.textContent : 1 // Pobieramy wartość dni (zaktualizowana na stronie)
+                                });
+
+                                // Pobieramy cenę produktu
+                                var priceElement = document.getElementById('total-price-' + productId);
+                                var productPrice = priceElement ? priceElement.textContent.replace(' zł', '').replace(',', '.') : '0.00';
+                                productPrices.push({
+                                    productId: productId,
+                                    price: productPrice
+                                });
+                            });
+
+                            if (selectedProducts.length > 0) {
+                                // Dodajemy zaznaczone produkty do formularza jako ukryte pola
+                                selectedProducts.forEach(function(productId) {
+                                    var hiddenInput = document.createElement('input');
+                                    hiddenInput.type = 'hidden';
+                                    hiddenInput.name = 'product_select[]';
+                                    hiddenInput.value = productId;
+                                    document.getElementById('rentForm').appendChild(hiddenInput);
+                                });
+
+                                // Dodajemy liczbę dni wynajmu dla każdego produktu
+                                rentalDays.forEach(function(product) {
+                                    var hiddenDaysInput = document.createElement('input');
+                                    hiddenDaysInput.type = 'hidden';
+                                    hiddenDaysInput.name = 'rental_days[' + product.productId + ']';
+                                    hiddenDaysInput.value = product.days;
+                                    document.getElementById('rentForm').appendChild(hiddenDaysInput);
+                                });
+
+                                // Dodajemy ceny produktów
+                                productPrices.forEach(function(product) {
+                                    var hiddenPriceInput = document.createElement('input');
+                                    hiddenPriceInput.type = 'hidden';
+                                    hiddenPriceInput.name = 'product_prices[' + product.productId + ']';
+                                    hiddenPriceInput.value = product.price;
+                                    document.getElementById('rentForm').appendChild(hiddenPriceInput);
+                                });
+
+                                // Po dodaniu wszystkich danych, wysyłamy formularz
+                                document.getElementById('rentForm').submit();
+                            } else {
+                                alert("Proszę zaznaczyć co najmniej jeden produkt.");
+                            }
+                        });
+                    </script>
                 <?php endif; ?>
-
-
             </div>
+
         </div>
-        <!-- Sekcja z polecanym produktem -->
-        <aside class="recommended-product">
+        <aside class="recommended-product-rental">
         <h3 style="color: red; text-align: center;">Warunki wynajmu sprzętu:</h3>
         <div class="terms-container">
             <ol style="text-align: justify; margin: 20px; font-size: 16px;">
@@ -307,13 +406,6 @@ if ($product) {
                 <br>
             </ol>
         </div>
-
-            <!-- Podsumowanie koszyka -->
-            <div class="summary">
-                <p>Produkty: <span id="products-total"><?php echo $Total;?> zł</span></p>
-                <p>RAZEM (BRUTTO): <strong id="cart-total"></strong> <?php echo $Brutto;?> zł</p>
-                <p>VAT (wliczony): <span id="vat-amount"><?php echo $Vat*100;?>%</span></p>
-            </div>
         </aside>
     </div>
     </div>
@@ -376,21 +468,23 @@ if ($product) {
             const daysInput = document.getElementById(`days-${productId}`);
             const hiddenDaysInput = document.getElementById(`days-hidden-${productId}`);
             const totalPriceField = document.getElementById(`total-price-${productId}`);
-            let days = parseInt(daysInput.value);
+            let days = parseInt(daysInput.value, 10);
 
             if (action === 'increase') {
                 days += 1;
-            } else if (action === 'decrease' && days > 0) {
+            } else if (action === 'decrease' && days > 1) { // Minimalna wartość dni to 1
                 days -= 1;
             }
 
+            // Aktualizacja widocznego i ukrytego pola
             daysInput.value = days;
-            hiddenDaysInput.value = days; // Aktualizacja ukrytego pola formularza
+            hiddenDaysInput.value = days;
 
             // Obliczanie całkowitej ceny brutto
-            const totalPrice = days * (price / 10);
+            const totalPrice = days * price;
             totalPriceField.textContent = totalPrice.toFixed(2) + ' zł';
         }
+
 
         function toggleRowHighlight(productId) {
             const row = document.getElementById(`row-${productId}`);
@@ -412,18 +506,27 @@ if ($product) {
             const priceElement = document.getElementById(`unit-price-${productId}`);
             const pricePerDay = parseFloat(priceElement.textContent.trim()); 
 
+            const form = document.getElementById(`form-${productId}`); // Pobierz formularz dla produktu
+            const days = parseInt(rentDaysValue.textContent || 1, 10);  // Pobierz dni wynajmu
+
+
             if (checkbox.checked) {
                 rentDays.style.display = 'flex';
                 tdElement.classList.add('highlighted');
-                const days = parseInt(rentDaysValue.value || 1, 10);
+
+                // Upewnij się, że rentDaysValue ma prawidłową wartość
+                const days = parseInt(rentDaysValue.innerText || 1, 10);
                 const total = pricePerDay * days;
 
                 // Wyświetl obliczoną wartość
-                totalPrice.textContent = total.toFixed(2) + ' zł';
+                totalPrice.textContent = (pricePerDay * days).toFixed(2) + ' zł';
+
+                form.querySelector('input[name="rental_days"]').value = days;
+
             } else {
                 tdElement.classList.remove('highlighted');
                 rentDays.style.display = 'none';
-                rentDaysValue.textContent = '1';
+                rentDaysValue.innerText = '1';  // Poprawka, zmieniać `innerText`, nie `textContent`
                 totalPrice.textContent = '0.00 zł';
             }
         }
@@ -433,17 +536,18 @@ if ($product) {
             const totalPrice = document.getElementById(`total-price-${productId}`);
             const unitPrice = parseFloat(document.querySelector(`#row-${productId} .unit-price`).textContent.replace(' zł', ''));
 
-            let currentDays = parseInt(rentDaysValue.textContent, 10) || 0;
+            let currentDays = parseInt(rentDaysValue.innerText, 10) || 0;  // Używaj innerText
             currentDays += change;
 
-            if (currentDays < 0) {
-                currentDays = 0;
+            if (currentDays < 1) {  // Nie pozwól na liczbę mniejszą niż 1
+                currentDays = 1;
             }
 
-            rentDaysValue.textContent = currentDays;
+            rentDaysValue.innerText = currentDays;  // Poprawka: używaj innerText
             const total = currentDays * unitPrice;
             totalPrice.textContent = total.toFixed(2) + ' zł';
         }
+
 
             window.onload = function() {
             // Pobranie danych koszyka z localStorage
