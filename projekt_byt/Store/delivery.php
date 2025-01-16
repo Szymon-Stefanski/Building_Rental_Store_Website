@@ -237,8 +237,14 @@ function findProductImage($productId, $categoryName, $productName) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formularz Dostawy i Podsumowanie Zakupów</title>
-    <link rel="stylesheet" href="../Style/style_delivery.css">
+    
     <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <link rel="stylesheet" href="../Style/style_delivery.css">
+    <!-- dla testów -->
 </head>
 
 <body>
@@ -266,8 +272,10 @@ function findProductImage($productId, $categoryName, $productName) {
                     </div>
 
                     <div class="form-group">
+                        <div class="marketing">
+                        <label for="pickupOption" class="option">Odbiór osobisty w sklepie</label>
                         <input type="checkbox" id="pickupOption" name="pickupOption">
-                        <label for="pickupOption">Odbiór osobisty w sklepie</label>
+                        </div>
                     </div>
 
                     <div class="form-group">
@@ -297,11 +305,47 @@ function findProductImage($productId, $categoryName, $productName) {
 
                     <div class="calendar">
                         <label for="deliveryDate">Wybierz datę dostawy*</label>
-                        <input type="date" id="deliveryDate" name="deliveryDate" required>
+                        <div class="calendar-input-container">
+                            <input type="date" id="deliveryDate" name="deliveryDate" required>
+                            <i class="fas fa-calendar-alt calendar-icon"></i> 
+                        </div>
+                    </div>
+                    
+                    <!-- Zgody marketingowe -->
+                    <div class="form-group">
+                        <div class="marketing">
+                            <label for="marketingConsent" class="consent">Wyrażam zgodę na otrzymywanie informacji marketingowych email</label>
+                            <input type="checkbox" id="marketingConsent" name="marketingConsent">
+                        </div>
+                        
                     </div>
 
+                    <!-- Kontener płatności -->
+                    <div class="payment-methods">
+                        <h3>Wybierz metodę płatności:</h3>
+                        <div class="payment-method">
+                            <label for="blik">
+                                <input type="radio" id="blik" name="paymentMethod" value="blik">
+                                BLIK
+                                <img src="../Image/Icon/blik.png" alt="BLIK" class="payment-icon">
+                                
+                            </label>
+                        </div>
+                        <div class="payment-method">
+                            <label for="paypal">
+                                <input type="radio" id="paypal" name="paymentMethod" value="paypal">
+                                PayPal
+                                <img src="../Image/Icon/paypal.png" alt="PayPal" class="payment-icon">
+                                
+                            </label>
+                        </div>
+                    </div>
+                    
                     <div class="return-button">
-                    <button onclick="window.history.back()">Powrót</button>
+                        <button onclick="window.history.back()">
+                            <img src="../Image/Icon/back.png" alt="Powrót" class="button-icon">
+                                Powrót
+                        </button>
                     </div>
 
                     <div class="submit-button">
@@ -519,6 +563,18 @@ function findProductImage($productId, $categoryName, $productName) {
             formSummaryContainer.style.display = "flex";
             renderCart();
         });
+        
+        
+        document.addEventListener("DOMContentLoaded", function () {
+            flatpickr("#deliveryDate", {
+                dateFormat: "Y-m-d", // Format daty
+                defaultDate: "today", // Domyślna data
+                minDate: "today", // Minimalna data (np. dzisiaj)
+                maxDate: new Date().fp_incr(30), // Maksymalna data (+30 dni)
+                locale: "pl", // Język polski
+            });
+        });
+
 
     </script>
 </body>
