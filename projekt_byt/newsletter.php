@@ -125,56 +125,67 @@
                 <input type="email" id="email" name="email" required>
                 <div class="buttons">
                     <button type="submit" class="submit-button">ZAPISZ SIĘ</button>
-                    <button type="button" class="back-button" onclick="history.back()">WRÓĆ</button>
+                    <button type="button" class="back-button" onclick="window.location.href='index.php'">WRÓĆ</button>
                     <?php
-                        require 'email_sender.php'; 
+                        require 'email_sender.php';
+                        require 'database_connection.php'; // Plik do połączenia z bazą danych
 
                         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             $email = filter_var($_POST['email'], FILTER_SANITIZE_EMAIL);
-                            $file = 'emails.txt';
 
                             if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
                                 echo '<div style="margin-top: 20px; padding: 10px; background-color: #f8d7da; color: #721c24; border-radius: 8px; text-align: center;">Nieprawidłowy adres e-mail.</div>';
                             } else {
-                                if (!file_exists($file)) {
-                                    file_put_contents($file, "");
-                                }
+                                try {
+                                    // Połączenie z bazą danych
+                                    $pdo = new PDO('mysql:host=localhost;dbname=Build_Store', 'root', '');
+                                    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-                                $emails = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+                                    // Sprawdzenie, czy e-mail już istnieje w tabeli Newsletter
+                                    $stmt = $pdo->prepare("SELECT COUNT(*) FROM Newsletter WHERE email = :email");
+                                    $stmt->execute([':email' => $email]);
+                                    $emailExists = $stmt->fetchColumn();
 
-                                if (in_array($email, $emails)) {
-                                    echo '<div style="margin-top: 20px; padding: 10px; background-color: #f8d7da; color: #721c24; border-radius: 8px; text-align: center;">Już jesteś zapisany!</div>';;
-                                } else {
+                                    if ($emailExists) {
+                                        echo '<div style="margin-top: 20px; padding: 10px; background-color: #f8d7da; color: #721c24; border-radius: 8px; text-align: center;">Już jesteś zapisany!</div>';
+                                    } else {
+                                        // Zapis e-maila do tabeli Newsletter
+                                        $stmt = $pdo->prepare("INSERT INTO Newsletter (email) VALUES (:email)");
+                                        $stmt->execute([':email' => $email]);
 
-                                    file_put_contents($file, $email . PHP_EOL, FILE_APPEND);
-                                    echo '<div style="margin-top: 20px; padding: 10px; background-color: #d4edda; color: #155724; border-radius: 8px; text-align: center;">Dziękujemy za zapisanie się!</div>';
+                                        echo '<div style="margin-top: 20px; padding: 10px; background-color: #d4edda; color: #155724; border-radius: 8px; text-align: center;">Dziękujemy za zapisanie się!</div>';
 
-                                    $subject = 'Dziękujemy za zapisanie się do newslettera Budex!';
-                                    $body = <<<EOD
-                                            Witamy w naszym newsletterze!
+                                        // Wysyłanie e-maila powitalnego
+                                        $subject = 'Dziękujemy za zapisanie się do newslettera Budex!';
+                                        $body = <<<EOD
+                                                Witamy w naszym newsletterze!
 
-                                            Dziękujemy, że dołączyłeś/aś do newslettera hurtowni Budex. 
-                                            Od teraz będziesz na bieżąco z:
-                                            - Najnowszymi promocjami na nasze produkty.
-                                            - Ekskluzywnymi ofertami tylko dla subskrybentów.
-                                            - Poradami dotyczącymi budownictwa, instalacji i narzędzi.
-                                            - Nowinkami technologicznymi i innowacjami w branży.
+                                                Dziękujemy, że dołączyłeś/aś do newslettera hurtowni Budex. 
+                                                Od teraz będziesz na bieżąco z:
+                                                - Najnowszymi promocjami na nasze produkty.
+                                                - Ekskluzywnymi ofertami tylko dla subskrybentów.
+                                                - Poradami dotyczącymi budownictwa, instalacji i narzędzi.
+                                                - Nowinkami technologicznymi i innowacjami w branży.
 
-                                            Jeśli masz jakiekolwiek pytania lub potrzebujesz pomocy, skontaktuj się z nami: 
-                                            - E-mail:  budexgdansk@gmail.com 
-                                            - Telefon: +48 555 348 591
+                                                Jeśli masz jakiekolwiek pytania lub potrzebujesz pomocy, skontaktuj się z nami: 
+                                                - E-mail: budexgdansk@gmail.com 
+                                                - Telefon: +48 555 348 591
 
-                                            Zespół Budex życzy Ci miłego dnia i udanych zakupów!
+                                                Zespół Budex życzy Ci miłego dnia i udanych zakupów!
 
-                                            Pozdrawiamy,
-                                            Hurtownia Budex
-                                            EOD;
+                                                Pozdrawiamy,
+                                                Hurtownia Budex
+                                                EOD;
 
-                                    sendEmail($email, $subject, $body);
+                                        sendEmail($email, $subject, $body);
+                                    }
+                                } catch (PDOException $e) {
+                                    echo '<div style="margin-top: 20px; padding: 10px; background-color: #f8d7da; color: #721c24; border-radius: 8px; text-align: center;">Błąd połączenia z bazą danych: ' . htmlspecialchars($e->getMessage()) . '</div>';
                                 }
                             }
                         }
-                    ?>
+                        ?>
+
                 </div>
             </form>
         </div>
