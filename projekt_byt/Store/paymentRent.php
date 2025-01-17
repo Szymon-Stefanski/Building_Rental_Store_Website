@@ -3,24 +3,31 @@ session_start();
 require '../database_connection.php';
 include '../email_sender.php';
 
-// Sprawdź, czy formularz został przesłany
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Pobierz dane z formularza
-    $userId = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;  // Sprawdzamy ID użytkownika z sesji
+function cleanCart() {
+    if (isset($_SESSION['cart'])) {
+        unset($_SESSION['cart']);
+    }
+}
+
+// Sprawdzamy, czy użytkownik nacisnął "Powrót"
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'cleanCart') {
+    cleanCart(); // Wyczyść koszyk
+    header('Location: ../index.php'); // Przekierowanie na poprzednią stronę
+    exit;
+}
+
+// Obsługa wynajmu
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['mark_paid'])) {
+    $userId = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null; // ID użytkownika z sesji
     $rentalDate = $_POST['rentalDate'] ?? null;
     $returnDate = $_POST['returnDate'] ?? null;
 
-    // Debugowanie, sprawdzenie, czy rentalDate jest ustawione
-    echo 'rentalDate: ' . (isset($rentalDate) ? $rentalDate : 'brak') . '<br>';
-    echo 'userId: ' . (isset($userId) ? $userId : 'brak') . '<br>';
-
-    // Prosta walidacja
+    // Walidacja danych
     if (empty($userId) || empty($rentalDate)) {
         echo "Wszystkie pola są wymagane!";
         exit;
     }
 
-    // Dodaj wynajem do bazy danych
     try {
         $db = getDbConnection();
 
@@ -31,8 +38,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         ");
         $stmt->execute([$userId, $rentalDate, $returnDate]);
 
-        // Pobierz ID nowo utworzonego wynajmu
         $rentalId = $db->lastInsertId();
+        $status = 'Nieopłacone';
+        $id = $rentalId;
+
+        $positionStmt = $db->prepare("
+        INSERT INTO Pozycje_Wynajmu (wynajem_id, produkt_id, ilosc, stawka_dzienna, koszt_calkowity)
+        VALUES (?, ?, ?, ?, ?)
+        ");
+        $positionStmt->execute([$rentalId, 1, 1, 1, 1]);
 
         // Pobranie danych użytkownika
         $userStmt = $db->prepare("SELECT email, imie, nazwisko FROM Uzytkownicy WHERE uzytkownik_id = ?");
@@ -47,6 +61,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $email = $user['email'];
         $firstName = $user['imie'];
         $lastName = $user['nazwisko'];
+        $start = $rentalDate;
+        $end = $returnDate;
 
         // Przygotowanie wiadomości e-mail
         $subject = "Potwierdzenie wynajmu #$rentalId";
@@ -56,14 +72,48 @@ http://localhost/projekt_byt/Rent/paymentRent.php?id=$rentalId";
         // Wyślij e-mail do klienta
         sendEmail($email, $subject, $message);
 
-        // Przekierowanie na stronę z podsumowaniem
-        header("Location: paymentRent.php?id=$rentalId");
-        exit;
     } catch (Exception $e) {
         echo "Wystąpił błąd podczas przetwarzania danych: " . $e->getMessage();
         exit;
     }
 }
+
+// Obsługa płatności
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['mark_paid'])) {
+    // Pobierz ID wynajmu z formularza
+    $rentalId = $_POST['rentalId'] ?? null;
+
+    if (empty($rentalId)) {
+        echo "Wszystkie pola są wymagane!";
+        exit;
+    }
+
+    try {
+        $db = getDbConnection();
+
+        // Zaktualizuj status wynajmu na "Opłacone"
+        $stmt = $db->prepare("UPDATE Wynajmy SET status = 'Opłacone' WHERE wynajem_id = ?");
+        $stmt->execute([$rentalId]);
+
+        // Sprawdź, czy aktualizacja się powiodła
+        if ($stmt->rowCount() > 0) {
+            $status = 'Opłacone';
+
+            // Po dokonaniu płatności, wyczyść koszyk
+            cleanCart();
+        } else {
+            echo "Nie udało się zaktualizować statusu wynajmu.";
+            exit;
+        }
+    } catch (Exception $e) {
+        echo "Wystąpił błąd: " . $e->getMessage();
+        exit;
+    }
+}
+
+// Przypisanie zmiennych do widoku
+$status = $status ?? 'Nieopłacone';
+$id = $id ?? 0;
 ?>
 
 <!DOCTYPE html>
@@ -76,27 +126,29 @@ http://localhost/projekt_byt/Rent/paymentRent.php?id=$rentalId";
 </head>
 <body>
     <div id="loading">
-    <div></div>
-    <div></div>
-    <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
     </div>
-<h1>Status zamówienia</h1>
-<?php if ($status === 'Opłacone'): ?>
-    <p>To zamówienie jest opłacone.</p>
-    <a href="../index.php">Powrót do strony głównej</a>
-    <a href="deliveryStatus.php?id=<?php echo $id;?>">Szczegóły zamówienia</a>
-<?php else: ?>
-    <p>Zamówienie nieopłacone.</p>
-    <form method="POST">
-        <button type="submit" name="mark_paid">Opłać</button>
-    </form>
-<?php endif; ?>
+    <h1>Status wynajmu</h1>
+    <?php if ($status === 'Opłacone'): ?>
+        <p>To zamówienie jest opłacone.</p>
+        <a href="../index.php" name="action" value="cleanCart">Powrót na strone główną</a>
+        <a href="deliveryStatus.php?id=<?php echo $id; ?>">Szczegóły wynajmu</a>
+    <?php else: ?>
+        <p>Zamówienie nieopłacone.</p>
+        <form method="POST">
+            <!-- Ukryte pole do przesyłania ID wynajmu -->
+            <input type="hidden" name="rentalId" value="<?php echo $id; ?>">
+            <button type="submit" name="mark_paid">Opłać</button>
+        </form>
+    <?php endif; ?>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const loader = document.getElementById("loading");
             setTimeout(() => {
                 loader.style.display = "none";
-            }, 20000); 
+            }, 2000); 
         });
     </script>
 </body>
