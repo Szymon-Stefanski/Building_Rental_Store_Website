@@ -178,7 +178,7 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
                             <img src="Image/Icon/delivery.png" class="category-icon"> ZARZĄDZANIE STANEM MAGAZYNU
                         </a>
                         <!-- W trakcie budowy -->
-                        <a href="#">
+                        <a href="Warehouse/rentalManagement.php">
                             <img src="Image/Icon/support.png" class="category-icon"> ZARZĄDZANIE WYPOŻYCZENIAMI
                         </a>
                         <!-- W trakcie budowy -->

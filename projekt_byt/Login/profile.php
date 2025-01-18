@@ -95,6 +95,12 @@ if (isset($_POST['delete_account'])) {
                     </a>
                 </li>
                 <li class="menu-item">
+                    <a href="profile.php?section=rentals">
+                        <span class="icon"><img src="../Image/Icon/rent.png" alt="Rentals"></span>
+                        Moje Wypożyczenia
+                    </a>
+                </li>
+                <li class="menu-item">
                     <a href="#">
                         <span class="icon"><img src="../Image/Icon/favourite.png" alt="Favourite"></span>
                         Ulubione
@@ -120,6 +126,18 @@ if (isset($_POST['delete_account'])) {
                     }
                 ?>
             </section>
+
+            <section id="user-rents" class="user-rents">
+                <?php
+                if (isset($_GET['section']) && $_GET['section'] == 'rentals') {
+                    // Wczytaj zawartość "Moje Wypożyczenia"
+                    require '../Store/userRents.php';
+                } else {
+                    // Domyślnie sekcja jest ukryta
+                }
+                ?>
+            </section>
+
             
             <section class="user-info">
                 <h2>Dane użytkownika</h2>
@@ -220,78 +238,91 @@ if (isset($_POST['delete_account'])) {
                 
                 
                 document.addEventListener("DOMContentLoaded", function() {
-                const deliverysLink = document.querySelector('a[href="profile.php?section=deliverys"]');
-                const userInfoLink = document.querySelector('a[href="profile.php?section=user-info"]');
-                //Tak samo dla sekcji favorite trzeba zrobić
-                const userInfoSection = document.querySelector(".user-info");
-                const editFormSection = document.querySelector(".edit-form");
-                const deleteAccountSection = document.querySelector(".delete-account");
-                const userDeliverysSection = document.getElementById("user-deliverys");
-                const mainSection = document.querySelector("main");
+                    const deliverysLink = document.querySelector('a[href="profile.php?section=deliverys"]');
+                    const rentsLink = document.querySelector('a[href="profile.php?section=rentals"]');
+                    const userInfoLink = document.querySelector('a[href="profile.php?section=user-info"]');
+                    const userInfoSection = document.querySelector(".user-info");
+                    const editFormSection = document.querySelector(".edit-form");
+                    const deleteAccountSection = document.querySelector(".delete-account");
+                    const userDeliverysSection = document.getElementById("user-deliverys");
+                    const userRentsSection = document.getElementById("user-rents");
+                    const mainSection = document.querySelector("main");
 
-                // Funkcja do ukrywania wszystkich sekcji oprócz zamówień
-                function showDeliverys() {
-                    if (userInfoSection) userInfoSection.style.display = "none";
-                    if (editFormSection) editFormSection.style.display = "none";
-                    if (deleteAccountSection) deleteAccountSection.style.display = "none";
-                    if (userDeliverysSection) userDeliverysSection.style.display = "block";
+                    // Funkcja do ukrywania wszystkich sekcji oprócz zamówień
+                    function showDeliverys() {
+                        if (userInfoSection) userInfoSection.style.display = "none";
+                        if (editFormSection) editFormSection.style.display = "none";
+                        if (deleteAccountSection) deleteAccountSection.style.display = "none";
+                        if (userDeliverysSection) userDeliverysSection.style.display = "block";
+                        if (userRentsSection) userRentsSection.style.display = "none";
 
-                    if (mainSection) {
-                        mainSection.classList.add("has-deliverys"); 
+                        if (mainSection) mainSection.classList.add("has-deliverys");
+                        if (deliverysLink) deliverysLink.classList.add("active");
+                        if (rentsLink) rentsLink.classList.remove("active");
+                        if (userInfoLink) userInfoLink.classList.remove("active");
                     }
-                    
+
+                    // Funkcja do ukrywania wszystkich sekcji oprócz wypożyczeń
+                    function showRents() {
+                        if (userInfoSection) userInfoSection.style.display = "none";
+                        if (editFormSection) editFormSection.style.display = "none";
+                        if (deleteAccountSection) deleteAccountSection.style.display = "none";
+                        if (userDeliverysSection) userDeliverysSection.style.display = "none";
+                        if (userRentsSection) userRentsSection.style.display = "block";
+
+                        if (mainSection) mainSection.classList.add("has-rents");
+                        if (rentsLink) rentsLink.classList.add("active");
+                        if (deliverysLink) deliverysLink.classList.remove("active");
+                        if (userInfoLink) userInfoLink.classList.remove("active");
+                    }
+
+                    // Funkcja do wyświetlania danych użytkownika
+                    function showUserInfo() {
+                        if (userInfoSection) userInfoSection.style.display = "block";
+                        if (editFormSection) editFormSection.style.display = "block";
+                        if (deleteAccountSection) deleteAccountSection.style.display = "block";
+                        if (userDeliverysSection) userDeliverysSection.style.display = "none";
+                        if (userRentsSection) userRentsSection.style.display = "none";
+
+                        if (mainSection) mainSection.classList.remove("has-deliverys");
+                        if (rentsLink) rentsLink.classList.remove("active");
+                        if (deliverysLink) deliverysLink.classList.remove("active");
+                        if (userInfoLink) userInfoLink.classList.add("active");
+                    }
+
+                    // Ustal widoczność na podstawie parametrów URL
+                    const urlParams = new URLSearchParams(window.location.search);
+                    if (urlParams.get('section') === 'deliverys') {
+                        showDeliverys();
+                    } else if (urlParams.get('section') === 'rentals') {
+                        showRents();
+                    } else {
+                        showUserInfo();
+                    }
+
+                    // Obsługa kliknięć
                     if (deliverysLink) {
-                        deliverysLink.classList.add("active");
+                        deliverysLink.addEventListener("click", function(e) {
+                            e.preventDefault();
+                            window.location.href = e.target.href;
+                        });
                     }
+
+                    if (rentsLink) {
+                        rentsLink.addEventListener("click", function(e) {
+                            e.preventDefault();
+                            window.location.href = e.target.href;
+                        });
+                    }
+
                     if (userInfoLink) {
-                        userInfoLink.classList.remove("active");
+                        userInfoLink.addEventListener("click", function(e) {
+                            e.preventDefault();
+                            window.location.href = e.target.href;
+                        });
                     }
-                }
+                });
 
-                // Funkcja do wyświetlania danych użytkownika
-                function showUserInfo() {
-                    if (userInfoSection) userInfoSection.style.display = "block";
-                    if (editFormSection) editFormSection.style.display = "block";
-                    if (deleteAccountSection) deleteAccountSection.style.display = "block";
-                    if (userDeliverysSection) userDeliverysSection.style.display = "none";
-
-                    if (mainSection) {
-                        mainSection.classList.remove("has-deliverys"); 
-                    }
-                    
-                    if (userInfoLink) {
-                        userInfoLink.classList.add("active");
-                    }
-                    if (deliverysLink) {
-                        deliverysLink.classList.remove("active");
-                    }
-                }
-
-                const urlParams = new URLSearchParams(window.location.search);
-                if (urlParams.get('section') === 'deliverys') {
-                    showDeliverys(); 
-                } else {
-                    showUserInfo(); 
-                }
-
-                if (deliverysLink) {
-                    deliverysLink.addEventListener("click", function(e) {
-                        e.preventDefault(); 
-                        window.location.href = e.target.href; 
-                    });
-                } else {
-                    console.error('Link "Moje Zamówienia" nie został znaleziony.');
-                }
-                    
-                if (userInfoLink) {
-                    userInfoLink.addEventListener("click", function(e) {
-                        e.preventDefault(); 
-                        window.location.href = e.target.href; 
-                    });
-                } else {
-                    console.warn('Link "Moje Dane" nie został znaleziony.');
-                }
-            });
                 
 
             </script>

@@ -1,27 +1,29 @@
 <?php
-require 'email_sender.php'; // Import funkcji sendEmail
-
-// Plik przechowujący zapisane adresy e-mail
-$file = 'emails.txt';
+require 'email_sender.php';
+require 'database_connection.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $message = trim($_POST['message']); // Pobierz treść wiadomości
+    $message = trim($_POST['message']);
 
     if (empty($message)) {
         $status = '<p style="color: red;">Treść wiadomości nie może być pusta.</p>';
-    } elseif (!file_exists($file)) {
-        $status = '<p style="color: red;">Brak subskrybentów do wysłania wiadomości.</p>';
     } else {
-        $emails = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-        if (empty($emails)) {
-            $status = '<p style="color: red;">Brak subskrybentów do wysłania wiadomości.</p>';
-        } else {
-            // Wysyłanie wiadomości do każdego subskrybenta
-            foreach ($emails as $email) {
-                $subject = 'Newsletter od Hurtowni Budex';
-                sendEmail($email, $subject, $message);
+        try {
+            $stmt = $pdo->prepare("SELECT email FROM Newsletter");
+            $stmt->execute();
+            $emails = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+            if (empty($emails)) {
+                $status = '<p style="color: red;">Brak subskrybentów do wysłania wiadomości.</p>';
+            } else {
+                foreach ($emails as $email) {
+                    $subject = 'Newsletter od Hurtowni Budex';
+                    sendEmail($email, $subject, $message);
+                }
+                $status = '<p style="color: green;">Wiadomość została pomyślnie wysłana do wszystkich subskrybentów!</p>';
             }
-            $status = '<p style="color: green;">Wiadomość została pomyślnie wysłana do wszystkich subskrybentów!</p>';
+        } catch (PDOException $e) {
+            $status = '<p style="color: red;">Błąd podczas pobierania subskrybentów: ' . htmlspecialchars($e->getMessage()) . '</p>';
         }
     }
 }
@@ -38,7 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
             padding: 20px;
-            background-color:rgb(255, 136, 0);
+            background-color: rgb(255, 136, 0);
         }
         .container {
             max-width: 800px;
@@ -47,6 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            position: relative; /* Ustawienie relatywne dla pozycjonowania elementów wewnątrz kontenera */
         }
         h1 {
             color: #333;
@@ -73,6 +76,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         button:hover {
             background-color: #218838;
         }
+        .back-button {
+            background-color: #dc3545; /* Kolor czerwony */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            position: absolute; /* Pozycjonowanie absolutne */
+            bottom: 20px; /* Odstęp od góry */
+            right: 20px; /* Odstęp od prawej */
+        }
+        .back-button:hover {
+            background-color: #c82333; /* Ciemniejszy czerwony na hover */
+        }
         .status {
             margin-top: 20px;
             text-align: center;
@@ -87,6 +105,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <textarea name="message" placeholder="Wpisz tutaj treść wiadomości..."></textarea>
             <button type="submit">WYŚLIJ</button>
         </form>
+        <button type="button" class="back-button" onclick="window.location.href='index.php'">WRÓĆ</button>
     </div>
 </body>
 </html>

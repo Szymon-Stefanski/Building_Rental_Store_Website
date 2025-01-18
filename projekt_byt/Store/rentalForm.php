@@ -22,6 +22,43 @@ function cleanCart() {
     }
 }
 
+// Jeżeli użytkownik jest gościem, czyli przekierowanie z "?guest=true"
+if (isset($_GET['guest']) && $_GET['guest'] == 'true') {
+    cleanCart();
+    // Ustawienie sesji dla gościa, np. brak ID użytkownika
+    $_SESSION['user_id'] = null;
+}
+
+// Autouzupełnianie danych użytkownika jeżeli jest zalogowany
+if (isset($_SESSION['user_id'])) {
+    $stmt = getDbConnection()->prepare(
+        "SELECT adres, imie, nazwisko, email FROM Uzytkownicy WHERE uzytkownik_id = ?"
+    );
+    $stmt->execute([$_SESSION['user_id']]);
+    $userData = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    if ($userData) {
+        $addressParts = explode(', ', $userData['adres'] ?? '');
+        $_SESSION['user'] = [
+            'first_name' => $userData['imie'] ?? '',
+            'last_name' => $userData['nazwisko'] ?? '',
+            'email' => $userData['email'] ?? '',
+            'postal_code' => $addressParts[0] ?? '',
+            'city' => $addressParts[1] ?? '',
+            'street' => $addressParts[2] ?? '',
+        ];
+
+        if (strpos($addressParts[3] ?? '', '/') !== false) {
+            list($houseNumber, $apartmentNumber) = explode('/', $addressParts[3]);
+            $_SESSION['user']['house_number'] = $houseNumber;
+            $_SESSION['user']['apartment_number'] = $apartmentNumber;
+        } else {
+            $_SESSION['user']['house_number'] = $addressParts[3] ?? '';
+            $_SESSION['user']['apartment_number'] = ''; // Brak numeru mieszkania
+        }
+    }
+}
+
 // Wywołanie funkcji czyszczenia koszyka
 cleanCart();
 
@@ -125,11 +162,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-        // Po zakończeniu dodawania produktów, przekierowanie do rentalForm.php
-        header('Location: rentalForm.php');
-        exit;
-    }
-}
+        $firstName = $_SESSION['user']['first_name'] ?? 'Gość';
+        $lastName = $_SESSION['user']['last_name'] ?? '';
+        $email = $_SESSION['user']['email'] ?? ($_POST['email'] ?? 'brak_emaila@example.com');
+        
+        $subject = "Potwierdzenie wypożyczenia";
+        $message = "Szanowny/a $firstName $lastName,
+
+Dziękujemy za złożenie zamówienia na wypożyczenie w naszym sklepie budowlanym. Poniżej znajdują się szczegóły Twojego wypożyczenia:
+
+Wypożyczone produkty:\n";
+
+                $totalCost = 0;
+                foreach ($_SESSION['cart'] as $item) {
+                    $productName = htmlspecialchars($item['name']);
+                    $rentalDays = htmlspecialchars($item['rental_days']);
+                    $pricePerDay = $basePrice * 0.05;
+                    $total = number_format($pricePerDay * $rentalDays, 2, '.', '');
+                    $message .= "- $productName (Dni: $rentalDays, Cena za dzień: $pricePerDay zł, Łącznie: $total zł)\n";
+                    $vat = $total * 1.08;
+                    $rentalDate = date('Y-m-d');
+                    $returnDate = date('Y-m-d', strtotime("+$rentalDays day", strtotime($rentalDate)));
+                }
+
+                $message .= 
+                "\nŁączna wartość wynajmu (netto): " . $total . " zł
+Podatek VAT (8%): " . $vat - $total . " zł
+Razem do zapłaty: $vat zł
+
+Data rozpoczęcia wynajmu: $rentalDate
+Planowana data zwrotu: $returnDate
+
+Prosimy o terminowy zwrot produktów. W przypadku pytań prosimy o kontakt z naszym działem obsługi klienta: budexgdansk@gmail.com
+
+Dziękujemy za skorzystanie z naszych usług!
+Budex sp. z o.o.";
+
+                header('Location: rentalForm.php');
+                exit;
+            }
+        }
 
 // Przygotowanie danych koszyka
 $cartData = [];
@@ -149,98 +221,14 @@ if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
             'img' => $imagePath
         ];
     }
+    
 }
 
-// Proces składania zamówienia
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'place_order') {
-    $firstName = trim($_POST['firstName'] ?? '');
-    $lastName = trim($_POST['lastName'] ?? '');
-    $email = trim($_POST['email'] ?? '');
-    $street = trim($_POST['street'] ?? '');
-    $houseNumber = trim($_POST['houseNumber'] ?? '');
-    $apartmentNumber = trim($_POST['apartmentNumber'] ?? '');
-    $city = trim($_POST['city'] ?? '');
-    $postalCode = trim($_POST['postalCode'] ?? '');
-    $deliveryDate = $_POST['deliveryDate'] ?? '';
-    $cart = $_SESSION['cart'] ?? [];
+$rentalDate = date('Y-m-d');
+$rentalDays = isset($_POST['rental_days']) ? $_POST['rental_days'] : $item['rental_days'];
+$returnDate = date('Y-m-d', strtotime("+$rentalDays day", strtotime($rentalDate)));
 
-    if (empty($cart)) {
-        echo "Koszyk jest pusty!";
-        exit;
-    }
-
-    // Budowanie adresu
-    if (!$apartmentNumber) {
-        $address = $postalCode . ', ' . $city . ', ' . $street . ', ' . $houseNumber;
-    } else {
-        $address = $postalCode . ', ' . $city . ', ' . $street . ', ' . $houseNumber . '/' . $apartmentNumber ;
-    }
-
-    try {
-        // Obliczanie wartości brutto
-        $brutto = 0;
-        foreach ($cart as $item) {
-            $brutto += $item['price'] * $item['rental_days']; // Cena * dni wynajmu
-        }
-        $brutto += $brutto * $Vat;
-
-        // Koszt dostawy
-        $deliveryCost = floatval($_POST['deliveryCost'] ?? 0);
-
-        // Całkowita kwota
-        $total = $brutto + $deliveryCost;
-
-        $pickupOption = isset($_POST['pickupOption']);
-        if ($pickupOption) {
-            $address = "Odbiór osobisty w sklepie";
-            $deliveryCost = 0;
-        }
-
-        // Dodanie zamówienia do bazy
-        $stmt = getDbConnection()->prepare("
-            INSERT INTO Zamowienia (uzytkownik_id, odbiorca_imie, odbiorca_nazwisko, odbiorca_email, adres, data_zamowienia, status) 
-            VALUES (:userId,:firstName, :lastName, :email, :address, :orderDate, :status)
-        ");
-
-        if (isset($_SESSION['user_id'])) {
-            $stmt->execute([ 
-                ':userId' => $_SESSION['user_id'],
-                ':firstName' => $firstName,
-                ':lastName' => $lastName,
-                ':email' => $email,
-                ':address' => $address,
-                ':orderDate' => date('Y-m-d'),
-                ':status' => 'Nieopłacone'
-            ]);
-        } else {
-            $stmt->execute([ 
-                ':userId' => null,
-                ':firstName' => $firstName,
-                ':lastName' => $lastName,
-                ':email' => $email,
-                ':address' => $address,
-                ':orderDate' => date('Y-m-d'),
-                ':status' => 'Nieopłacone'
-            ]);
-        }
-
-        $orderId = getDbConnection()->lastInsertId();
-
-        // Wysłanie maila
-        $subject = "Potwierdzenie zamówienia #$orderId";
-        $message = "Szanowny/a $firstName $lastName, ...";  // Dodaj treść maila jak wcześniej
-
-        sendEmail($email, $subject, $message);
-
-        header("Location: payment.php?id=$orderId");
-        unset($_SESSION['cart']); // Wyczyszczenie koszyka po złożeniu zamówienia
-        exit;
-    } catch (Exception $e) {
-        echo "Wystąpił błąd podczas składania zamówienia: " . $e->getMessage();
-    }
-}
 ?>
-
 
 <script>
     const cartItems = <?php echo json_encode($cartData, JSON_UNESCAPED_UNICODE); ?>;
@@ -253,19 +241,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formularz Wypożyczenia Sprzętu i Podsumowanie</title>
-    <link rel="stylesheet" href="../Style/style_delivery.css">
+
     <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <link rel="stylesheet" href="../Style/style_delivery.css">
 </head>
 
 <body>
     <div class="main-container">
 
         <!-- Kontener formularza i podsumowania -->
-        <div class="container" id="">
+        <div class="container" id="formSummaryContainer">
             <!-- Kontener formularza -->
             <div class="form-container" id="formContainer">
                 <h2>Formularz Wypożyczenia Sprzętu</h2>
-                <form method="" enctype="multipart/form-data" id="deliveryForm">
+                <form method="POST" action="paymentRent.php" enctype="multipart/form-data" id="deliveryForm">
+                <?php if (isset($_SESSION['user_id'])): ?>
+                    <input type="hidden" name="userId" value="<?= htmlspecialchars($_SESSION['user_id']) ?>">
+                <?php endif; ?>
                     <div class="form-group">
                         <label for="firstName">Imię*</label>
                         <input type="text" id="firstName" name="firstName" required>
@@ -286,6 +282,51 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                         <input type="text" id="phone" name="phone" required>
                     </div>
 
+                    <!-- Data wynajmu - pobierana z systemu -->
+                    <label for="rentalDate">Data wynajmu:</label>
+                    <input type="date" name="rentalDate" id="rentalDate" value="<?php echo $rentalDate; ?>" readonly><br>
+                    
+                    <!-- Data zwrotu - obliczana na podstawie rentalDate i rentalDays -->
+                    <label for="returnDate">Data zwrotu:</label>
+                    <input type="date" name="returnDate" id="returnDate" value="<?php echo $returnDate; ?>" readonly><br>
+
+                    <!-- Zgody marketingowe -->
+                    <div class="form-group">
+                        <div class="marketing">
+                            <label for="marketingConsent" class="consent">Wyrażam zgodę na otrzymywanie informacji marketingowych email</label>
+                            <input type="checkbox" id="marketingConsent" name="marketingConsent">
+                        </div>
+                    </div>
+
+                    <!-- Kontener płatności -->
+                    <div class="payment-methods">
+                        <h3>Wybierz metodę płatności:</h3>
+                        <div class="payment-method">
+                            <label for="blik">
+                                <input type="radio" id="blik" name="paymentMethod" value="blik">
+                                BLIK
+                                <img src="../Image/Icon/blik.png" alt="BLIK" class="payment-icon">
+                            </label>
+                        </div>
+                        <div class="payment-method">
+                            <label for="paypal">
+                                <input type="radio" id="paypal" name="paymentMethod" value="paypal">
+                                PayPal
+                                <img src="../Image/Icon/paypal.png" alt="PayPal" class="payment-icon">
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="return-button">
+                        <button type="button" onclick="window.history.back()">Powrót</button>
+                    </div>
+                    
+                    <div class="submit-button">
+                        <button type="submit">Zgłoś wynajem</button>
+                    </div>
+                </form>
+
+
                     <div class="form-group hidden">
                         <input type="checkbox" id="pickupOption" name="pickupOption">
                         <label for="pickupOption">Odbiór osobisty w sklepie w następnym dniu roboczym</label>
@@ -293,12 +334,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
                     <div class="form-group hidden">
                         <label for="street"></label>
-                        <input type="text" id="street" name="street" required>
+                        <input type="text" id="street" name="street">
                     </div>
 
                     <div class="form-group hidden">
-                        <label for="houseNumber">Nr domu*</label>
-                        <input type="text" id="houseNumber" name="houseNumber" required>
+                        <label for="">Nr domu*</label>
+                        <input type="text" id="" name="">
                     </div>
 
                     <div class="form-group hidden">
@@ -308,33 +349,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
                     <div class="form-group hidden">
                         <label for="city">Miasto*</label>
-                        <input type="text" id="city" name="city" required>
+                        <input type="text" id="city" name="city">
                     </div>
 
                     <div class="form-group hidden">
                         <label for="postalCode">Kod pocztowy*</label>
-                        <input type="text" id="postalCode" name="postalCode" placeholder="XX-XXX" required>
+                        <input type="text" placeholder="XX-XXX">
                     </div>
 
                     <div class="form-group hidden">
                         <label for="deliveryDate">Wybierz datę dostawy*</label>
-                        <input type="date" id="deliveryDate" name="deliveryDate" required>
+                        <input type="date" id="deliveryDate" name="deliveryDate">
                     </div>
 
-                    <div class="return-button">
-                    <button onclick="window.history.back()">Powrót</button>
-                    </div>
-
-                    <div class="submit-button">
-                        <button type="submit">Zgłoś wynajem</button>
-                    </div>
-
-                    <!-- Przekazanie danych obliczanych w js do php -->
-                    <input type="hidden" id="deliveryCost" name="deliveryCost" value="0">
-                </form>
             </div>
-            
-            <!-- wstawić metody płatności w osobnym kontenerze, oraz informacje do sprzedającego -->
 
             <!-- Kontener podsumowania -->
             <div class="summary-container">
@@ -348,6 +376,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
     </div>
 
     <script>
+        
         document.addEventListener("DOMContentLoaded", () => {
             const deliveryForm = document.getElementById("deliveryForm");
             const summaryList = document.getElementById("summaryList");
@@ -360,16 +389,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             const loginButton = document.getElementById("loginButton");
             const guestButton = document.getElementById("guestButton");
 
-            // Wycztywanie danych użytkownika, jeśli jest zalogowany
             if (userData) {
                 document.getElementById("firstName").value = userData.first_name || "";
                 document.getElementById("lastName").value = userData.last_name || "";
                 document.getElementById("email").value = userData.email || "";
-                document.getElementById("postalCode").value = userData.postal_code || "";
-                document.getElementById("city").value = userData.city || "";
-                document.getElementById("street").value = userData.street || "";
-                document.getElementById("houseNumber").value = userData.house_number || "";
-                document.getElementById("apartmentNumber").value = userData.apartment_number || "";
             }
 
 
@@ -410,10 +433,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             function validateForm() {
                 const firstName = document.getElementById("firstName");
                 const lastName = document.getElementById("lastName");
-                const street = document.getElementById("street");
-                const houseNumber = document.getElementById("houseNumber");
-                const city = document.getElementById("city");
-                const postalCode = document.getElementById("postalCode");
                 const pickupOption = document.getElementById("pickupOption");
 
                 const nameRegex = /^[a-zA-ZżźćńółęąśŻŹĆĄŚĘŁÓŃ]+$/;
@@ -423,12 +442,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                     if(
                         !nameRegex.test(firstName.value) ||
                         !nameRegex.test(lastName.value) ||
-                        !nameRegex.test(city.value)
+                        nameRegex.test(city.value)
                     ) {
                         alert("Pola Imię, Nazwisko i Miasto mogą zawierać tylko litery.");
                         return false;
                     }
-                    if (!postalCodeRegex.test(postalCode.value)) {
+                    if (postalCodeRegex.test(postalCode.value)) {
                         alert("Kod pocztowy musi być w formacie XX-XXX.");
                         return false;
                     }
@@ -447,7 +466,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
             // funkcja ukrywania pól adresu po zaznaczeniu checkboxa
             const pickupOption = document.getElementById("pickupOption");
-            const addressFields = document.querySelectorAll("#street, #houseNumber, #apartmentNumber, #city, #postalCode, #deliveryDate");
             const deliveryCostField = document.getElementById("deliveryCost");
 
             pickupOption.addEventListener("change", () => {
@@ -480,25 +498,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
                         <img src="${item.img}" alt="${item.name}" width="50" height="50">
                         <div class="details">
                             <strong>${item.name}</strong>
-                            <p>Cena: ${item.price} zł</p>
-                            <p>Liczba dni wynajmu: ${item.rentalDays}</p>  <!-- Wyświetlamy liczbę dni wynajmu -->
+                            <p>Cena za dzień: ${item.price/item.rentalDays} zł</p>
+                            <p>Liczba dni wynajmu: ${item.rentalDays}</p> <!-- Wyświetlamy liczbę dni wynajmu -->
+                            <p>VAT: 8%</p> <!-- Prawidłowa łączna cena -->
                         </div>
                     `;
                     summaryList.appendChild(itemElement);
-                    total += parseFloat(item.total);
+
+                    // Dodajemy do całkowitej kwoty
+                    total += item.price * 1.08;
                 });
 
-                const pickupOptionChecked = document.getElementById("pickupOption").checked;
-                let deliveryCost = pickupOptionChecked ? 0 : calculateDeliveryCost(
-                    document.getElementById("deliveryDate").value,
-                    document.getElementById("city").value.trim()
-                );
-
-                // Zaktualizuj ukryte pole i podsumowanie
-                document.getElementById("deliveryCost").value = deliveryCost.toFixed(2);
-                total += deliveryCost;
-                summaryTotal.textContent = `Razem (brutto): ${total.toFixed(2)} zł`;
+                // Wyświetl całkowitą kwotę
+                summaryTotal.textContent = `Razem (brutto): ${total.toFixed(1)} zł`;
             }
+
 
 
 

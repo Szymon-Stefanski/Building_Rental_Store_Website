@@ -185,6 +185,14 @@ tr {
   border-radius: 15px;
 }
 
+.status.unavailable {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 15px;
+  background-color: red;
+  color: white;
+}
+
 .available {
   background-color: #28a745;
   color: #fff;
@@ -307,7 +315,7 @@ tr {
   padding: 20px;
   border-radius: 8px;
   box-shadow: 6px 9px 4px rgba(0, 0, 0, 0.24);
-  max-height: 900px;
+  max-height: 1000px;
 }
 
 .recommended-product h3 {
