@@ -118,6 +118,12 @@ CREATE TABLE Newsletter (
     email VARCHAR(100) NOT NULL UNIQUE
 );
 
+CREATE TABLE Kody_Rabatowe (
+    kod_id INT AUTO_INCREMENT PRIMARY KEY,
+    nazwa_kodu VARCHAR(100) UNIQUE NOT NULL,
+    wartosc INT NOT NULL,
+    data_waznosci DATE
+);
 
 
 INSERT INTO Uzytkownicy (imie, nazwisko, email, login, haslo, numer_telefonu, adres, rola) VALUES
