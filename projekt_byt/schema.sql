@@ -280,18 +280,18 @@ INSERT INTO Wynajmy (wynajem_id, uzytkownik_id, data_wynajmu, data_zwrotu, statu
 VALUES (8, 6, '2024-12-20', '2024-12-30', 'Zakończone');
 
 INSERT INTO Pozycje_Wynajmu (produkt_id, wynajem_id, ilosc, stawka_dzienna, koszt_calkowity) 
-VALUES (70, 1, 1, 25.00, 250.00);
+VALUES (70, 1, 1, 20.00, 200.00);
 INSERT INTO Pozycje_Wynajmu (produkt_id, wynajem_id, ilosc, stawka_dzienna, koszt_calkowity)
-VALUES (71, 2, 1, 15.00, 165.00);
+VALUES (71, 2, 1, 50.00, 550.00);
 INSERT INTO Pozycje_Wynajmu (produkt_id, wynajem_id, ilosc, stawka_dzienna, koszt_calkowity) 
-VALUES (72, 3, 1, 22.50, 247.50);
+VALUES (72, 3, 1, 25.00, 275.00);
 INSERT INTO Pozycje_Wynajmu (produkt_id, wynajem_id, ilosc, stawka_dzienna, koszt_calkowity) 
 VALUES (73, 4, 1, 30.00, 330.00);
 INSERT INTO Pozycje_Wynajmu (produkt_id, wynajem_id, ilosc, stawka_dzienna, koszt_calkowity) 
-VALUES (74, 5, 1, 12.50, 137.50);
+VALUES (74, 5, 1, 100.00, 1100.00);
 INSERT INTO Pozycje_Wynajmu (produkt_id, wynajem_id, ilosc, stawka_dzienna, koszt_calkowity)
-VALUES (75, 6, 1, 40.00, 440.00);
+VALUES (75, 6, 1, 35.00, 370.00);
 INSERT INTO Pozycje_Wynajmu (produkt_id, wynajem_id, ilosc, stawka_dzienna, koszt_calkowity) 
 VALUES (76, 7, 1, 20.00, 220.00);
 INSERT INTO Pozycje_Wynajmu (produkt_id, wynajem_id, ilosc, stawka_dzienna, koszt_calkowity) 
-VALUES (77, 8, 1, 35.00, 385.00);
+VALUES (77, 8, 1, 75.00, 825.00);

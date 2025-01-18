@@ -66,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['mark_paid'])) {
 
         // Przygotowanie wiadomości e-mail
         $subject = "Potwierdzenie wynajmu #$rentalId";
-        $message = "Dziękujemy, $firstName $lastName, za zgłoszenie wynajmu. Aby sfinalizować transakcję, opłać wynajem za pomocą poniższego linku:
+        $message = "Dziękujemy za wypożyczenie sprzętu w naszym sklepie budowlanym. Za pomocą poniższego linku można sprawdzić status Twojego wypożyczenia:
 http://localhost/projekt_byt/Rent/paymentRent.php?id=$rentalId";
 
         // Wyślij e-mail do klienta
@@ -134,12 +134,12 @@ $id = $id ?? 0;
     <?php if ($status === 'Opłacone'): ?>
         <p>To zamówienie jest opłacone.</p>
         <a href="../index.php" name="action" value="cleanCart">Powrót na strone główną</a>
-        <a href="deliveryStatus.php?id=<?php echo $id; ?>">Szczegóły wynajmu</a>
+        <a href="rentalStatus.php?id=<?php echo $rentalId; ?>">Szczegóły wynajmu</a>
     <?php else: ?>
         <p>Zamówienie nieopłacone.</p>
         <form method="POST">
             <!-- Ukryte pole do przesyłania ID wynajmu -->
-            <input type="hidden" name="rentalId" value="<?php echo $id; ?>">
+            <input type="hidden" name="rentalId" value="<?php echo $rentalId; ?>">
             <button type="submit" name="mark_paid">Opłać</button>
         </form>
     <?php endif; ?>

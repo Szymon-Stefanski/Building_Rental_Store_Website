@@ -26,7 +26,7 @@ function cleanCart() {
 if (isset($_GET['guest']) && $_GET['guest'] == 'true') {
     cleanCart();
     // Ustawienie sesji dla gościa, np. brak ID użytkownika
-    $_SESSION['user_id'] = null;  // Usuń ID użytkownika, by traktować go jako gościa
+    $_SESSION['user_id'] = null;
 }
 
 // Autouzupełnianie danych użytkownika jeżeli jest zalogowany
@@ -38,7 +38,6 @@ if (isset($_SESSION['user_id'])) {
     $userData = $stmt->fetch(PDO::FETCH_ASSOC);
 
     if ($userData) {
-        // Rozdziel adres na części
         $addressParts = explode(', ', $userData['adres'] ?? '');
         $_SESSION['user'] = [
             'first_name' => $userData['imie'] ?? '',
@@ -49,7 +48,6 @@ if (isset($_SESSION['user_id'])) {
             'street' => $addressParts[2] ?? '',
         ];
 
-        // Rozdziel trzeci element na numer domu i numer mieszkania, jeśli istnieje
         if (strpos($addressParts[3] ?? '', '/') !== false) {
             list($houseNumber, $apartmentNumber) = explode('/', $addressParts[3]);
             $_SESSION['user']['house_number'] = $houseNumber;
@@ -164,11 +162,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-        // Po zakończeniu dodawania produktów, przekierowanie do rentalForm.php
-        header('Location: rentalForm.php');
-        exit;
-    }
-}
+        $firstName = $_SESSION['user']['first_name'] ?? 'Gość';
+        $lastName = $_SESSION['user']['last_name'] ?? '';
+        $email = $_SESSION['user']['email'] ?? ($_POST['email'] ?? 'brak_emaila@example.com');
+        
+        $subject = "Potwierdzenie wypożyczenia";
+        $message = "Szanowny/a $firstName $lastName,
+
+Dziękujemy za złożenie zamówienia na wypożyczenie w naszym sklepie budowlanym. Poniżej znajdują się szczegóły Twojego wypożyczenia:
+
+Wypożyczone produkty:\n";
+
+                $totalCost = 0;
+                foreach ($_SESSION['cart'] as $item) {
+                    $productName = htmlspecialchars($item['name']);
+                    $rentalDays = htmlspecialchars($item['rental_days']);
+                    $pricePerDay = $basePrice * 0.05;
+                    $total = number_format($pricePerDay * $rentalDays, 2, '.', '');
+                    $message .= "- $productName (Dni: $rentalDays, Cena za dzień: $pricePerDay zł, Łącznie: $total zł)\n";
+                    $vat = $total * 1.08;
+                    $rentalDate = date('Y-m-d');
+                    $returnDate = date('Y-m-d', strtotime("+$rentalDays day", strtotime($rentalDate)));
+                }
+
+                $message .= 
+                "\nŁączna wartość wynajmu (netto): " . $total . " zł
+Podatek VAT (8%): " . $vat - $total . " zł
+Razem do zapłaty: $vat zł
+
+Data rozpoczęcia wynajmu: $rentalDate
+Planowana data zwrotu: $returnDate
+
+Prosimy o terminowy zwrot produktów. W przypadku pytań prosimy o kontakt z naszym działem obsługi klienta: budexgdansk@gmail.com
+
+Dziękujemy za skorzystanie z naszych usług!
+Budex sp. z o.o.";
+
+                header('Location: rentalForm.php');
+                exit;
+            }
+        }
 
 // Przygotowanie danych koszyka
 $cartData = [];
@@ -194,6 +227,7 @@ if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
 $rentalDate = date('Y-m-d');
 $rentalDays = isset($_POST['rental_days']) ? $_POST['rental_days'] : $item['rental_days'];
 $returnDate = date('Y-m-d', strtotime("+$rentalDays day", strtotime($rentalDate)));
+
 ?>
 
 <script>
@@ -464,7 +498,7 @@ $returnDate = date('Y-m-d', strtotime("+$rentalDays day", strtotime($rentalDate)
                         <img src="${item.img}" alt="${item.name}" width="50" height="50">
                         <div class="details">
                             <strong>${item.name}</strong>
-                            <p>Cena za dzień: ${item.price} zł</p>
+                            <p>Cena za dzień: ${item.price/item.rentalDays} zł</p>
                             <p>Liczba dni wynajmu: ${item.rentalDays}</p> <!-- Wyświetlamy liczbę dni wynajmu -->
                             <p>VAT: 8%</p> <!-- Prawidłowa łączna cena -->
                         </div>

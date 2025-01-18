@@ -525,6 +525,31 @@ if ($product) {
             totalPriceField.textContent = totalPrice.toFixed(2) + ' zł';
         }
 
+        function updateRentDays(productId, change) {
+            const rentDaysValue = document.getElementById(`rent-days-value-${productId}`);
+            const totalPrice = document.getElementById(`total-price-${productId}`);
+            const unitPrice = parseFloat(document.querySelector(`#row-${productId} .unit-price`).textContent.replace(' zł', ''));
+
+            let currentDays = parseInt(rentDaysValue.innerText, 10) || 0;
+            currentDays += change;
+
+            if (currentDays < 1) {
+                currentDays = 1;
+            }
+
+            rentDaysValue.innerText = currentDays;
+
+            // Przeliczanie całkowitej ceny
+            const total = currentDays * unitPrice;
+            totalPrice.textContent = total.toFixed(2) + ' zł';
+
+            const hiddenInput = document.getElementById(`days-hidden-${productId}`);
+            if (hiddenInput) {
+                hiddenInput.value = currentDays;
+            }
+        }
+
+
 
         function toggleRowHighlight(productId) {
             const row = document.getElementById(`row-${productId}`);
@@ -569,23 +594,6 @@ if ($product) {
                 rentDaysValue.innerText = '1';  // Poprawka, zmieniać `innerText`, nie `textContent`
                 totalPrice.textContent = '0.00 zł';
             }
-        }
-
-        function updateRentDays(productId, change) {
-            const rentDaysValue = document.getElementById(`rent-days-value-${productId}`);
-            const totalPrice = document.getElementById(`total-price-${productId}`);
-            const unitPrice = parseFloat(document.querySelector(`#row-${productId} .unit-price`).textContent.replace(' zł', ''));
-
-            let currentDays = parseInt(rentDaysValue.innerText, 10) || 0;  // Używaj innerText
-            currentDays += change;
-
-            if (currentDays < 1) {  // Nie pozwól na liczbę mniejszą niż 1
-                currentDays = 1;
-            }
-
-            rentDaysValue.innerText = currentDays;  // Poprawka: używaj innerText
-            const total = currentDays * unitPrice;
-            totalPrice.textContent = total.toFixed(2) + ' zł';
         }
 
         window.onload = function() {
