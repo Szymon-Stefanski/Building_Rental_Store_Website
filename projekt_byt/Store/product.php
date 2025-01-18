@@ -181,7 +181,8 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
                         <img src="../Image/Icon/furnace.png" class="category-icon"> INSTALACJE
                         <img src="../Image/Icon/down-arrow.png" alt="Strzałka w dół" class="arrow-icon">
                     </a>
-                    <a href="#">
+                
+                    <a href="rental.php?source=<?php echo $current_url; ?>">
                         <img src="../Image/Icon/rent.png" class="category-icon"> WYPOŻYCZALNIA
                         <img src="../Image/Icon/down-arrow.png" alt="Strzałka w dół" class="arrow-icon">
                     </a>
@@ -196,8 +197,8 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
             </nav>
         </header>
         <div id="no-results-message" class="no-results-message" style="display: none;">
-    Nie ma takiego produktu.
-</div>
+            Nie ma takiego produktu.
+        </div>
 
 <!-- Główna sekcja produktu -->
 <main class="main-content">
@@ -380,8 +381,11 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
                     <div class="footer-newsletter">
                         <h3>NEWSLETTER</h3>
                         <p>Chcesz być na bieżąco z najlepszymi ofertami? Zapisz się do newslettera i nie przegap okazji!</p>
-                        <button type="submit"><i class="fa fa-arrow-right"></i> ZAPISZ SIĘ</button>
-                        
+                        <form action="../newsletter.php" method="GET">
+                            <button type="submit">
+                                <i class="fa fa-arrow-right"></i> ZAPISZ SIĘ
+                            </button>
+                        </form>
                         
                     </div>
 

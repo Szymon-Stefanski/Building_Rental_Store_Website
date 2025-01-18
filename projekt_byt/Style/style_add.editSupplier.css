@@ -1,0 +1,83 @@
+/* Ogólne stylizacje */
+body {
+    font-family: Arial;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f9;
+    color: #333;
+    
+    background-image: url("../Image/Icon/brickwallpaper.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+header {
+    background-color: #0056b3;
+    padding: 20px;
+    color: white;
+    text-align: center;
+}
+
+
+.main-content {
+    max-width: 600px;
+    margin: 30px auto;
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.add-supplier-form label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.add-supplier-form input,
+.add-supplier-form textarea,
+.add-supplier-form button {
+    width: 100%;
+    margin-bottom: 15px;
+    padding: 10px;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.add-supplier-form textarea {
+    resize: vertical;
+    height: 80px;
+}
+
+.add-supplier-form button {
+    background-color: #0056b3;
+    color: #fff;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.add-supplier-form button:hover {
+    background-color: #00408f;
+}
+
+footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 20px 0;
+    min-height: 80px;
+    font-size: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}

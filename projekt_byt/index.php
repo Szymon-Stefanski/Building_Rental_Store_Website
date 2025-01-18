@@ -195,7 +195,8 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
                         <img src="Image/Icon/down-arrow.png" alt="Strzałka w dół" class="arrow-icon">
                     </a>
                     <a href="Store/rental.php?source=<?php echo $current_url; ?>">
-                        <img src="Image/Icon/rent.png" class="category-icon"> WYPOŻYCZALNIA SPRZĘTU
+                        <img src="Image/Icon/rent.png" class="category-icon"> WYPOŻYCZALNIA
+                        <img src="Image/Icon/down-arrow.png" alt="Strzałka w dół" class="arrow-icon">
                     </a>
 
                     <a href="#">
@@ -243,14 +244,14 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
                                         <a href="Store/product.php?id=<?= $product['produkt_id'] ?>">
                                             
                                             <img src="<?= findProductImage($product['produkt_id'], $category, $product['nazwa_produktu']) ?>"
-                                                 alt="Obraz produktu: <?= ($product['nazwa_produktu']) ?>">
+                                                 alt="Obraz produktu: <?= ($product['nazwa_produktu']) ?>" class="zdjecie">
 
                                             <h3><?= ($product['nazwa_produktu']) ?></h3>
                                             <p class="product-price"><?= number_format($product['cena'], 2, ',', ' ') ?> zł/szt.</p>
                                         </a>
                                         
                                             <div class="favorite-icon" onclick="toggleFavorite(<?= $product['produkt_id'] ?>)"> <!-- Zmiany ! Zobacz czy poprawnie działa -->
-                                                <img src="Image/Icon/love-always-wins.png" alt="Ulubione">
+                                                <img src="Image/Icon/love-always-wins.png" class="ikonka" alt="Ulubione">
                                             </div>
                                         <div class="quantity-cart-container">
                                             <div class="quantity-control">
