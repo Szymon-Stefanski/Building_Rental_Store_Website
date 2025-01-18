@@ -43,28 +43,58 @@ if (isset($_POST['action']) && $_POST['action'] === 'clear_cart') {
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['action'])) {
-        if ($_POST['action'] === 'update_quantity' && isset($_POST['item_index'], $_POST['change'])) {
-            $index = intval($_POST['item_index']);
-            $change = intval($_POST['change']);
-            if (isset($_SESSION['cart'][$index])) {
-                $_SESSION['cart'][$index]['quantity'] += $change;
-                if ($_SESSION['cart'][$index]['quantity'] < 1) {
-                    $_SESSION['cart'][$index]['quantity'] = 1;
+        switch ($_POST['action']) {
+            case 'update_quantity':
+                if (isset($_POST['item_index'], $_POST['change'])) {
+                    $index = intval($_POST['item_index']);
+                    $change = intval($_POST['change']);
+                    if (isset($_SESSION['cart'][$index])) {
+                        $_SESSION['cart'][$index]['quantity'] += $change;
+                        if ($_SESSION['cart'][$index]['quantity'] < 1) {
+                            $_SESSION['cart'][$index]['quantity'] = 1;
+                        }
+                    }
                 }
-            }
-        }
+                break;
 
-        if ($_POST['action'] === 'remove_item' && isset($_POST['item_index'])) {
-            $index = intval($_POST['item_index']);
-            if (isset($_SESSION['cart'][$index])) {
-                unset($_SESSION['cart'][$index]);
-                $_SESSION['cart'] = array_values($_SESSION['cart']);
-            }
+            case 'remove_item':
+                if (isset($_POST['item_index'])) {
+                    $index = intval($_POST['item_index']);
+                    if (isset($_SESSION['cart'][$index])) {
+                        unset($_SESSION['cart'][$index]);
+                        $_SESSION['cart'] = array_values($_SESSION['cart']);
+                    }
+                }
+                break;
+
+            case 'fetch_promo_codes':
+                header('Content-Type: application/json');
+                try {
+                    $pdo = new PDO('mysql:host=localhost;dbname=build_store', 'root', '');
+                    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+                    $stmt = $pdo->prepare("SELECT nazwa_kodu, wartosc, data_waznosci FROM Kody_Rabatowe");
+                    $stmt->execute();
+                    $codes = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+                    echo json_encode(['success' => true, 'codes' => $codes]);
+                } catch (PDOException $e) {
+                    echo json_encode(['success' => false, 'message' => 'Błąd połączenia: ' . $e->getMessage()]);
+                } catch (Exception $e) {
+                    echo json_encode(['success' => false, 'message' => 'Błąd: ' . $e->getMessage()]);
+                }
+                break;
+
+
+            default:
+                echo "Nieznane działanie: " . htmlspecialchars($_POST['action']);
+                break;
         }
     }
     header("Refresh:0");
-    exit();
+    exit;
 }
+
 
 function displayCart() {
     if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
@@ -184,6 +214,7 @@ if ($product) {
     echo "Brak produktów w bazie.";
 }
 
+
 ?>
 
 <!DOCTYPE html>
@@ -279,7 +310,8 @@ if ($product) {
                     <button id="toggle-code-btn">WPISZ KOD RABATOWY / BON PODARUNKOWY</button>
                     <div id="promo-code-input" style="display: none; margin-top: 10px;">
                         <input type="text" placeholder="Wpisz kod rabatowy" style="padding: 10px; width: 100%; box-sizing: border-box;">
-                        <button id="apply-code-btn" style="margin-top: 5px; padding: 10px; width: 100%;">Zastosuj kod</button>
+                        <button type="submit" id="apply-code-btn" style="margin-top: 5px; padding: 10px; width: 100%;">Zastosuj kod</button>
+
                     </div>
                 </div>
                 <div class="free-shipping">
@@ -368,6 +400,8 @@ if ($product) {
             <!-- Podsumowanie koszyka -->
             <div class="summary">
                 <p>Produkty: <span id="products-total"><?php echo $Total;?> zł</span></p>
+                <p id="Rabat">Rabat: <span>0%</span>
+                </p>
                 <p>RAZEM (BRUTTO): <strong><span id="cart-total"> <?php echo $Brutto;?> zł</span></strong></p>
                 <p>VAT (wliczony): <span id="vat-amount"><?php echo $Vat*100;?>%</span></p>
             </div>
@@ -375,7 +409,6 @@ if ($product) {
     </div>
 
     <script>
-
             window.onload = function() {
             // Pobranie danych koszyka z localStorage
             const cartProducts = JSON.parse(localStorage.getItem('cartItems')) || [];
@@ -418,7 +451,7 @@ if ($product) {
             }
 
             // Zliczenie całkowitej ceny koszyka
-            const cartTotal = cartProducts.reduce((total, product) => total + product.price * product.quantity, 0);
+            let cartTotal = cartProducts.reduce((total, product) => total + product.price * product.quantity, 0);
 
             // Aktualizacja całkowitej ceny w koszyku
             document.getElementById('cart-total').textContent = `${cartTotal.toFixed(2)} zł`;
@@ -514,8 +547,9 @@ if ($product) {
 
                 // Dodajemy cenę tego produktu do całkowitej ceny koszyka
                 totalProductPrice += productTotalPrice;
-                updateProgress();
+
             });
+
         }
 
 
@@ -654,19 +688,69 @@ if ($product) {
         window.onload = function() {
             updateCart();
         }
-        
-        
-        
-        //Kod rabatowy
-        document.getElementById("toggle-code-btn").addEventListener("click", () => {
-        const promoCodeInput = document.getElementById("promo-code-input");
-            
-            if (promoCodeInput.style.display === "none" || promoCodeInput.style.display === "") {
-                promoCodeInput.style.display = "block";
-            } else {
-                promoCodeInput.style.display = "none";
-            }
-        });
+
+
+
+            // Przełączanie widoczności pola
+            document.getElementById("toggle-code-btn").addEventListener("click", () => {
+                const promoCodeInput = document.getElementById("promo-code-input");
+
+                if (promoCodeInput.style.display === "none" || promoCodeInput.style.display === "") {
+                    promoCodeInput.style.display = "block";
+                } else {
+                    promoCodeInput.style.display = "none";
+                }
+            });
+
+            // Pobieranie kodów rabatowych z backendu
+            let promoCodes = [];
+
+            console.log('Rozpoczęcie fetch...');
+            fetch('cart.php', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({ action: 'fetch_promo_codes' })
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        promoCodes = data.codes; // Przypisujemy do globalnej zmiennej
+                        console.log('Otrzymane kody rabatowe:', promoCodes);
+                    } else {
+                        console.error('Błąd podczas pobierania kodów:', data.message);
+                    }
+                })
+                .catch(error => console.error('Błąd:', error));
+
+            // Obsługa wpisanego kodu rabatowego
+            document.getElementById("apply-code-btn").addEventListener("click", () => {
+                let currentDiscount = 0;
+                const codeInput = document.querySelector("#promo-code-input input").value;
+                const rabatDiv = document.getElementById("Rabat");
+
+                if (!codeInput) {
+                    // Wyświetlenie powiadomienia o braku kodu
+                    alert("Nie wprowadzono kodu rabatowego.");
+                    return;
+                }
+
+                const normalizedInput = codeInput.trim().toUpperCase();
+                const matchingCode = promoCodes.find(code => code.nazwa_kodu.toUpperCase() === normalizedInput);
+
+                if (matchingCode) {
+                    // Jeśli kod jest poprawny, wyświetlamy rabat w <div id="Rabat">
+                    rabatDiv.innerHTML = `Rabat: <span>${matchingCode.wartosc}%</span>`;
+                    rabatDiv.style.color = "green"; // Dodatkowe podkreślenie, że wszystko jest OK
+                    updateCart();
+                } else {
+                    // Jeśli kod jest niepoprawny, wyświetlamy powiadomienie
+                    alert("Nieprawidłowy kod rabatowy.");
+                    rabatDiv.innerHTML = ""; // Czyszczenie zawartości div w przypadku błędu
+                }
+            });
+
+
+
     </script>
 </body>
 </html>
