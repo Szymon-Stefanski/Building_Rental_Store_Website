@@ -112,7 +112,12 @@ CREATE TABLE Transakcje (
     FOREIGN KEY (zamowienie_id) REFERENCES Zamowienia(zamowienie_id) ON DELETE CASCADE
 );
 
-
+CREATE TABLE Kody_Rabatowe (
+    kod_id INT AUTO_INCREMENT PRIMARY KEY,
+    nazwa_kodu VARCHAR(100) UNIQUE NOT NULL,
+    wartosc INT NOT NULL,
+    data_waznosci DATE
+);
 
 INSERT INTO Uzytkownicy (imie, nazwisko, email, login, haslo, numer_telefonu, adres, rola) VALUES
 ('admin', 'admin', 'examplemail@g.pl', 'admin', '$2y$10$eao35AcfQ6kLjBv6piRueu6tspT4EhDCun3L0np4oZ2zeTrOJYx3m', 123456789, "55-555, Gdańsk, Example street, 1/2", 'admin'),
