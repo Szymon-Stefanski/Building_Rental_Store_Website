@@ -73,7 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $pdo = new PDO('mysql:host=localhost;dbname=build_store', 'root', '');
                     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-                    $stmt = $pdo->prepare("SELECT nazwa_kodu, wartosc, data_waznosci FROM Kody_Rabatowe");
+                    $stmt = $pdo->prepare("SELECT kod_id, nazwa_kodu, wartosc, data_waznosci FROM Kody_Rabatowe");
                     $stmt->execute();
                     $codes = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -85,6 +85,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
                 break;
 
+            case 'apply_promo_code':
+                if (isset($_POST['code_id'], $_POST['code_value'])) {
+                    $codeId = intval($_POST['code_id']);
+                    $codeValue = floatval($_POST['code_value']);
+
+                    $_SESSION['promo_code'] = [
+                        'id' => $codeId,
+                        'value' => $codeValue
+                    ];
+                    // Oblicz brutto
+                    $Total = 0;
+                    $Vat = 0.08;
+                    if (isset($_SESSION['cart'])) {
+                        foreach ($_SESSION['cart'] as $item) {
+                            $itemTotal = $item['price'] * $item['quantity'];
+                            $Total += $itemTotal;
+                        }
+                    }
+                    $discount = $Total * ($codeValue / 100);
+                    $Brutto = $Total + $Total * $Vat - $discount;
+
+                    // Wyślij nową wartość brutto do klienta
+                    echo json_encode([
+                        'success' => true,
+                        'new_brutto' => $Brutto,
+                        'message' => 'Kod rabatowy został zastosowany.'
+                    ]);
+                } else {
+                    echo json_encode([
+                        'success' => false,
+                        'message' => 'Nieprawidłowe dane kodu rabatowego.'
+                    ]);}
+                break;
 
             default:
                 echo "Nieznane działanie: " . htmlspecialchars($_POST['action']);
@@ -96,41 +129,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 
-function displayCart() {
-    if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
-        echo "<form action='update_cart.php' method='post'>
-                <table class='cart-table'>
-                    <thead>
-                        <tr>
-                            <th>Produkt</th>
-                            <th>Cena</th>
-                            <th>Ilość</th>
-                            <th>Łączna cena</th>
-                        </tr>
-                    </thead>
-                    <tbody>";
-
-        foreach ($_SESSION['cart'] as $key => $item) {
-            $totalPrice = $item['price'] * $item['quantity'];
-            echo "<tr>
-                    <td><img src='{$item['image']}' alt='{$item['name']}' style='width: 50px;'> {$item['name']}</td>
-                    <td>{$item['price']} zł</td>
-                    <td>
-                        <input type='number' name='quantity[{$key}]' value='{$item['quantity']}' min='1' />
-                    </td>
-                    <td>{$totalPrice} zł</td>
-                  </tr>";
-        }
-
-        echo "</tbody></table>
-              <button type='submit'>Zaktualizuj koszyk</button>
-              </form>";
-    } else {
-        echo "<p>Twój koszyk jest pusty.</p>";
-    }
-}
-
-
 $Total = 0;
 $Vat = 0.08;
                     if (isset($_SESSION['cart'])) {
@@ -139,6 +137,11 @@ $Vat = 0.08;
                             $Total += $itemTotal;
                         }
                     }
+$discount = 0;
+if (isset($_SESSION['promo_code'])) {
+    $discount = $Total * ($_SESSION['promo_code']['value'] / 100);
+}
+$Total = $Total - $discount;
 $Brutto = $Total + $Total * $Vat;
 
 // Losowe wyświetlanie produktów z bazy
@@ -400,7 +403,18 @@ if ($product) {
             <!-- Podsumowanie koszyka -->
             <div class="summary">
                 <p>Produkty: <span id="products-total"><?php echo $Total;?> zł</span></p>
-                <p id="Rabat">Rabat: <span>0%</span>
+                <?php
+                $discountValue = 0; // Domyślna wartość rabatu
+                $textColor = "black"; // Domyślny kolor czcionki
+
+                if (isset($_SESSION['promo_code'])) {
+                    $discountValue = $_SESSION['promo_code']['value']; // Pobranie wartości rabatu z sesji
+                    $textColor = "green"; // Zmiana koloru na zielony, gdy kod jest w sesji
+                }
+                ?>
+
+                <p id="Rabat" style="color: <?php echo ($textColor); ?>;">
+                    Rabat: <span><?php echo ($discountValue); ?>%</span>
                 </p>
                 <p>RAZEM (BRUTTO): <strong><span id="cart-total"> <?php echo $Brutto;?> zł</span></strong></p>
                 <p>VAT (wliczony): <span id="vat-amount"><?php echo $Vat*100;?>%</span></p>
@@ -741,11 +755,30 @@ if ($product) {
                     // Jeśli kod jest poprawny, wyświetlamy rabat w <div id="Rabat">
                     rabatDiv.innerHTML = `Rabat: <span>${matchingCode.wartosc}%</span>`;
                     rabatDiv.style.color = "green"; // Dodatkowe podkreślenie, że wszystko jest OK
-                    updateCart();
+
+                    // Wysłanie ID i wartości kodu do PHP
+                    fetch('cart.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                        body: new URLSearchParams({
+                            action: 'apply_promo_code',
+                            code_id: matchingCode.kod_id,
+                            code_value: matchingCode.wartosc
+                        })
+                    })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                // Aktualizuj wartość brutto w widoku
+                                document.getElementById("cart-total").textContent = `${data.new_brutto.toFixed(2)} zł`;
+                                alert(data.message);
+                            } else {
+                                alert(data.message);
+                            }
+                        })
+                        .catch(error => console.error('Błąd podczas aktualizacji brutto:', error));
                 } else {
-                    // Jeśli kod jest niepoprawny, wyświetlamy powiadomienie
                     alert("Nieprawidłowy kod rabatowy.");
-                    rabatDiv.innerHTML = ""; // Czyszczenie zawartości div w przypadku błędu
                 }
             });
 

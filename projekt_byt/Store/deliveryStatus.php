@@ -7,6 +7,15 @@ if (!isset($_GET['id'])) {
     exit;
 }
 
+// Sprawdzenie, czy użytkownik jest zalogowany
+if (!isset($_SESSION['user_id'])) {
+    $logged_in = false;
+    $user_id = null;
+} else {
+    $logged_in = true;
+    $user_id = $_SESSION['user_id'];
+}
+
 $zamowienie_id = $_GET['id'];
 
 $db = getDbConnection();
@@ -21,11 +30,14 @@ $zamowienie_stmt = $db->prepare("
         z.odbiorca_email,
         z.adres,
         z.data_zamowienia,
-        z.status
+        z.status,
+        k.wartosc AS kod_rabatowy_wartosc
     FROM Zamowienia z
     LEFT JOIN Uzytkownicy u ON z.uzytkownik_id = u.uzytkownik_id
+    LEFT JOIN Kody_Rabatowe k ON z.kod_id = k.kod_id
     WHERE z.zamowienie_id = ?
 ");
+
 $zamowienie_stmt->execute([$zamowienie_id]);
 $zamowienie = $zamowienie_stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -48,9 +60,13 @@ $pozycje_stmt->execute([$zamowienie_id]);
 $pozycje = $pozycje_stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Pobieranie roli użytkownika
-$stmt = getDbConnection()->prepare("SELECT rola FROM Uzytkownicy WHERE uzytkownik_id = ?");
-$stmt->execute([$_SESSION['user_id']]);
-$userRole = $stmt->fetchColumn();
+if (isset($_SESSION['user_id'])) {
+    $stmt = getDbConnection()->prepare("SELECT rola FROM Uzytkownicy WHERE uzytkownik_id = ?");
+    $stmt->execute([$_SESSION['user_id']]);
+    $userRole = $stmt->fetchColumn();
+} else {
+    $userRole = 'guest';
+}
 ?>
 <!DOCTYPE html>
 <html lang="pl">
@@ -102,7 +118,9 @@ $userRole = $stmt->fetchColumn();
                 <p><strong>Adres:</strong> <?= $zamowienie['adres'] ?></p>
                 <p><strong>Data zamówienia:</strong> <?= $zamowienie['data_zamowienia'] ?></p>
                 <!--<p class="status <?php echo strtolower($zamowienie['status']); ?>"><strong>Status:</strong> <?= $zamowienie['status'] ?></p>-->
-                
+                <?php if ($zamowienie['kod_rabatowy_wartosc']): ?>
+                <p><strong>Zastosowano kod rabatowy:</strong> <?= $zamowienie['kod_rabatowy_wartosc'] ?>%</p>
+                <?php endif; ?>
                 <!-- Dodanie klasy CSS do statusu w zależności od jego wartości -->
                 <p class="status 
                     <?php 

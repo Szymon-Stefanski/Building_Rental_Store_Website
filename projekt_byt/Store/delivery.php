@@ -126,6 +126,11 @@ function findProductImage($productId, $categoryName, $productName) {
         foreach ($cart as $item) {
             $brutto += $item['price'] * $item['quantity'];
         }
+        $discount = 0;
+        if (isset($_SESSION['promo_code'])) {
+            $discount = $brutto * ($_SESSION['promo_code']['value'] / 100);
+        }
+        $brutto = $brutto - $discount;
         $brutto += $brutto * $Vat;
 
         $deliveryCost = floatval($_POST['deliveryCost'] ?? 0);
@@ -138,10 +143,12 @@ function findProductImage($productId, $categoryName, $productName) {
             $deliveryCost = 0;
         }
 
+        $kod = $_SESSION['promo_code']['id'] ?? null;
+
         // Dodanie zamówienia
         $stmt = getDbConnection()->prepare("
-            INSERT INTO Zamowienia (uzytkownik_id, odbiorca_imie, odbiorca_nazwisko, odbiorca_email, adres, data_zamowienia, status) 
-            VALUES (:userId,:firstName, :lastName, :email, :address, :orderDate, :status)
+            INSERT INTO Zamowienia (uzytkownik_id, odbiorca_imie, odbiorca_nazwisko, odbiorca_email, adres, data_zamowienia, status, kod_id) 
+            VALUES (:userId,:firstName, :lastName, :email, :address, :orderDate, :status, :kod)
         ");
 
         if (isset($_SESSION['user_id'])) {
@@ -152,7 +159,8 @@ function findProductImage($productId, $categoryName, $productName) {
                 ':email' => $email,
                 ':address' => $address,
                 ':orderDate' => date('Y-m-d'),
-                ':status' => 'Nieopłacone'
+                ':status' => 'Nieopłacone',
+                ':kod' => $kod
             ]);
         } else {
             $stmt->execute([
@@ -162,7 +170,8 @@ function findProductImage($productId, $categoryName, $productName) {
                 ':email' => $email,
                 ':address' => $address,
                 ':orderDate' => date('Y-m-d'),
-                ':status' => 'Nieopłacone'
+                ':status' => 'Nieopłacone',
+                ':kod' => $kod
             ]);
         }
 
@@ -217,6 +226,7 @@ function findProductImage($productId, $categoryName, $productName) {
 
         header("Location: payment.php?id=$orderId");
         unset($_SESSION['cart']); // Wyczyszczenie koszyka po złożeniu zamówienia
+        unset($_SESSION['promo_code']);
         exit;
     } catch (Exception $e) {
         echo "Wystąpił błąd podczas składania zamówienia: " . $e->getMessage();
@@ -249,7 +259,6 @@ function findProductImage($productId, $categoryName, $productName) {
 
 <body>
     <div class="main-container">
-
         <!-- Kontener formularza i podsumowania -->
         <div class="container" id="formSummaryContainer">
             <!-- Kontener formularza -->
@@ -495,6 +504,8 @@ function findProductImage($productId, $categoryName, $productName) {
             function updateSummary() {
                 summaryList.innerHTML = "";
                 let total = 0;
+                const discountFromSession = <?php echo isset($_SESSION['promo_code']) ? $_SESSION['promo_code']['value'] : 0; ?>;
+                const discountPercentage = discountFromSession || 0; // Wartość rabatu z sesji lub 0, jeśli brak
 
                 cartItems.forEach((item) => {
                     const itemElement = document.createElement("div");
@@ -519,6 +530,8 @@ function findProductImage($productId, $categoryName, $productName) {
 
                 // Zaktualizuj ukryte pole i podsumowanie
                 document.getElementById("deliveryCost").value = deliveryCost.toFixed(2);
+                let discountValue = total * (discountPercentage / 100);
+                total = total - discountValue;
                 total += deliveryCost;
                 summaryTotal.textContent = `Razem (brutto): ${total.toFixed(2)} zł`;
             }
