@@ -7,6 +7,15 @@ if (!isset($_GET['id'])) {
     exit;
 }
 
+// Sprawdzenie, czy użytkownik jest zalogowany
+if (!isset($_SESSION['user_id'])) {
+    $logged_in = false;
+    $user_id = null;
+} else {
+    $logged_in = true;
+    $user_id = $_SESSION['user_id'];
+}
+
 $zamowienie_id = $_GET['id'];
 
 $db = getDbConnection();
@@ -48,9 +57,13 @@ $pozycje_stmt->execute([$zamowienie_id]);
 $pozycje = $pozycje_stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Pobieranie roli użytkownika
-$stmt = getDbConnection()->prepare("SELECT rola FROM Uzytkownicy WHERE uzytkownik_id = ?");
-$stmt->execute([$_SESSION['user_id']]);
-$userRole = $stmt->fetchColumn();
+if (isset($_SESSION['user_id'])) {
+    $stmt = getDbConnection()->prepare("SELECT rola FROM Uzytkownicy WHERE uzytkownik_id = ?");
+    $stmt->execute([$_SESSION['user_id']]);
+    $userRole = $stmt->fetchColumn();
+} else {
+    $userRole = 'guest';
+}
 ?>
 <!DOCTYPE html>
 <html lang="pl">

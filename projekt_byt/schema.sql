@@ -67,6 +67,8 @@ CREATE TABLE Zamowienia (
 	adres TEXT,
     data_zamowienia DATE NOT NULL,
     status VARCHAR(50) NOT NULL,
+	kod_id INT NULL,
+    FOREIGN KEY (kod_id) REFERENCES Kody_Rabatowe(kod_id) ON DELETE SET NULL
     FOREIGN KEY (uzytkownik_id) REFERENCES Uzytkownicy(uzytkownik_id) ON DELETE CASCADE
 );
 
@@ -112,19 +114,12 @@ CREATE TABLE Transakcje (
     FOREIGN KEY (zamowienie_id) REFERENCES Zamowienia(zamowienie_id) ON DELETE CASCADE
 );
 
-
-CREATE TABLE Newsletter (
-    email_id INT AUTO_INCREMENT PRIMARY KEY,
-    email VARCHAR(100) NOT NULL UNIQUE
-);
-
 CREATE TABLE Kody_Rabatowe (
     kod_id INT AUTO_INCREMENT PRIMARY KEY,
     nazwa_kodu VARCHAR(100) UNIQUE NOT NULL,
     wartosc INT NOT NULL,
     data_waznosci DATE
 );
-
 
 INSERT INTO Uzytkownicy (imie, nazwisko, email, login, haslo, numer_telefonu, adres, rola) VALUES
 ('admin', 'admin', 'examplemail@g.pl', 'admin', '$2y$10$eao35AcfQ6kLjBv6piRueu6tspT4EhDCun3L0np4oZ2zeTrOJYx3m', 123456789, "55-555, Gdańsk, Example street, 1/2", 'admin'),
@@ -239,7 +234,7 @@ INSERT INTO Produkty (nazwa_produktu, kategoria_id, dostawca_id, cena, ilosc_w_m
 ('Przecinarka do płytek', 4, 3, 400.00, 100, 'Przecinarka to funkcjonalne narzędzie do cięcia płytek, które znacznie ułatwia wykładanie ścian i podłóg materiałem ceramicznym. Jej prowadnice zostały wykonane z płaskownika stalowego, a podstawa narzędzia została dodatkowo wzmocniona kątownikiem i teownikiem, przez co narzędzie jest wytrzymałe i zapewnia stabilność podczas cięcia. Dzięki amortyzowanemu stołowi łamane płytki są zabezpieczone przed kruszeniem się, a ich krawędzie są równe. Narzędzie posiada również łatwą do ustawienia regulację wysokości, na której pracuje gilotyna. Przecinarka wyposażona w kątownik umożliwia precyzyjną regulację kąta cięcia. Dostępne są również inne modele przecinarki, które będą sprawdzały się podczas obróbki płytek o mniejszych formatach.', 'TAK'),
 ('Odkurzacz przemysłowy 1600 W', 4, 3, 1500.00, 100, 'Jeśli masz trudności z doczyszczeniem przestrzeni zwykłym odkurzaczem, warto zastanowić się nad profesjonalnym urządzeniem, który poradzi sobie nawet z ciężkimi zabrudzeniami. Odkurzacz przemysłowy to sprzęt, który znajdzie swoje zastosowanie przy usuwaniu szczególnie trudnego rodzaju zanieczyszczeń. Technologia dwóch kaset filtrujących umożliwia otrząsanie jednego z filtrów, podczas ciągłej pracy drugiego. Dzięki temu zaoszczędzisz czas i koszt pracy. Urządzenie umożliwia pracę z pyłami bez konieczności montaży worków. Odkurzacz przemysłowy wyposażony jest w funkcję pracy na mokro, podczas której nie musisz demontować filtrów. To urządzenie zaprojektowane do nieprzerywanej, wymagającej pracy.', 'TAK'),
 ('Wiertnica do betonu 2000 W', 4, 3, 2500.00, 100, 'Uniwersalna wiertnica diamentowa do pracy ze statywem lub z ręki. Wiertnica ma moc 2200W i pracuje z prędkością 0-1200 obr/min. Umożliwia wiercenie otworów w bardzo szerokim zakresie, wynoszącym od 30mm do 180mm. Maszynę wyposażono w sprzęgło, które dzięki płynnej pracy nie powoduje szarpnięć urządzenia podczas wycinania otworów w żelbecie. Uchwyt wiertła o średnicy 1 1/4" cala jest standardowym uchwytem, pasującym do wszystkich wierteł dostępnych na rynku. W komplecie z urządzeniem dołączony jest statyw wyposażony w przekładnię, dzięki któremu wiercenie w twardych materiałach jak granit czy beton, nie wymaga użycia siły.', 'TAK'),
-('Drabina teleskopowa 5 m', 4, 3, 1000.00, 100, 'Szukasz kompaktowego, lekkiego, łatwego w transporcie i absolutnie uniwersalnego narzędzia do pracy na wysokości? Drabina teleskopowa z łatwością spełni wszystkie Twoje oczekiwania. Nowoczesna konstrukcja składająca się z aluminiowych rur o różnej średnicy umożliwia złożenie drabiny do niewiarygodnie wręcz małych rozmiarów. Elegancki, czarny pokrowiec ułatwi transport i przechowywanie Twojej nowej maszyny. Od dzisiaj nie musisz posiadać warsztatu, komórki ani nawet piwnicy. Nie potrzebujesz specjalnych uchwytów do transportu drabiny - wsuniesz ją pod łóżko, schowasz do szafy lub zostawisz w bagażniku swojego samochodu, a w razie potrzeby po prostu spakujesz ją w pokrowiec i przeniesiesz w miejsce pracy. ', 'NIE');
+('Drabina teleskopowa 5 m', 4, 3, 1000.00, 100, 'Szukasz kompaktowego, lekkiego, łatwego w transporcie i absolutnie uniwersalnego narzędzia do pracy na wysokości? Drabina teleskopowa z łatwością spełni wszystkie Twoje oczekiwania. Nowoczesna konstrukcja składająca się z aluminiowych rur o różnej średnicy umożliwia złożenie drabiny do niewiarygodnie wręcz małych rozmiarów. Elegancki, czarny pokrowiec ułatwi transport i przechowywanie Twojej nowej maszyny. Od dzisiaj nie musisz posiadać warsztatu, komórki ani nawet piwnicy. Nie potrzebujesz specjalnych uchwytów do transportu drabiny - wsuniesz ją pod łóżko, schowasz do szafy lub zostawisz w bagażniku swojego samochodu, a w razie potrzeby po prostu spakujesz ją w pokrowiec i przeniesiesz w miejsce pracy. ', 'TAK');
 
 -- Przykładowe zamówienia
 INSERT INTO zamowienia (zamowienie_id, uzytkownik_id, odbiorca_imie, odbiorca_nazwisko, odbiorca_email, adres, data_zamowienia, status) VALUES (1, 3, 'Ewa', 'Wiśniewska', 'ewa.w@example.com', '55-555, Kraków, ul. Lipowa 12', '2024-12-02', 'Dostarczone');
@@ -266,38 +261,3 @@ INSERT INTO pozycje_zamowien (pozycja_id, zamowienie_id, produkt_id, ilosc, cena
 INSERT INTO pozycje_zamowien (pozycja_id, zamowienie_id, produkt_id, ilosc, cena_za_sztuke) VALUES (11, 9, 50, 2, 270.00);
 INSERT INTO pozycje_zamowien (pozycja_id, zamowienie_id, produkt_id, ilosc, cena_za_sztuke) VALUES (12, 9, 51, 1, 30.00);
 INSERT INTO pozycje_zamowien (pozycja_id, zamowienie_id, produkt_id, ilosc, cena_za_sztuke) VALUES (13, 10, 59, 3, 80.00);
-
-
-INSERT INTO Wynajmy (wynajem_id, uzytkownik_id, data_wynajmu, data_zwrotu, status) 
-VALUES (1, 3, '2024-12-01', '2024-12-10', 'Zakończone');
-INSERT INTO Wynajmy (wynajem_id, uzytkownik_id, data_wynajmu, data_zwrotu, status) 
-VALUES (2, 3, '2024-12-05', '2024-12-15', 'Zakończone');
-INSERT INTO Wynajmy (wynajem_id, uzytkownik_id, data_wynajmu, data_zwrotu, status) 
-VALUES (3, 4, '2024-12-10', '2024-12-20', 'Zakończone');
-INSERT INTO Wynajmy (wynajem_id, uzytkownik_id, data_wynajmu, data_zwrotu, status) 
-VALUES (4, 4, '2024-12-12', '2024-12-22', 'Zakończone');
-INSERT INTO Wynajmy (wynajem_id, uzytkownik_id, data_wynajmu, data_zwrotu, status) 
-VALUES (5, 5, '2024-12-14', '2024-12-24', 'Zakończone');
-INSERT INTO Wynajmy (wynajem_id, uzytkownik_id, data_wynajmu, data_zwrotu, status) 
-VALUES (6, 5, '2024-12-16', '2024-12-26', 'Zakończone');
-INSERT INTO Wynajmy (wynajem_id, uzytkownik_id, data_wynajmu, data_zwrotu, status) 
-VALUES (7, 6, '2024-12-18', '2024-12-28', 'Zakończone');
-INSERT INTO Wynajmy (wynajem_id, uzytkownik_id, data_wynajmu, data_zwrotu, status) 
-VALUES (8, 6, '2024-12-20', '2024-12-30', 'Zakończone');
-
-INSERT INTO Pozycje_Wynajmu (produkt_id, wynajem_id, ilosc, stawka_dzienna, koszt_calkowity) 
-VALUES (70, 1, 1, 20.00, 200.00);
-INSERT INTO Pozycje_Wynajmu (produkt_id, wynajem_id, ilosc, stawka_dzienna, koszt_calkowity)
-VALUES (71, 2, 1, 50.00, 550.00);
-INSERT INTO Pozycje_Wynajmu (produkt_id, wynajem_id, ilosc, stawka_dzienna, koszt_calkowity) 
-VALUES (72, 3, 1, 25.00, 275.00);
-INSERT INTO Pozycje_Wynajmu (produkt_id, wynajem_id, ilosc, stawka_dzienna, koszt_calkowity) 
-VALUES (73, 4, 1, 30.00, 330.00);
-INSERT INTO Pozycje_Wynajmu (produkt_id, wynajem_id, ilosc, stawka_dzienna, koszt_calkowity) 
-VALUES (74, 5, 1, 100.00, 1100.00);
-INSERT INTO Pozycje_Wynajmu (produkt_id, wynajem_id, ilosc, stawka_dzienna, koszt_calkowity)
-VALUES (75, 6, 1, 35.00, 370.00);
-INSERT INTO Pozycje_Wynajmu (produkt_id, wynajem_id, ilosc, stawka_dzienna, koszt_calkowity) 
-VALUES (76, 7, 1, 20.00, 220.00);
-INSERT INTO Pozycje_Wynajmu (produkt_id, wynajem_id, ilosc, stawka_dzienna, koszt_calkowity) 
-VALUES (77, 8, 1, 75.00, 825.00);
