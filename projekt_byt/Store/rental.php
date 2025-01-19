@@ -177,23 +177,25 @@ if ($product) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Wypożyczalnia sprzętu</title>
-    <link rel="stylesheet" href="../Style/style_cart.css">
+    <link rel="stylesheet" href="../Style/style_rental.css">
 </head>
 <body>
     <div class="cart-container">
         <div class="main-cart">
             <div class="breadcrumbs">
-                <form method="post" style="display: inline;">
-                    <input type="hidden" name="action" value="cleanCart">
-                    <button type="submit" class="back-button">◄ Powrót</button>
-                </form>
+                <?php
+                echo '<a href="' . $source . '" class="back-button">
+                        <img src="../Image/Icon/back.png" alt="Ikona Powrotu" class="icon"> Powrót
+                     </a>';
+                ?>
             </div>
 
             <div class="cart-header">
                 <h2>Wypożyczalnia sprzętu</h2>
 
             </div>
-            <table class="cart-table">
+            <div class="cart-table-container">
+                <table class="cart-table">
                 <thead>
                     <tr>
                         <th>Produkt</th>
@@ -201,6 +203,7 @@ if ($product) {
                         <th>Cena za dzień (brutto)</th>
                         <th>Liczba dni wynajmu</th>
                         <th>Razem (brutto)</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -229,9 +232,11 @@ if ($product) {
                                 echo '<tr>';
                                 echo '<tr id="row-' . $produkt['produkt_id'] . '" class="product-row">'; // Dodajemy klasę dla wiersza
                                 echo '<td class="product-info">
-                                        <img src="' . $imagePath . '" alt="' . htmlspecialchars($produkt['nazwa_produktu']) . '" width="50" height="50">
-                                        <div>
+                                        <div class="product-name">
                                             <p>' . htmlspecialchars($produkt['nazwa_produktu']) . '</p>
+                                        </div>
+                                        <div class="product-image">
+                                        <img src="' . $imagePath . '" alt="' . htmlspecialchars($produkt['nazwa_produktu']) . '" width="50" height="50">
                                         </div>
                                     </td>';
                                 echo '<td class="availability">
@@ -308,7 +313,8 @@ if ($product) {
                 ?>
 
                 </tbody>
-            </table>
+                </table>
+            </div>
             <!-- Przycisk na dole -->
             <div class="bottom-buttons">
                 <form method="post" style="display: inline;">
@@ -426,7 +432,7 @@ if ($product) {
             </div>
 
         </div>
-        <aside class="recommended-product-rental">
+        <aside class="recommended-product">
         <h3 style="color: red; text-align: center;">Warunki wynajmu sprzętu:</h3>
         <div class="terms-container">
             <ol style="text-align: justify; margin: 20px; font-size: 16px;">

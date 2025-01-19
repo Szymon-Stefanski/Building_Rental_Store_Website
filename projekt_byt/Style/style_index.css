@@ -532,9 +532,9 @@ body {
   gap: 10px;
   flex-wrap: wrap;
   margin-left: auto;
-  justify-content: space-between; /* Równomierne rozmieszczenie linków */
+  justify-content: space-between; 
   width: 100%;
-  flex-grow: 1; /* Zajmowanie całej dostępnej przestrzeni */
+  flex-grow: 1; 
 }
 
 /* Styl dla pojedynczych linków (takie same jak dla category-dropdown) */
@@ -725,6 +725,7 @@ body {
   margin-bottom: 20px;
   font-size: 24px;
   color: #ff6600;
+    
 }
 
 .product-grid {
@@ -753,9 +754,9 @@ body {
   transform: translateY(-5px);
 }
 
-.product-card img {
+.zdjecie {
   width: 100%;
-  max-height: 200px;
+  height: 200px;
   object-fit: contain;
   object-position: center;
   mix-blend-mode: multiply;
@@ -877,6 +878,7 @@ body {
   right: 10px;
   cursor: pointer;
   transition: transform 0.2s ease;
+  z-index: 10;
 }
 
 .favorite-icon img {
@@ -1130,8 +1132,8 @@ body {
   }
 
   .nav-links {
-    display: flex; /* Ustawienie przycisków w jednym rzędzie */
-    gap: 10px; /* Odstęp między przyciskami */
+    display: flex; 
+    gap: 10px; 
     justify-content: space-around;
     width: 100%;
   }
