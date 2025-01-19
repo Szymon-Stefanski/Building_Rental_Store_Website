@@ -17,7 +17,8 @@ $stmt = getDbConnection()->prepare("
         p.ilosc_w_magazynie, 
         p.opis, 
         d.nazwa_dostawcy, 
-        k.nazwa_kategorii
+        k.nazwa_kategorii,
+        p.promocja
     FROM 
         Produkty p
     LEFT JOIN 
@@ -181,8 +182,7 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
                         <img src="../Image/Icon/furnace.png" class="category-icon"> INSTALACJE
                         <img src="../Image/Icon/down-arrow.png" alt="Strzałka w dół" class="arrow-icon">
                     </a>
-                
-                    <a href="rental.php?source=<?php echo $current_url; ?>">
+                    <a href="#">
                         <img src="../Image/Icon/rent.png" class="category-icon"> WYPOŻYCZALNIA
                         <img src="../Image/Icon/down-arrow.png" alt="Strzałka w dół" class="arrow-icon">
                     </a>
@@ -197,8 +197,8 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
             </nav>
         </header>
         <div id="no-results-message" class="no-results-message" style="display: none;">
-            Nie ma takiego produktu.
-        </div>
+    Nie ma takiego produktu.
+</div>
 
 <!-- Główna sekcja produktu -->
 <main class="main-content">
@@ -235,7 +235,18 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
                 <h2> <?php echo ($product['nazwa_produktu']); ?> </h2>
                 <p>Nr produktu: <?php echo ($product['produkt_id']); ?></p>
                 <div class="product-price">
-                    <span class="current-price"> <?php echo ($product['cena']); ?> </span>
+                    <?php if ($product['promocja'] === null): ?>
+                        <!-- Cena standardowa -->
+                        <p class="current-price"><?= number_format($product['cena'], 2, ',', ' ') ?> zł/szt.</p>
+                    <?php else: ?>
+                        <!-- Cena z promocją -->
+                        <p style="font-size: 16px; margin: 5px 0; text-decoration: line-through; color: red;">
+                            <?= number_format($product['cena'], 2, ',', ' ') ?> zł/szt.
+                        </p>
+                        <p style="font-size: 18px; margin: 5px 0; font-weight: bold; color: green;">
+                            <?= number_format($product['promocja'], 2, ',', ' ') ?> zł/szt.
+                        </p>
+                    <?php endif; ?>
                 </div>
                 <div class="product-availability">
                     <span>Dostępność: <strong> <?php echo ($product['ilosc_w_magazynie']); ?></strong></span>
@@ -252,7 +263,7 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
                             <input type="hidden" name="action" value="add">
                             <input type="hidden" name="product_id" value="<?= $product['produkt_id'] ?>">
                             <input type="hidden" name="product_name" value="<?= ($product['nazwa_produktu']) ?>">
-                            <input type="hidden" name="product_price" value="<?= $product['cena'] ?>">
+                            <input type="hidden" name="product_price" value="<?= $product['promocja'] !== null ? $product['promocja'] : $product['cena'] ?>">
                             <input type="hidden" class="form-quantity" name="quantity" value="1">
                             <button type="submit" class="add-to-cart">
                                 <img src="../Image/Icon/pngegg.png" style="filter: invert(1) brightness(1000%);" alt="Dodaj do koszyka"> DO KOSZYKA
@@ -381,11 +392,8 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
                     <div class="footer-newsletter">
                         <h3>NEWSLETTER</h3>
                         <p>Chcesz być na bieżąco z najlepszymi ofertami? Zapisz się do newslettera i nie przegap okazji!</p>
-                        <form action="../newsletter.php" method="GET">
-                            <button type="submit">
-                                <i class="fa fa-arrow-right"></i> ZAPISZ SIĘ
-                            </button>
-                        </form>
+                        <button type="submit"><i class="fa fa-arrow-right"></i> ZAPISZ SIĘ</button>
+                        
                         
                     </div>
 

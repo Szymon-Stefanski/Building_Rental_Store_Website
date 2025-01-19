@@ -12,7 +12,7 @@ if (!in_array($userRole, ['mod', 'admin'])) {
 }
 
 $stmt = getDbConnection()->prepare("
-    SELECT k.nazwa_kategorii, p.produkt_id, p.nazwa_produktu, p.cena, p.ilosc_w_magazynie
+    SELECT k.nazwa_kategorii, p.produkt_id, p.nazwa_produktu, p.cena, p.promocja , p.ilosc_w_magazynie
     FROM Kategorie k
     LEFT JOIN Produkty p ON p.kategoria_id = k.kategoria_id
     ORDER BY k.nazwa_kategorii, p.nazwa_produktu
@@ -181,6 +181,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
+    if ($action === 'update_promo') {
+        $productId = isset($_POST['product_id']) ? $_POST['product_id'] : null;
+        $new_promo = isset($_POST['new_promo']) ? $_POST['new_promo'] : null;
+
+        if ($productId && is_numeric($new_promo)) {
+            $stmt = getDbConnection()->prepare("
+                UPDATE Produkty
+                SET promocja = :promocja
+                WHERE produkt_id = :productId
+            ");
+            $stmt->execute([
+                ':promocja' => $new_promo,
+                ':productId' => $productId,
+            ]);
+
+            $_SESSION['success_message'] = 'Promocja produktu została zaktualizowana.';
+        } else {
+            $_SESSION['error_message'] = 'Brak wymaganych danych lub nieprawidłowa cena.';
+        }
+    }
+
     if ($action === 'delete_product') {
         $productId = isset($_POST['product_id']) ? $_POST['product_id'] : null;
 
@@ -324,6 +345,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                                     <label for="new_price">Nowa cena:</label>
                                                     <input type="text" name="new_price" value="<?= (number_format($product['cena'], 2, '.', '')) ?>" required>
                                                     <button type="submit" id="cena">Zmień cenę</button>
+                                                </form>
+
+                                                <!-- Formularz zmiany promocji -->
+                                                <form action="<?= $_SERVER['PHP_SELF'] ?>" method="POST" class="edit-form">
+                                                    <input type="hidden" name="action" value="update_promo">
+                                                    <input type="hidden" name="product_id" value="<?= ($product['produkt_id']) ?>">
+                                                    <label for="new_promo">Nowa promocja:</label>
+                                                    <input type="text" name="new_promo" value="<?= (number_format($product['promocja'], 2, '.', '')) ?>" required>
+                                                    <button type="submit" id="promo">Zmień promocję</button>
                                                 </form>
 
                                                 <button class="edit-product"">
