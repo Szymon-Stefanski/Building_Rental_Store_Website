@@ -63,7 +63,7 @@ if (isset($_POST['favorites'])) {
         foreach ($productsInCategory as $product) {
             $html .= "
         <div class='product-card'>
-            <a href='Store/product.php?id={$product['produkt_id']}'>
+            <a href='../Store/product.php?id={$product['produkt_id']}'>
                 <img src='" . findProductImage($product['produkt_id'], $category, $product['nazwa_produktu']) . "' alt='Obraz produktu: {$product['nazwa_produktu']}' class='zdjecie'>
                 <h3>{$product['nazwa_produktu']}</h3>
                 <p class='product-price'>" . number_format($product['cena'], 2, ',', ' ') . " zł/szt.</p>
