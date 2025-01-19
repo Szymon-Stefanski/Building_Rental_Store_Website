@@ -64,7 +64,7 @@ if (isset($_POST['favorites'])) {
             $html .= "
         <div class='product-card'>
             <a href='Store/product.php?id={$product['produkt_id']}'>
-                <img src='" . findProductImage($product['produkt_id'], $category, $product['nazwa_produktu']) . "' alt='Obraz produktu: {$product['nazwa_produktu']}'>
+                <img src='" . findProductImage($product['produkt_id'], $category, $product['nazwa_produktu']) . "' alt='Obraz produktu: {$product['nazwa_produktu']}' class='zdjecie'>
                 <h3>{$product['nazwa_produktu']}</h3>
                 <p class='product-price'>" . number_format($product['cena'], 2, ',', ' ') . " zł/szt.</p>
             </a>
@@ -236,7 +236,8 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
                             <img src="../Image/Icon/down-arrow.png" alt="Strzałka w dół" class="arrow-icon">
                         </a>
                         <a href="rental.php?source=<?php echo $current_url; ?>">
-                            <img src="../Image/Icon/rent.png" class="category-icon"> WYPOŻYCZALNIA SPRZĘTU
+                            <img src="../Image/Icon/rent.png" class="category-icon"> WYPOŻYCZALNIA
+                            <img src="../Image/Icon/down-arrow.png" alt="Strzałka w dół" class="arrow-icon">
                         </a>
 
                         <a href="#">
@@ -256,20 +257,9 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
         <main class="main-content">
 
             <div class="advertisement-container">
-                <div class="advertisement-slider">
-                    <img src="../Image/Advert/szlifierkenmachendruten.jpg" alt="Reklama 1" class="ad-image">
-                    <img src="../Image/Advert/budex.png" alt="Reklama 2" class="ad-image">
-                    <img src="../Image/Advert/reklama.png" alt="Reklama 3" class="ad-image">
-                    <img src="../Image/Advert/baner-uslugi.png" alt="Reklama 4" class="ad-image">
-                    <img src="../Image/Advert/reklamaswieta.png" alt="Reklama 5" class="ad-image">
-                </div>
-                <div class="advertisement-dots">
-                    <span class="dot"></span>
-                    <span class="dot"></span>
-                    <span class="dot"></span>
-                    <span class="dot"></span>
-                    <span class="dot"></span>
-                </div>
+                <h3 class="header-h3">Ulubione Produkty</h3>
+                <p class="opis">Dodawaj produkty do ulubionych, aby mieć do nich szybki dostęp. Możesz je dodać do koszyka lub usunąć z listy w dowolnym momencie.</p>
+               
             </div>
 
             <div id="favorites-container">
@@ -315,7 +305,11 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
                     <div class="footer-newsletter">
                         <h3>NEWSLETTER</h3>
                         <p>Chcesz być na bieżąco z najlepszymi ofertami? Zapisz się do newslettera i nie przegap okazji!</p>
-                        <button type="submit"><i class="fa fa-arrow-right"></i> ZAPISZ SIĘ</button>
+                        <form action="../newsletter.php" method="GET">
+                            <button type="submit">
+                                <i class="fa fa-arrow-right"></i> ZAPISZ SIĘ
+                            </button>
+                        </form>
 
 
                     </div>
@@ -359,7 +353,7 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
         const favoriteCountElement = document.querySelector('.header-favorite-count');
         favoriteCountElement.innerText = favorites.length;
         if (favorites.length === 0) {
-            favoritesContainer.innerHTML = '<p>Brak ulubionych produktów.</p>';
+            favoritesContainer.innerHTML = '<div class="elo">Twoja lista ulubionych produktów jest pusta. Przeglądaj naszą ofertę i dodawaj ulubione produkty, klikając ikonę serca!</div>';
             return;
         }
 
@@ -417,7 +411,7 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
 
         // Jeśli lista ulubionych jest pusta, pokaż wiadomość
         if (favorites.length === 0) {
-            document.getElementById('favorites-container').innerHTML = '<p>Brak ulubionych produktów.</p>';
+            document.getElementById('favorites-container').innerHTML = '<div class="elo">Twoja lista ulubionych produktów jest pusta. Przeglądaj naszą ofertę i dodawaj ulubione produkty, klikając ikonę serca!</div>';
         }
     }
 
@@ -654,6 +648,8 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
             favoriteIconElement.classList.remove('active');
         }
     }
+    
+    
 
 </script>
 </html>

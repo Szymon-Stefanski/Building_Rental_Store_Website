@@ -638,55 +638,42 @@ body {
 
 /* Kontener z reklamą */
 .advertisement-container {
-    position: relative;
-
-    height: auto; /* Stała wysokość kontenera */
-    margin: 0 auto;
-    overflow: hidden; /* Ukrywa nadmiar obrazu poza kontenerem */
-    padding: 0;
+    height: 250px;
     max-width: 1200px;
-    background-color: transparent;
+    background-color: #00ff0054;
 }
 
-/* Slider reklamowy */
-.advertisement-slider {
-    display: flex;
-    transition: transform 0.5s ease-in-out;
-    height: 100%;
+.elo{
+    background-color: #ffca8a;
+    color: #6b1212;
+    text-align: center;
+    height: 200px;
+    padding-top: 60px;
+    font-size: 32px;
+    font-weight: bold;
+    border: 5px solid #e65c00;
 }
 
-/* Obrazki wewnątrz slidera */
-.advertisement-slider .ad-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover; /* Obrazek dopasowuje się do kontenera, przycinając nadmiar */
-    margin: 0;
-    padding: 0;
-    border: none;
+.header-h3{
+    padding-top: 20px;
+    margin-top: 0px;
+    text-align: center;
+    color: #83f2ff;
+    font-size: 40px;
+    font-weight: bold;
+     text-shadow: 
+        1px 1px 0 #000000, 
+        2px 2px 0 #000000, 
+        3px 3px 0 #000000, 
+        4px 4px 0 #000000;
+    
 }
 
-/* Kółeczka nawigacyjne */
-.advertisement-dots {
-    display: flex;
-    justify-content: center;
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 10;
-}
-
-.advertisement-dots .dot {
-    width: 12px;
-    height: 12px;
-    background-color: #fff;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: background-color 0.3s;
-}
-
-.advertisement-dots .dot.active {
-    background-color: #006d28;
+.opis{
+    text-align: center;
+    color: #b2ff00;
+    font-size: 27px;
+    font-weight: bold;
 }
 
 /* Styl dla pojedynczego kółeczka */
@@ -752,23 +739,21 @@ body {
     transform: translateY(-5px);
 }
 
-.product-card img {
-    width: 100%;
-    max-height: 150px;
-    object-fit: cover;
-    object-position: center; /* Wyśrodkowanie zdjęcia w kontenerze ssssssssssssssssssssssssss*/
+.zdjecie {
+  width: 100%;
+  height: 200px;
+  object-fit: contain;
+  object-position: center;
+  mix-blend-mode: multiply;
+  border-bottom: 2px solid #ccc; 
 }
 
 .product-card h3 {
-    /*font-size: 18px;
-      margin: 10px 0;
-      padding: 0 10px;
-      color: #333;*/
     font-size: 18px;
     margin: 10px 0;
     padding: 0 10px;
     color: #333;
-    height: 50px; /* Stała wysokość dla tytułu */
+    height: 50px; 
     overflow: hidden;
 }
 
@@ -878,11 +863,14 @@ body {
     right: 10px;
     cursor: pointer;
     transition: transform 0.2s ease;
+    z-index: 10;
+    
 }
 
 .favorite-icon img {
     width: 32px;
     height: 32px;
+    
 }
 
 .favorite-icon.active img {
