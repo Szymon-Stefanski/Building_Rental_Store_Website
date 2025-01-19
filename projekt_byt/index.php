@@ -5,7 +5,7 @@ require 'database_connection.php';
 include 'email_sender.php';
 
 $stmt = getDbConnection()->prepare("
-    SELECT k.nazwa_kategorii, p.produkt_id, p.nazwa_produktu, p.cena
+    SELECT k.nazwa_kategorii, p.produkt_id, p.nazwa_produktu, p.cena, p.promocja
     FROM Produkty p
     LEFT JOIN Kategorie k ON p.kategoria_id = k.kategoria_id
     ORDER BY k.nazwa_kategorii, p.nazwa_produktu
@@ -178,7 +178,7 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
                             <img src="Image/Icon/delivery.png" class="category-icon"> ZARZĄDZANIE STANEM MAGAZYNU
                         </a>
                         <!-- W trakcie budowy -->
-                        <a href="Warehouse/rentalManagement.php">
+                        <a href="#">
                             <img src="Image/Icon/support.png" class="category-icon"> ZARZĄDZANIE WYPOŻYCZENIAMI
                         </a>
                         <!-- W trakcie budowy -->
@@ -195,8 +195,7 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
                         <img src="Image/Icon/down-arrow.png" alt="Strzałka w dół" class="arrow-icon">
                     </a>
                     <a href="Store/rental.php?source=<?php echo $current_url; ?>">
-                        <img src="Image/Icon/rent.png" class="category-icon"> WYPOŻYCZALNIA
-                        <img src="Image/Icon/down-arrow.png" alt="Strzałka w dół" class="arrow-icon">
+                        <img src="Image/Icon/rent.png" class="category-icon"> WYPOŻYCZALNIA SPRZĘTU
                     </a>
 
                     <a href="#">
@@ -244,14 +243,24 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
                                         <a href="Store/product.php?id=<?= $product['produkt_id'] ?>">
                                             
                                             <img src="<?= findProductImage($product['produkt_id'], $category, $product['nazwa_produktu']) ?>"
-                                                 alt="Obraz produktu: <?= ($product['nazwa_produktu']) ?>" class="zdjecie">
+                                                 alt="Obraz produktu: <?= ($product['nazwa_produktu']) ?>">
 
                                             <h3><?= ($product['nazwa_produktu']) ?></h3>
-                                            <p class="product-price"><?= number_format($product['cena'], 2, ',', ' ') ?> zł/szt.</p>
-                                        </a>
+                                            <?php if ($product['promocja'] === null): ?>
+                                                <!-- Cena standardowa -->
+                                                <p class="product-price"><?= number_format($product['cena'], 2, ',', ' ') ?> zł/szt.</p>
+                                            <?php else: ?>
+                                                <!-- Cena z promocją -->
+                                                <p style="font-size: 16px; margin: 5px 0; text-decoration: line-through; color: red;">
+                                                    <?= number_format($product['cena'], 2, ',', ' ') ?> zł/szt.
+                                                </p>
+                                                <p style="font-size: 18px; margin: 5px 0; font-weight: bold; color: green;">
+                                                    <?= number_format($product['promocja'], 2, ',', ' ') ?> zł/szt.
+                                                </p>
+                                            <?php endif; ?>                                </a>
                                         
                                             <div class="favorite-icon" onclick="toggleFavorite(<?= $product['produkt_id'] ?>)"> <!-- Zmiany ! Zobacz czy poprawnie działa -->
-                                                <img src="Image/Icon/love-always-wins.png" class="ikonka" alt="Ulubione">
+                                                <img src="Image/Icon/love-always-wins.png" alt="Ulubione">
                                             </div>
                                         <div class="quantity-cart-container">
                                             <div class="quantity-control">
@@ -263,7 +272,7 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
                                                 <input type="hidden" name="action" value="add">
                                                 <input type="hidden" name="product_id" value="<?= $product['produkt_id'] ?>">
                                                 <input type="hidden" name="product_name" value="<?= htmlspecialchars($product['nazwa_produktu']) ?>">
-                                                <input type="hidden" name="product_price" value="<?= $product['cena'] ?>">
+                                                <input type="hidden" name="product_price" value="<?= $product['promocja'] !== null ? $product['promocja'] : $product['cena'] ?>">
                                                 <input type="hidden" class="form-quantity" name="quantity" value="1">
                                                 <button type="submit" class="add-to-cart">
                                                     <img src="Image/Icon/pngegg.png" style="filter: invert(1) brightness(1000%);" alt="Dodaj do koszyka"> DO KOSZYKA
