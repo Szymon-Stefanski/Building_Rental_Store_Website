@@ -30,11 +30,14 @@ $zamowienie_stmt = $db->prepare("
         z.odbiorca_email,
         z.adres,
         z.data_zamowienia,
-        z.status
+        z.status,
+        k.wartosc AS kod_rabatowy_wartosc
     FROM Zamowienia z
     LEFT JOIN Uzytkownicy u ON z.uzytkownik_id = u.uzytkownik_id
+    LEFT JOIN Kody_Rabatowe k ON z.kod_id = k.kod_id
     WHERE z.zamowienie_id = ?
 ");
+
 $zamowienie_stmt->execute([$zamowienie_id]);
 $zamowienie = $zamowienie_stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -115,7 +118,9 @@ if (isset($_SESSION['user_id'])) {
                 <p><strong>Adres:</strong> <?= $zamowienie['adres'] ?></p>
                 <p><strong>Data zamówienia:</strong> <?= $zamowienie['data_zamowienia'] ?></p>
                 <!--<p class="status <?php echo strtolower($zamowienie['status']); ?>"><strong>Status:</strong> <?= $zamowienie['status'] ?></p>-->
-                
+                <?php if ($zamowienie['kod_rabatowy_wartosc']): ?>
+                <p><strong>Zastosowano kod rabatowy:</strong> <?= $zamowienie['kod_rabatowy_wartosc'] ?>%</p>
+                <?php endif; ?>
                 <!-- Dodanie klasy CSS do statusu w zależności od jego wartości -->
                 <p class="status 
                     <?php 

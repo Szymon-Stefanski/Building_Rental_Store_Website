@@ -236,6 +236,16 @@ INSERT INTO Produkty (nazwa_produktu, kategoria_id, dostawca_id, cena, ilosc_w_m
 ('Wiertnica do betonu 2000 W', 4, 3, 2500.00, 100, 'Uniwersalna wiertnica diamentowa do pracy ze statywem lub z ręki. Wiertnica ma moc 2200W i pracuje z prędkością 0-1200 obr/min. Umożliwia wiercenie otworów w bardzo szerokim zakresie, wynoszącym od 30mm do 180mm. Maszynę wyposażono w sprzęgło, które dzięki płynnej pracy nie powoduje szarpnięć urządzenia podczas wycinania otworów w żelbecie. Uchwyt wiertła o średnicy 1 1/4" cala jest standardowym uchwytem, pasującym do wszystkich wierteł dostępnych na rynku. W komplecie z urządzeniem dołączony jest statyw wyposażony w przekładnię, dzięki któremu wiercenie w twardych materiałach jak granit czy beton, nie wymaga użycia siły.', 'TAK'),
 ('Drabina teleskopowa 5 m', 4, 3, 1000.00, 100, 'Szukasz kompaktowego, lekkiego, łatwego w transporcie i absolutnie uniwersalnego narzędzia do pracy na wysokości? Drabina teleskopowa z łatwością spełni wszystkie Twoje oczekiwania. Nowoczesna konstrukcja składająca się z aluminiowych rur o różnej średnicy umożliwia złożenie drabiny do niewiarygodnie wręcz małych rozmiarów. Elegancki, czarny pokrowiec ułatwi transport i przechowywanie Twojej nowej maszyny. Od dzisiaj nie musisz posiadać warsztatu, komórki ani nawet piwnicy. Nie potrzebujesz specjalnych uchwytów do transportu drabiny - wsuniesz ją pod łóżko, schowasz do szafy lub zostawisz w bagażniku swojego samochodu, a w razie potrzeby po prostu spakujesz ją w pokrowiec i przeniesiesz w miejsce pracy. ', 'TAK');
 
+INSERT INTO Kody_Rabatowe (nazwa_kodu, wartosc, data_waznosci)
+VALUES ('PROMO10', 10, '2025-02-28');
+
+INSERT INTO Kody_Rabatowe (nazwa_kodu, wartosc, data_waznosci)
+VALUES ('PROMO30', 30, '2025-02-28');
+
+INSERT INTO Kody_Rabatowe (nazwa_kodu, wartosc, data_waznosci)
+VALUES ('PROMO50', 50, '2025-02-28');
+
+
 -- Przykładowe zamówienia
 INSERT INTO zamowienia (zamowienie_id, uzytkownik_id, odbiorca_imie, odbiorca_nazwisko, odbiorca_email, adres, data_zamowienia, status) VALUES (1, 3, 'Ewa', 'Wiśniewska', 'ewa.w@example.com', '55-555, Kraków, ul. Lipowa 12', '2024-12-02', 'Dostarczone');
 INSERT INTO zamowienia (zamowienie_id, uzytkownik_id, odbiorca_imie, odbiorca_nazwisko, odbiorca_email, adres, data_zamowienia, status) VALUES (2, 3, 'Ewa', 'Wiśniewska', 'ewa.w@example.com', 'Odbiór osobisty w sklepie', '2024-12-04', 'Dostarczone');

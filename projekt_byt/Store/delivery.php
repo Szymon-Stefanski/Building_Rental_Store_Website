@@ -226,6 +226,7 @@ function findProductImage($productId, $categoryName, $productName) {
 
         header("Location: payment.php?id=$orderId");
         unset($_SESSION['cart']); // Wyczyszczenie koszyka po złożeniu zamówienia
+        unset($_SESSION['promo_code']);
         exit;
     } catch (Exception $e) {
         echo "Wystąpił błąd podczas składania zamówienia: " . $e->getMessage();
