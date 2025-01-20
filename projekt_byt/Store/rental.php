@@ -183,11 +183,12 @@ if ($product) {
     <div class="cart-container">
         <div class="main-cart">
             <div class="breadcrumbs">
-                <?php
-                echo '<a href="' . $source . '" class="back-button">
+                <form method="post" action="">
+                    <input type="hidden" name="action" value="cleanCart">
+                    <button type="submit" class="back-button">
                         <img src="../Image/Icon/back.png" alt="Ikona Powrotu" class="icon"> Powrót
-                     </a>';
-                ?>
+                    </button>
+                </form>
             </div>
 
             <div class="cart-header">
