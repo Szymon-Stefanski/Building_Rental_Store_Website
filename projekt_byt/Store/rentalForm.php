@@ -198,6 +198,8 @@ Prosimy o terminowy zwrot produktów. W przypadku pytań prosimy o kontakt z nas
 Dziękujemy za skorzystanie z naszych usług!
 Budex sp. z o.o.";
 
+                sendEmail($email, $subject, $message);
+
                 header('Location: rentalForm.php');
                 exit;
             }
