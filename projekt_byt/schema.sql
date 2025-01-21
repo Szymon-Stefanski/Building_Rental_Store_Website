@@ -8,7 +8,6 @@ CREATE TABLE Kategorie (
     opis TEXT
 );
 
-
 CREATE TABLE Dostawcy (
     dostawca_id INT AUTO_INCREMENT PRIMARY KEY,
     nazwa_dostawcy VARCHAR(100) NOT NULL,
@@ -17,7 +16,6 @@ CREATE TABLE Dostawcy (
     email VARCHAR(100),
     adres TEXT
 );
-
 
 CREATE TABLE Produkty (
     produkt_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -28,11 +26,10 @@ CREATE TABLE Produkty (
     ilosc_w_magazynie INT,
     opis TEXT,
     wynajem TEXT,
-	promocja INT NULL,
+    promocja INT NULL,
     FOREIGN KEY (kategoria_id) REFERENCES Kategorie(kategoria_id) ON DELETE SET NULL,
     FOREIGN KEY (dostawca_id) REFERENCES Dostawcy(dostawca_id) ON DELETE SET NULL
 );
-
 
 CREATE TABLE Uzytkownicy (
     uzytkownik_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -46,45 +43,6 @@ CREATE TABLE Uzytkownicy (
     rola VARCHAR(50) NOT NULL DEFAULT 'klient'
 );
 
-
-CREATE TABLE Opinie_Produktow (
-    opinia_id INT AUTO_INCREMENT PRIMARY KEY,
-    produkt_id INT NOT NULL,
-    uzytkownik_id INT NOT NULL,
-    ocena INT CHECK (ocena BETWEEN 1 AND 5),
-    tresc_opinii TEXT,
-    data_opinii DATE NOT NULL,
-    FOREIGN KEY (produkt_id) REFERENCES Produkty(produkt_id) ON DELETE CASCADE,
-    FOREIGN KEY (uzytkownik_id) REFERENCES Uzytkownicy(uzytkownik_id) ON DELETE CASCADE
-);
-
-
-CREATE TABLE Zamowienia (
-    zamowienie_id INT AUTO_INCREMENT PRIMARY KEY,
-    uzytkownik_id INT,
-	odbiorca_imie VARCHAR(50),
-	odbiorca_nazwisko VARCHAR(50),
-	odbiorca_email VARCHAR(100),
-	adres TEXT,
-    data_zamowienia DATE NOT NULL,
-    status VARCHAR(50) NOT NULL,
-	kod_id INT NULL,
-    FOREIGN KEY (kod_id) REFERENCES Kody_Rabatowe(kod_id) ON DELETE SET NULL,
-    FOREIGN KEY (uzytkownik_id) REFERENCES Uzytkownicy(uzytkownik_id) ON DELETE CASCADE
-);
-
-
-CREATE TABLE Pozycje_Zamowien (
-    pozycja_id INT AUTO_INCREMENT PRIMARY KEY,
-    zamowienie_id INT NOT NULL,
-    produkt_id INT NOT NULL,
-    ilosc INT NOT NULL,
-    cena_za_sztuke DECIMAL(10, 2) NOT NULL,
-    FOREIGN KEY (zamowienie_id) REFERENCES Zamowienia(zamowienie_id) ON DELETE CASCADE,
-    FOREIGN KEY (produkt_id) REFERENCES Produkty(produkt_id) ON DELETE CASCADE
-);
-
-
 CREATE TABLE Wynajmy (
     wynajem_id INT AUTO_INCREMENT PRIMARY KEY,
     uzytkownik_id INT NOT NULL,
@@ -93,7 +51,6 @@ CREATE TABLE Wynajmy (
     status VARCHAR(50) NOT NULL,
     FOREIGN KEY (uzytkownik_id) REFERENCES Uzytkownicy(uzytkownik_id) ON DELETE CASCADE
 );
-
 
 CREATE TABLE Pozycje_Wynajmu (
     pozycja_wynajmu_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -106,6 +63,47 @@ CREATE TABLE Pozycje_Wynajmu (
     FOREIGN KEY (produkt_id) REFERENCES Produkty(produkt_id) ON DELETE CASCADE
 );
 
+CREATE TABLE Opinie_Produktow (
+    opinia_id INT AUTO_INCREMENT PRIMARY KEY,
+    produkt_id INT NOT NULL,
+    uzytkownik_id INT NOT NULL,
+    ocena INT CHECK (ocena BETWEEN 1 AND 5),
+    tresc_opinii TEXT,
+    data_opinii DATE NOT NULL,
+    FOREIGN KEY (produkt_id) REFERENCES Produkty(produkt_id) ON DELETE CASCADE,
+    FOREIGN KEY (uzytkownik_id) REFERENCES Uzytkownicy(uzytkownik_id) ON DELETE CASCADE
+);
+
+CREATE TABLE Kody_Rabatowe (
+    kod_id INT AUTO_INCREMENT PRIMARY KEY,
+    nazwa_kodu VARCHAR(100) UNIQUE NOT NULL,
+    wartosc INT NOT NULL,
+    data_waznosci DATE
+);
+
+CREATE TABLE Zamowienia (
+    zamowienie_id INT AUTO_INCREMENT PRIMARY KEY,
+    uzytkownik_id INT,
+    odbiorca_imie VARCHAR(50),
+    odbiorca_nazwisko VARCHAR(50),
+    odbiorca_email VARCHAR(100),
+    adres TEXT,
+    data_zamowienia DATE NOT NULL,
+    status VARCHAR(50) NOT NULL,
+    kod_id INT NULL,
+    FOREIGN KEY (kod_id) REFERENCES Kody_Rabatowe(kod_id) ON DELETE SET NULL,
+    FOREIGN KEY (uzytkownik_id) REFERENCES Uzytkownicy(uzytkownik_id) ON DELETE CASCADE
+);
+
+CREATE TABLE Pozycje_Zamowien (
+    pozycja_id INT AUTO_INCREMENT PRIMARY KEY,
+    zamowienie_id INT NOT NULL,
+    produkt_id INT NOT NULL,
+    ilosc INT NOT NULL,
+    cena_za_sztuke DECIMAL(10, 2) NOT NULL,
+    FOREIGN KEY (zamowienie_id) REFERENCES Zamowienia(zamowienie_id) ON DELETE CASCADE,
+    FOREIGN KEY (produkt_id) REFERENCES Produkty(produkt_id) ON DELETE CASCADE
+);
 
 CREATE TABLE Transakcje (
     transakcja_id INT AUTO_INCREMENT PRIMARY KEY,
@@ -120,13 +118,6 @@ CREATE TABLE Newsletter (
     email VARCHAR(100) NOT NULL UNIQUE
 );
 
-
-CREATE TABLE Kody_Rabatowe (
-    kod_id INT AUTO_INCREMENT PRIMARY KEY,
-    nazwa_kodu VARCHAR(100) UNIQUE NOT NULL,
-    wartosc INT NOT NULL,
-    data_waznosci DATE
-);
 
 INSERT INTO Uzytkownicy (imie, nazwisko, email, login, haslo, numer_telefonu, adres, rola) VALUES
 ('admin', 'admin', 'examplemail@g.pl', 'admin', '$2y$10$eao35AcfQ6kLjBv6piRueu6tspT4EhDCun3L0np4oZ2zeTrOJYx3m', 123456789, "55-555, Gdańsk, Example street, 1/2", 'admin'),
