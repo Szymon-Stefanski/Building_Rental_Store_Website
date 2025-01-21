@@ -101,7 +101,7 @@ if (isset($_POST['delete_account'])) {
                     </a>
                 </li>
                 <li class="menu-item">
-                    <a href="#">
+                    <a href="../Store/favorites.php">
                         <span class="icon"><img src="../Image/Icon/favourite.png" alt="Favourite"></span>
                         Ulubione
                     </a>

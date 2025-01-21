@@ -3,7 +3,7 @@ session_start();
 require '../database_connection.php';
 
 $stmt = getDbConnection()->prepare("
-    SELECT k.nazwa_kategorii, p.produkt_id, p.nazwa_produktu, p.cena
+    SELECT k.nazwa_kategorii, p.produkt_id, p.nazwa_produktu, p.cena, p.promocja
     FROM Produkty p
     LEFT JOIN Kategorie k ON p.kategoria_id = k.kategoria_id
     ORDER BY k.nazwa_kategorii, p.nazwa_produktu
@@ -38,7 +38,7 @@ if (isset($_POST['favorites'])) {
     // Zapytanie do bazy, aby pobrać szczegóły produktów
     $placeholders = implode(',', array_fill(0, count($favorites), '?'));
     $stmt = getDbConnection()->prepare("
-        SELECT k.nazwa_kategorii, p.produkt_id, p.nazwa_produktu, p.cena
+        SELECT k.nazwa_kategorii, p.produkt_id, p.nazwa_produktu, p.cena, p.promocja
         FROM Produkty p
         LEFT JOIN Kategorie k ON p.kategoria_id = k.kategoria_id
         WHERE p.produkt_id IN ($placeholders)
@@ -62,43 +62,52 @@ if (isset($_POST['favorites'])) {
 
         foreach ($productsInCategory as $product) {
             $html .= "
-        <div class='product-card'>
-            <a href='../Store/product.php?id={$product['produkt_id']}'>
-                <img src='" . findProductImage($product['produkt_id'], $category, $product['nazwa_produktu']) . "' alt='Obraz produktu: {$product['nazwa_produktu']}' class='zdjecie'>
-                <h3>{$product['nazwa_produktu']}</h3>
-                <p class='product-price'>" . number_format($product['cena'], 2, ',', ' ') . " zł/szt.</p>
-            </a>
-            <div class='favorite-icon' data-product-id='{$product['produkt_id']}'>
+    <div class='product-card'>
+        <a href='../Store/product.php?id={$product['produkt_id']}'>
+            <img src='" . findProductImage($product['produkt_id'], $category, $product['nazwa_produktu']) . "' alt='Obraz produktu: {$product['nazwa_produktu']}' class='zdjecie'>
+            <h3>{$product['nazwa_produktu']}</h3>";
+
+            if ($product['promocja'] === null) {
+                // Cena standardowa
+                $html .= "<p class='product-price'>" . number_format($product['cena'], 2, ',', ' ') . " zł/szt.</p>";
+            } else {
+                // Cena z promocją
+                $html .= "
+            <p style='font-size: 16px; margin: 5px 0; text-decoration: line-through; color: red;'>"
+                    . number_format($product['cena'], 2, ',', ' ') . " zł/szt.</p>
+            <p style='font-size: 18px; margin: 5px 0; font-weight: bold; color: green;'>"
+                    . number_format($product['promocja'], 2, ',', ' ') . " zł/szt.</p>";
+            }
+
+            $html .= "
+        </a>
+        <div class='favorite-icon' data-product-id='{$product['produkt_id']}'>
             <img src='../Image/Icon/love-always-wins.png' alt='Ulubione'>
+        </div>
+
+        <div class='quantity-cart-container'>
+            <div class='quantity-control'>
+                <button type='button' class='decrease-quantity' onclick='changeQuantity(this, -1)'>-</button>
+                <input type='number' value='1' min='1' class='quantity' name='quantity' onchange='updateQuantityDisplay(this)'>
+                <button type='button' class='increase-quantity' onclick='changeQuantity(this, 1)'>+</button>
             </div>
 
-             <div class='quantity-cart-container'>
-                <div class='quantity-control'>
-                    <button type='button' class='decrease-quantity' onclick='changeQuantity(this, -1)'>-</button>
-                    <input type='number' value='1' min='1' class='quantity' name='quantity' onchange='updateQuantityDisplay(this)'>
-                    <button type='button' class='increase-quantity' onclick='changeQuantity(this, 1)'>+</button>
-                </div>
-                
-                <form method='POST' action='cart_actions.php' class='add-to-cart-form'>
-                    <input type='hidden' name='action' value='add'>
-                    <input type='hidden' name='product_id' value='{$product['produkt_id']}'>
-                    <input type='hidden' name='product_name' value='" . htmlspecialchars($product['nazwa_produktu']) . "'>
-                    <input type='hidden' name='product_price' value='{$product['cena']}'>
-                    
-                    <!-- Ta linia jest odpowiedzialna za dynamiczną ilość w formularzu -->
-                    <input type='hidden' class='form-quantity' name='quantity' value='1'>
-                    
-                    <button type='submit' class='add-to-cart'>
-                        <img src='../Image/Icon/pngegg.png' style='filter: invert(1) brightness(1000%);' alt='Dodaj do koszyka'> DO KOSZYKA
-                    </button>
-                </form>
-            </div>
+            <form method='POST' action='cart_actions.php' class='add-to-cart-form'>
+                <input type='hidden' name='action' value='add'>
+                <input type='hidden' name='product_id' value='{$product['produkt_id']}'>
+                <input type='hidden' name='product_name' value='" . htmlspecialchars($product['nazwa_produktu']) . "'>
+                <input type='hidden' name='product_price' value='{$product['cena']}'>
+                <input type='hidden' class='form-quantity' name='quantity' value='1'>
+                <button type='submit' class='add-to-cart'>
+                    <img src='../Image/Icon/pngegg.png' style='filter: invert(1) brightness(1000%);' alt='Dodaj do koszyka'> DO KOSZYKA
+                </button>
+            </form>
         </div>
-    ";
+    </div>";
         }
 
-
         $html .= "</div></div></section>";
+
     }
 
     // Zwracamy wygenerowany HTML
