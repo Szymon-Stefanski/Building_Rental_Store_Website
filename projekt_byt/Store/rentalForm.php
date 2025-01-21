@@ -103,6 +103,16 @@ function findProductImage($productId, $categoryName, $productName) {
     return null;
 }
 
+$_SESSION['rental_items'] = [];
+foreach ($_SESSION['cart'] as $item) {
+    $_SESSION['rental_items'][] = [
+        'produkt_id' => $item['id'],
+        'stawka_dzienna' => $item['price']*0.10,
+        'koszt_calkowity' => ($item['price']*0.10) * $item['rental_days'],
+        'ilosc' => 1
+    ];
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['product_select'])) {
         $selectedProducts = $_POST['product_select'];
@@ -198,6 +208,8 @@ Prosimy o terminowy zwrot produktów. W przypadku pytań prosimy o kontakt z nas
 Dziękujemy za skorzystanie z naszych usług!
 Budex sp. z o.o.";
 
+                sendEmail($email, $subject, $message);
+
                 header('Location: rentalForm.php');
                 exit;
             }
@@ -234,6 +246,7 @@ $returnDate = date('Y-m-d', strtotime("+$rentalDays day", strtotime($rentalDate)
     const cartItems = <?php echo json_encode($cartData, JSON_UNESCAPED_UNICODE); ?>;
     const userData = <?php echo json_encode($_SESSION['user'] ?? null, JSON_UNESCAPED_UNICODE); ?>;
 </script>
+
 <!DOCTYPE html>
 <html lang="pl">
 
