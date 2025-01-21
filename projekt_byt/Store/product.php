@@ -392,7 +392,11 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
                     <div class="footer-newsletter">
                         <h3>NEWSLETTER</h3>
                         <p>Chcesz być na bieżąco z najlepszymi ofertami? Zapisz się do newslettera i nie przegap okazji!</p>
-                        <button type="submit"><i class="fa fa-arrow-right"></i> ZAPISZ SIĘ</button>
+                        <form action="../newsletter.php" method="GET">
+                            <button type="submit">
+                                <i class="fa fa-arrow-right"></i> ZAPISZ SIĘ
+                            </button>
+                        </form>
                         
                         
                     </div>
