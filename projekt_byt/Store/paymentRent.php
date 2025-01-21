@@ -21,6 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['mark_paid'])) {
     $userId = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null; // ID użytkownika z sesji
     $rentalDate = $_POST['rentalDate'] ?? null;
     $returnDate = $_POST['returnDate'] ?? null;
+    
 
     // Walidacja danych
     if (empty($userId) || empty($rentalDate)) {
@@ -42,11 +43,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['mark_paid'])) {
         $status = 'Nieopłacone';
         $id = $rentalId;
 
-        $positionStmt = $db->prepare("
-        INSERT INTO Pozycje_Wynajmu (wynajem_id, produkt_id, ilosc, stawka_dzienna, koszt_calkowity)
-        VALUES (?, ?, ?, ?, ?)
-        ");
-        $positionStmt->execute([$rentalId, 1, 1, 1, 1]);
+        if (!empty($_SESSION['rental_items'])) {
+            $positionStmt = $db->prepare("
+                INSERT INTO Pozycje_Wynajmu (wynajem_id, produkt_id, ilosc, stawka_dzienna, koszt_calkowity)
+                VALUES (?, ?, ?, ?, ?)
+            ");
+
+            foreach ($_SESSION['rental_items'] as $item) {
+                $positionStmt->execute([
+                    $rentalId,
+                    $item['produkt_id'],
+                    $item['ilosc'],
+                    $item['stawka_dzienna'],
+                    $item['koszt_calkowity']
+                ]);
+            }
+        }
 
         // Pobranie danych użytkownika
         $userStmt = $db->prepare("SELECT email, imie, nazwisko FROM Uzytkownicy WHERE uzytkownik_id = ?");
