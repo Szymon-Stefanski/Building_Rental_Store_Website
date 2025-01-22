@@ -287,12 +287,12 @@ $returnDate = date('Y-m-d', strtotime("+$rentalDays day", strtotime($rentalDate)
 
                     <div class="form-group">
                         <label for="email">E-mail*</label>
-                        <input type="text" id="email" name="email" required>
+                            <input type="email" id="email" name="email" required>
                     </div>
 
                     <div class="form-group">
                         <label for="phone">Nr telefonu*</label>
-                        <input type="text" id="phone" name="phone" required>
+                            <input type="tel" id="phoneNumber" name="phoneNumber" required pattern="[0-9]{9}" title="Numer telefonu musi zawierać dokładnie 9 cyfr.">
                     </div>
 
                     <!-- Data wynajmu - pobierana z systemu -->
@@ -447,9 +447,13 @@ $returnDate = date('Y-m-d', strtotime("+$rentalDays day", strtotime($rentalDate)
                 const firstName = document.getElementById("firstName");
                 const lastName = document.getElementById("lastName");
                 const pickupOption = document.getElementById("pickupOption");
+                const email = document.getElementById("email");
+                const phoneNumber = document.getElementById("phoneNumber");
 
                 const nameRegex = /^[a-zA-ZżźćńółęąśŻŹĆĄŚĘŁÓŃ]+$/;
                 const postalCodeRegex = /^\d{2}-\d{3}$/;
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                const phoneRegex = /^[0-9]{9}$/;
 
                 if(!pickupOption.checked) {
                     if(
@@ -464,12 +468,28 @@ $returnDate = date('Y-m-d', strtotime("+$rentalDays day", strtotime($rentalDate)
                         alert("Kod pocztowy musi być w formacie XX-XXX.");
                         return false;
                     }
+                    if (!emailRegex.test(email.value)) {
+                        alert("Podaj poprawny adres e-mail.");
+                        return false;
+                    }
+                    if (!phoneRegex.test(phoneNumber.value)) {
+                        alert("Numer telefonu musi składać się z 9 cyfr.");
+                        return false;
+                    }
                 } else {
                     if(
                         !nameRegex.test(firstName.value) ||
                         !nameRegex.test(lastName.value)
                     ) {
                         alert("Pola Imię i Nazwisko mogą zawierać tylko litery.");
+                        return false;
+                    }
+                    if (!emailRegex.test(email.value)) {
+                        alert("Podaj poprawny adres e-mail.");
+                        return false;
+                    }
+                    if (!phoneRegex.test(phoneNumber.value)) {
+                        alert("Numer telefonu musi składać się z 9 cyfr.");
                         return false;
                     }
                 }

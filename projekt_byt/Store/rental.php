@@ -339,7 +339,7 @@ if ($product) {
                         
                         <button id="guestButton" class="guest-button">
                         <a href="rentalForm.php">
-                            <img src="../Image/Icon/user.png" alt="Ikona gościa"> Przejdź do dostawy
+                            <img src="../Image/Icon/user.png" alt="Ikona gościa"> Przejdź do wynajmu
                         </a>
                     </button>
                     </form>
