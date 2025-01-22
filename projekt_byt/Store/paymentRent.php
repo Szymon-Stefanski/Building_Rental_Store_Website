@@ -57,6 +57,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['mark_paid'])) {
                     $item['stawka_dzienna'],
                     $item['koszt_calkowity']
                 ]);
+
+                $updateStmt = $db->prepare("UPDATE Produkty SET wynajem = 'NIE' WHERE produkt_id = ?");
+                $updateStmt->execute([$item['produkt_id']]);
             }
         }
 
