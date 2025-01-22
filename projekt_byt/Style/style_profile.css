@@ -447,6 +447,15 @@ main.has-deliverys {
   padding-bottom: 20px;
 }
 
+main.has-rents {
+  min-height: 70vh;
+  padding-bottom: 20px;
+}
+
+main.has-rents th{
+    background-color: #99d98c;
+}
+
 /* Ogólny styl dla sekcji "Moje Zamówienia" */
 #user-deliverys {
   padding: 20px;
