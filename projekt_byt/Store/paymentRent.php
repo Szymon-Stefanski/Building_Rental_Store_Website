@@ -43,26 +43,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['mark_paid'])) {
         $status = 'Nieopłacone';
         $id = $rentalId;
 
-        if (!empty($_SESSION['rental_items'])) {
-            $positionStmt = $db->prepare("
-                INSERT INTO Pozycje_Wynajmu (wynajem_id, produkt_id, ilosc, stawka_dzienna, koszt_calkowity)
-                VALUES (?, ?, ?, ?, ?)
-            ");
-
-            foreach ($_SESSION['rental_items'] as $item) {
-                $positionStmt->execute([
-                    $rentalId,
-                    $item['produkt_id'],
-                    $item['ilosc'],
-                    $item['stawka_dzienna'],
-                    $item['koszt_calkowity']
-                ]);
-
-                $updateStmt = $db->prepare("UPDATE Produkty SET wynajem = 'NIE' WHERE produkt_id = ?");
-                $updateStmt->execute([$item['produkt_id']]);
-            }
-        }
-
         // Pobranie danych użytkownika
         $userStmt = $db->prepare("SELECT email, imie, nazwisko FROM Uzytkownicy WHERE uzytkownik_id = ?");
         $userStmt->execute([$userId]);
@@ -113,6 +93,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['mark_paid'])) {
         // Sprawdź, czy aktualizacja się powiodła
         if ($stmt->rowCount() > 0) {
             $status = 'Opłacone';
+
+            $positionStmt = $db->prepare("
+                INSERT INTO Pozycje_Wynajmu (wynajem_id, produkt_id, ilosc, stawka_dzienna, koszt_calkowity)
+                VALUES (?, ?, ?, ?, ?)
+            ");
+    
+            foreach ($_SESSION['rental_items'] as $item) {
+                $positionStmt->execute([
+                    $rentalId,
+                    $item['produkt_id'],
+                    $item['ilosc'],
+                    $item['stawka_dzienna'],
+                    $item['koszt_calkowity']
+                ]);
+
+                $updateStmt = $db->prepare("UPDATE Produkty SET wynajem = 'NIE' WHERE produkt_id = ?");
+                $updateStmt->execute([$item['produkt_id']]);
+            }
 
             // Po dokonaniu płatności, wyczyść koszyk
             cleanCart();
