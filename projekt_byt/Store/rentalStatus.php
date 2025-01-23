@@ -73,7 +73,7 @@ $userRole = $stmt->fetchColumn();
             <nav>
                 <ul>
                     <li><a href="../index.php">Strona główna</a></li>
-                    <li><a href="userDeliverys.php">Moje wynajmy</a></li>
+                    <li><a href="../Login/profile.php?section=rentals">Moje wynajmy</a></li>
                     <?php if (isset($_SESSION['user_id']) && ($userRole === 'admin' || $userRole === 'mod')): ?>
                         <li><a href="../Warehouse/deliveryManagement.php">Zarządzanie wynajmami</a></li>
                     <?php endif; ?>

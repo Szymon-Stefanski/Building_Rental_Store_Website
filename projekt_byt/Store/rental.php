@@ -348,21 +348,9 @@ if ($product) {
                 <?php else: ?>
                     <button id="loginButton" class="login-button">
                         <a href="../Login/login.php">
-                            <img src="../Image/Icon/log-in.png" alt="Ikona logowania"> Zaloguj się
+                            <img src="../Image/Icon/log-in.png" alt="Ikona logowania"> Zaloguj się, aby wypożyczyć
                         </a>
                     </button>
-
-                    <form method="post" action="rentalForm.php" id="rentForm">
-                        <input type="hidden" name="action" value="add">
-                        <input type="hidden" name="product_id" value="<?php echo $produkt['produkt_id']; ?>">
-                        <input type="hidden" name="product_name" value="<?php echo htmlspecialchars($produkt['nazwa_produktu']); ?>">
-                        <input type="hidden" name="product_price" value="<?php echo $produkt['cena']; ?>">
-                        <input type="hidden" id="days-hidden-<?php echo $produkt['produkt_id']; ?>" name="rental_days" value="1">
-                        
-                        <button type="button" class="guest-button" id="guestButton">
-                            <img src="../Image/Icon/user.png" alt="Ikona gościa"> WYPOŻYCZ JAKO GOŚĆ
-                        </button>
-                    </form>
 
                 <?php endif; ?>
 

@@ -14,6 +14,11 @@ $stmt = getDbConnection()->prepare("
 $stmt->execute();
 $Products = $stmt->fetchAll();
 
+$stmt = getDbConnection()->prepare("
+DELETE FROM Wynajmy WHERE status = 'Nieopłacone'
+");
+$stmt->execute();
+
 $groupedProducts = [];
 foreach ($Products as $row) {
     $groupedProducts[$row['nazwa_kategorii']][] = $row;

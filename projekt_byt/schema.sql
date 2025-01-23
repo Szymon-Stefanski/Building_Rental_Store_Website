@@ -40,12 +40,12 @@ CREATE TABLE Uzytkownicy (
     haslo VARCHAR(255) NOT NULL,
     numer_telefonu VARCHAR(15),
     adres TEXT,
-    rola VARCHAR(50) NOT NULL DEFAULT 'klient'
+    rola VARCHAR(50) NOT NULL DEFAULT 'user'
 );
 
 CREATE TABLE Wynajmy (
     wynajem_id INT AUTO_INCREMENT PRIMARY KEY,
-    uzytkownik_id INT NOT NULL,
+    uzytkownik_id INT,
     data_wynajmu DATE NOT NULL,
     data_zwrotu DATE,
     status VARCHAR(50) NOT NULL,
@@ -287,6 +287,7 @@ INSERT INTO Wynajmy (wynajem_id, uzytkownik_id, data_wynajmu, data_zwrotu, statu
 VALUES (7, 6, '2024-12-18', '2024-12-28', 'Zakończone');
 INSERT INTO Wynajmy (wynajem_id, uzytkownik_id, data_wynajmu, data_zwrotu, status) 
 VALUES (8, 6, '2024-12-20', '2024-12-30', 'Zakończone');
+
 INSERT INTO Pozycje_Wynajmu (produkt_id, wynajem_id, ilosc, stawka_dzienna, koszt_calkowity) 
 VALUES (70, 1, 1, 20.00, 200.00);
 INSERT INTO Pozycje_Wynajmu (produkt_id, wynajem_id, ilosc, stawka_dzienna, koszt_calkowity)
