@@ -402,7 +402,7 @@ if ($product) {
 
             <!-- Podsumowanie koszyka -->
             <div class="summary">
-                <p>Produkty: <span id="products-total"><?php echo $Total;?> zł</span></p>
+                <p>Cena: <span id="products-total"><?php echo $Total;?> zł</span></p>
                 <?php
                 $discountValue = 0; // Domyślna wartość rabatu
                 $textColor = "black"; // Domyślny kolor czcionki
