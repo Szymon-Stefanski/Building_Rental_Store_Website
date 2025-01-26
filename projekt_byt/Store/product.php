@@ -39,6 +39,7 @@ if (!$product) {
     echo "Produkt nie istnieje.";
     exit;
 }
+
 $stmt = getDbConnection()->prepare("
     SELECT o.opinia_id, o.tresc_opinii, o.data_opinii, o.ocena, u.login
     FROM Opinie_Produktow o
@@ -51,17 +52,28 @@ $stmt->execute([$product_id]);
 $opinions = $stmt->fetchAll();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['opinion'])) {
+    session_start();
+    $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
+
+    // Sprawdzenie, czy użytkownik jest zalogowany
+    if ($user_id === null) {
+        echo "Musisz być zalogowany, aby dodać opinię.";
+        exit;
+    }
+
     $tresc_opinii = $_POST['opinion'];
     $ocena = isset($_POST['rating']) ? intval($_POST['rating']) : null;
-    $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
+
     $stmt = getDbConnection()->prepare("
-    INSERT INTO Opinie_Produktow (uzytkownik_id, produkt_id, ocena, tresc_opinii, data_opinii) 
-    VALUES (?, ?, ?, ?, NOW())
-");
+        INSERT INTO Opinie_Produktow (uzytkownik_id, produkt_id, ocena, tresc_opinii, data_opinii) 
+        VALUES (?, ?, ?, ?, NOW())
+    ");
     $stmt->execute([$user_id, $product_id, $ocena, $tresc_opinii]);
+
     header("Location: product.php?id=$product_id");
     exit;
 }
+
 
 if (!isset($_SESSION['cart'])) {
     $_SESSION['cart'] = [];
@@ -317,37 +329,43 @@ $current_url = urlencode("http://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_U
             </div>
 
             <h2>Dodaj Opinię</h2>
-            <form method="POST">
-                <textarea name="opinion" required placeholder="Napisz swoją opinię..."></textarea>
+            <?php if (isset($_SESSION['user_id'])): ?>
+                <!-- Formularz dla zalogowanych użytkowników -->
+                <form method="POST">
+                    <textarea name="opinion" required placeholder="Napisz swoją opinię..."></textarea>
 
-                <div class="rating">
-                    <label>
-                        <input type="radio" name="rating" value="1" required>
-                        <span class="star">&#9733;</span>
-                    </label>
-                    <label>
-                        <input type="radio" name="rating" value="2">
-                        <span class="star">&#9733;</span>
-                    </label>
-                    <label>
-                        <input type="radio" name="rating" value="3">
-                        <span class="star">&#9733;</span>
-                    </label>
-                    <label>
-                        <input type="radio" name="rating" value="4">
-                        <span class="star">&#9733;</span>
-                    </label>
-                    <label>
-                        <input type="radio" name="rating" value="5">
-                        <span class="star">&#9733;</span>
-                    </label>
-                </div>
+                    <div class="rating">
+                        <label>
+                            <input type="radio" name="rating" value="1" required>
+                            <span class="star">&#9733;</span>
+                        </label>
+                        <label>
+                            <input type="radio" name="rating" value="2">
+                            <span class="star">&#9733;</span>
+                        </label>
+                        <label>
+                            <input type="radio" name="rating" value="3">
+                            <span class="star">&#9733;</span>
+                        </label>
+                        <label>
+                            <input type="radio" name="rating" value="4">
+                            <span class="star">&#9733;</span>
+                        </label>
+                        <label>
+                            <input type="radio" name="rating" value="5">
+                            <span class="star">&#9733;</span>
+                        </label>
+                    </div>
 
-                <button type="submit">
-                    <img src="../Image/Icon/plus.png" alt="Ikona opinii">
-                    Dodaj Opinię
-                </button>
-            </form>
+                    <button type="submit">
+                        <img src="../Image/Icon/plus.png" alt="Ikona opinii">
+                        Dodaj Opinię
+                    </button>
+                </form>
+            <?php else: ?>
+                <!-- Komunikat dla niezalogowanych użytkowników -->
+                <p class="warning">Musisz być zalogowany, aby dodać opinię.</p>
+            <?php endif; ?>
         </div>
 
     </div>
