@@ -581,13 +581,6 @@ body {
     font-size: 14px; /* Zmniejszenie rozmiaru czcionki */
 }
 
-.main-navigation,
-.nav-links a,
-.category-dropdown,
-.top-bar {
-    font-family: "Brush Script MT";
-}
-
 /* Styl dla linków w nawigacji */
 .nav-links {
     display: flex;
