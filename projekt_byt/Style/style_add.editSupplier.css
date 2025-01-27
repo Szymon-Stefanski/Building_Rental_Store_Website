@@ -81,3 +81,34 @@ footer {
     left: 0;
     right: 0;
 }
+
+@media (max-width: 768px) {
+    .main-content {
+        margin: 20px;
+        padding: 15px;
+    }
+
+    .edit-supplier-form input,
+    .edit-supplier-form textarea,
+    .edit-supplier-form button {
+        font-size: 0.9rem;
+        padding: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    header h1 {
+        font-size: 1.5rem;
+    }
+
+    footer {
+        font-size: 14px;
+    }
+
+    .edit-supplier-form input,
+    .edit-supplier-form textarea,
+    .edit-supplier-form button {
+        font-size: 0.8rem;
+        padding: 6px;
+    }
+}
