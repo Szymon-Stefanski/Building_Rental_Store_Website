@@ -1,17 +1,17 @@
-# Strona Hurtowni Budowlanej 🧱
+# Strona Hurtowni Budowlanej 
 
 Jest to aplikacja internetowa dla fikcyjnej hurtowni materiałów budowlanych.  
 Strona umożliwia przeglądanie produktów, zapisanie się na newsletter oraz wypożyczenie sprzętu budowlanego.
 
-## ✨ Główne funkcje
+## Główne funkcje
 
-- 🛒 Przeglądanie produktów według kategorii
-- 📰 Możliwość zapisania się na newsletter
-- 🛠️ System wypożyczania sprzętu budowlanego
-- 🔐 Logowanie za pomocą konta Google
-- 👤 Obsługa ról użytkowników: Administrator i Moderator
-- 📧 Wysyłka e-maili przez PHPMailer
-- 🧪 Testowanie funkcjonalności przy pomocy PHPUnit
+- Przeglądanie produktów według kategorii
+- Możliwość zapisania się na newsletter
+- 🛠System wypożyczania sprzętu budowlanego
+- Logowanie za pomocą konta Google
+- Obsługa ról użytkowników: Administrator i Moderator
+- Wysyłka e-maili przez PHPMailer
+- Testowanie funkcjonalności przy pomocy PHPUnit
 
 I Logowanie poprzez google
 
